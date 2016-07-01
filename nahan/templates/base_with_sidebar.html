@@ -1,0 +1,11 @@
+{% extends 'base.html' %}
+{% block inside_row %}
+<div class="col-md-3" id="left">
+    {% block left %}{% endblock %}
+</div>
+<!--left: user info-->
+<div class="col-md-8" id="right">
+    {% block right %}{% endblock %}
+</div>
+<!--right: topics-->
+{% endblock %}

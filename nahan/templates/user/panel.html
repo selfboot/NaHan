@@ -1,0 +1,45 @@
+<div class="panel panel-default">
+    <div class="panel-body">
+        {% if request.user.is_authenticated %}
+        <div class="row">
+            <a class="col-xs-4"><img title="{{request.user.profile.username}}" class="avatar-large" src="{{request.user.profile.avatar.middle}}"></a>
+            <div class="col-xs-8">
+            <p class="list-post-title"><strong>{{request.user.profile.username}}</strong></p>
+            <p class="list-meta" style="margin-top: 1em">{% with user_id=request.user.id %}
+            {% blocktrans %} {{ user_id }} users {% endblocktrans %}{% endwith %}
+            </p>
+        </div>
+        </div>
+        <div class="row" style="margin-top: 1em">
+            <div class="col-xs-4">
+                <a href="{% url 'user_info' request.user.id %}" class="btn btn-block"> <span class="glyphicon glyphicon-home"></span> {% trans 'info' %} </a>
+            </div>
+            <div class="col-xs-4">
+                <a href="{% url 'user_setting' %}" class="btn btn-block"> <span class="glyphicon glyphicon-cog"></span> {% trans 'settings' %} </a>
+            </div>
+            <div class="col-xs-4">
+                <a href="{% url 'signout' %}" class="btn btn-block"> <span class="glyphicon glyphicon-log-out"></span> {% trans 'log out' %} </a>
+            </div>
+        </div>
+        {% else %}
+        <p>{% trans 'content of this site' %}</p>
+        <div class="row">
+            <div class="col-md-6">
+                <a href="{% url 'signin' %}" class="btn btn-block btn-info">{% trans 'sign in' %}</a>
+            </div>
+            <div class="col-md-6">
+                <a href="{% url 'reg' %}" class="btn btn-block btn-default">{% trans 'reg' %}</a>
+            </div>
+        </div>
+        {% endif %}
+    </div>
+    {% if request.user.profile.unread_mention %}
+    <div class="panel-footer">
+        <span class="notification"><a href="{% url 'mention' %}">{{request.user.profile.unread_mention.count}}{% trans 'new messages' %}</a></span>
+    </div>
+    {% elif request.user.is_authenticated %}
+    <div class="panel-footer">
+        <span class="notification"><a href="{% url 'mention' %}">{% trans 'site messages' %}</a></span>
+    </div>
+    {% endif %}
+</div>

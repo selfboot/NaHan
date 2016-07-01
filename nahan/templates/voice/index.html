@@ -1,0 +1,11 @@
+{% extends 'base-with-sidebar.html' %}
+{% block header_ext%}
+    <meta name="keywords" content="Speaker for children" />
+    <meta name="description" content="Speaker for children" />
+{% endblock %}
+{% block left %}
+{% include 'user/panel.html' %}
+{% endblock %}
+{% block right %}
+{% include 'voice/list.html' %}
+{% endblock %}
