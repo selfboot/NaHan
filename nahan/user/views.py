@@ -32,16 +32,36 @@ def signout():
     return redirect(url_for('voice.index'))
 
 
+@user.route('/reg')
+def reg():
+    return "REG"
+
+
+@user.route('/<int:uid>')
+def info(uid):
+    return "%s" % uid
+
+
+@user.route('/setting')
+def setting():
+    return "Setting"
+
+
+@user.route("/mention")
+def mention():
+    return "Mention"
+
+
+@user.route("/password")
+def password_reset():
+    return "Reset"
+
 # urlpatterns = patterns(
 #     'account.views',
 #     url(r'^(?P<user_id>\d+)/info/$',
 #         'user_info', name='user_info'),
-#     url(r'^reg/$', 'reg', name='reg'),
 #     url(r'^super/$', 'super_login', name='super_login'),
-#     url(r'^signin/$', 'user_login', name='signin'),
-#     url(r'^setting/$', 'setting', name='user_setting'),
 #     url(r'^signout/$', 'user_logout', name='signout'),
-#     url(r'^mention/$', 'view_mention', name='mention'),
 #     url(r'password/$', 'change_password',
 #         name='change_password'),
 #     url(r'^avatar/$', 'user_avatar', name='user_avatar'),

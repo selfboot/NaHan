@@ -27,6 +27,14 @@ class User(UserMixin, db.Model):
     last_login = db.Column(db.DateTime(), default=datetime.utcnow)
     date_joined = db.Column(db.DateTime(), default=datetime.utcnow)
 
+    # Keep all the topics, comments the user has created.
+    topics = db.Column(db.Text(), default="")
+    comments = db.Column(db.Text(), default="")
+
+    # Keep all the notify id.  User can have more than one read or unread notify.
+    unread_notify = db.Column(db.Text())
+    read_notify = db.Column(db.Text())
+
     @property
     def password(self):
         raise AttributeError('password is not a readable attribute')
@@ -65,6 +73,10 @@ class User(UserMixin, db.Model):
     def is_administrator(self):
         return self.is_superuser
 
+    def unread_nofity_count(self):
+        # TODO
+        return 1
+
 
 @login_manager.user_loader
 def load_user(user_id):
@@ -89,6 +101,10 @@ class Topic(db.Model):
     # User create a topic at topic_id which belong to the node.
     user_id = db.Column(db.Integer)
     node_id = db.Column(db.Integer)
+
+    # Keep all the append and comment about the topic.
+    appends = db.Column(db.Text(), default="")
+    comments = db.Column(db.Text(), default="")
 
 
 class TopicAppend(db.Model):
@@ -124,6 +140,9 @@ class Node(db.Model):
 
     title = db.Column(db.String(64))
     description = db.Column(db.Text())
+
+    # Keep all the topics the node have.
+    topics = db.Column(db.Text(), default="")
 
     def __unicode__(self):
         return self.title

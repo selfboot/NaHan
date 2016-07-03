@@ -1,45 +1,45 @@
 <div class="panel panel-default">
     <div class="panel-body">
-        {% if request.user.is_authenticated %}
+        {% if current_user.is_authenticated %}
         <div class="row">
-            <a class="col-xs-4"><img title="{{request.user.profile.username}}" class="avatar-large" src="{{request.user.profile.avatar.middle}}"></a>
+            <a class="col-xs-4"><img title="{{current_user.username}}" class="avatar-large" src="{{current_user.avatar.middle}}"></a>
             <div class="col-xs-8">
-            <p class="list-post-title"><strong>{{request.user.profile.username}}</strong></p>
-            <p class="list-meta" style="margin-top: 1em">{% with user_id=request.user.id %}
-            {% blocktrans %} {{ user_id }} users {% endblocktrans %}{% endwith %}
+            <p class="list-post-title"><strong>{{current_user.username}}</strong></p>
+            <p class="list-meta" style="margin-top: 1em">{% with user_id=current_user.id %}
+            {{ user_id }} users {% endwith %}
             </p>
         </div>
         </div>
         <div class="row" style="margin-top: 1em">
             <div class="col-xs-4">
-                <a href="{% url 'user_info' request.user.id %}" class="btn btn-block"> <span class="glyphicon glyphicon-home"></span> {% trans 'info' %} </a>
+                <a href="{{ url_for('user.info', uid=ser.id) }}" class="btn btn-block"> <span class="glyphicon glyphicon-home"></span> {{ _('info') }} </a>
             </div>
             <div class="col-xs-4">
-                <a href="{% url 'user_setting' %}" class="btn btn-block"> <span class="glyphicon glyphicon-cog"></span> {% trans 'settings' %} </a>
+                <a href="{{ url_for('user.setting') }}" class="btn btn-block"> <span class="glyphicon glyphicon-cog"></span> {{ _('settings') }} </a>
             </div>
             <div class="col-xs-4">
-                <a href="{% url 'signout' %}" class="btn btn-block"> <span class="glyphicon glyphicon-log-out"></span> {% trans 'log out' %} </a>
+                <a href="{{ url_for('user.signout') }}" class="btn btn-block"> <span class="glyphicon glyphicon-log-out"></span> {{ _('log out') }} </a>
             </div>
         </div>
         {% else %}
-        <p>{% trans 'content of this site' %}</p>
+        <p>{{  _('content of this site') }}</p>
         <div class="row">
             <div class="col-md-6">
-                <a href="{% url 'signin' %}" class="btn btn-block btn-info">{% trans 'sign in' %}</a>
+                <a href="{{ url_for('user.signin') }}" class="btn btn-block btn-info">{{ _('sign in') }}</a>
             </div>
             <div class="col-md-6">
-                <a href="{% url 'reg' %}" class="btn btn-block btn-default">{% trans 'reg' %}</a>
+                <a href="{{ url_for('user.reg') }}" class="btn btn-block btn-default">{{ _('reg') }}</a>
             </div>
         </div>
         {% endif %}
     </div>
-    {% if request.user.profile.unread_mention %}
+    {% if current_user.unread_notify %}
     <div class="panel-footer">
-        <span class="notification"><a href="{% url 'mention' %}">{{request.user.profile.unread_mention.count}}{% trans 'new messages' %}</a></span>
+        <span class="notification"><a href="{{ url_for('user.mention') }}">{{current_user.unread_nofity_count()}}{{ _('new messages') }}</a></span>
     </div>
-    {% elif request.user.is_authenticated %}
+    {% elif current_user.is_authenticated %}
     <div class="panel-footer">
-        <span class="notification"><a href="{% url 'mention' %}">{% trans 'site messages' %}</a></span>
+        <span class="notification"><a href="{{ url_for('user.mention') }}">{{ _('site messages') }}</a></span>
     </div>
     {% endif %}
 </div>

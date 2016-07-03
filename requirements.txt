@@ -1,5 +1,4 @@
 Flask==0.11.1
-Flask-Bootstrap==3.3.6.0
 Flask-Login==0.3.2
 Flask-Mail==0.9.1
 Flask-Migrate==1.8.0
@@ -8,6 +7,7 @@ Flask-Script==2.0.5
 Jinja2==2.8
 Mako==1.0.4
 MarkupSafe==0.23
+MySQL-python==1.2.5
 SQLAlchemy==1.0.13
 Werkzeug==0.11.10
 alembic==0.8.6
