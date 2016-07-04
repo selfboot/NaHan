@@ -1,0 +1,37 @@
+{% extends 'base.html' %}
+{% block inside_row %}
+<div class="panel panel-default col-md-6 col-md-offset-3">
+    <form class="panel-body" role="form" method="post" action="{{ url_for('user.reg')}}">
+        <h2 class="text-center" style="margin-bottom:1em">{{ _('register a account') }}</h2>
+        <div class="form-group ">
+            <label for="username">{{ _('username') }}</label>
+            <input class="form-control" id="username" name="username" placeholder="{{ _('letters,digits,underscore') }}" type="text" value="{{ form.username }}">
+            {% if message_u %} <div class="messages"> <p class="text-danger"> {{ message_u }} </p> </div> {% endif %}
+        </div>
+
+        <div class="form-group ">
+            <label for="email">{{ _('Email') }}</label>
+            <input class="form-control" id="email" name="email" type="email" placeholder="" value="{{ form.email }}" >
+            {% if message_e %} <div class="messages"> <p class="text-danger"> {{ message_e }} </p> </div> {% endif %}
+        </div>
+
+        <div class="form-group ">
+            <label for="password">{{ _('password') }}</label>
+            <input class="form-control" id="password" name="password" type="password" value="{{ form.password }}">
+        </div>
+
+         <div class="form-group ">
+            <label for="password">{{ _('repeat password') }}</label>
+            <input class="form-control" id="password2" name="password2" type="password" value="{{ form.password2 }}">
+             {% if message_p %} <div class="messages"> <p class="text-danger"> {{ message_p }} </p> </div> {% endif %}
+        </div>
+
+        <div class="form-group">
+            <button class="btn btn-success pull-right">
+                {{ _('register') }}
+            </button>
+            <a class="btn btn-link pull-right" href="{{ url_for('user.signin')}}">{{ _('sign in?') }}</a>
+        </div>
+    </form>
+</div>
+{% endblock %}

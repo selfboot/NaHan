@@ -5,6 +5,7 @@
 
 from flask import render_template, redirect, request, url_for, flash
 from . import voice
+from flask_babel import gettext
 from ..models import Topic, TopicAppend, Node, Notify, Comment, User
 from flask_login import login_user, logout_user, login_required, current_user
 
@@ -16,7 +17,7 @@ def index():
     topic_count = Topic.query.count()
     comment_count = Comment.query.count()
     topics = Topic.query.filter(Topic.deleted == False).order_by(Topic.last_replied).all()[0:30]
-    post_list_title = 'Latest Topics'
+    post_list_title = gettext('Latest Topics')
 
     return render_template('voice/index.html',
                            topics=topics,

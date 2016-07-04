@@ -20,9 +20,9 @@ class User(UserMixin, db.Model):
     is_superuser = db.Column(db.Boolean, default=False)
 
     nickname = db.Column(db.String(64), nullable=True)
-    use_avatar = db.Column(db.Boolean, default=True)
-    avatar_url = db.Column(db.String(64), nullable=True)
     website = db.Column(db.String(64), nullable=True)
+    avatar_url = db.Column(db.String(64), nullable=True)
+    use_avatar = db.Column(db.Boolean, default=True)
 
     last_login = db.Column(db.DateTime(), default=datetime.utcnow)
     date_joined = db.Column(db.DateTime(), default=datetime.utcnow)
@@ -32,8 +32,8 @@ class User(UserMixin, db.Model):
     comments = db.Column(db.Text(), default="")
 
     # Keep all the notify id.  User can have more than one read or unread notify.
-    unread_notify = db.Column(db.Text())
-    read_notify = db.Column(db.Text())
+    unread_notify = db.Column(db.Text(), default="")
+    read_notify = db.Column(db.Text(), default="")
 
     @property
     def password(self):

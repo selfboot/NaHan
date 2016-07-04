@@ -1,19 +1,20 @@
 {% extends 'base.html' %}
 {% block inside_row %}
 <div class="panel panel-default col-md-6 col-md-offset-3">
+
     <form class="panel-body" role="form" method="post" action="{{ url_for('user.signin') }}">
         <h2 class="text-center" style="margin-bottom:1em"> {{ _('user sign in')}} </h2>
-        {% if messages %}
-		<div class="messages">{{ message }}</div>
+        {% if message %}
+		<div class="messages"> <p class="text-danger"> {{ message }} </p></div>
 		{% endif %}
         <div class="form-group ">
             <label for="email"> {{ _('email') }} </label>
-            <input class="form-control" id="email" name="email" placeholder=example@gmail.com type="text">
+            <input class="form-control" id="email" name="email" placeholder=example@gmail.com type="text", value="{{ form.email}}">
         </div>
 
         <div class="form-group ">
             <label for="password">{{_('password') }}</label>
-            <input class="form-control" id="password" name="password" type="password">
+            <input class="form-control" id="password" name="password" type="password", value="{{ form.password}}">
         </div>
 
         <div class="form-group">

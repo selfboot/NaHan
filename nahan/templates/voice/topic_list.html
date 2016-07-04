@@ -1,7 +1,7 @@
 <div class="panel panel-default">
 	<div class="panel-heading title-breadcrumb">
 			{% if post_list_title %}
-			{{post_list_title}}
+			{{ post_list_title }}
 			{% else %}
                 <a href="{{ url_for('voice.index')}}">{{ _('home') }}</a> <span>{{node.title}}</span>
 			{% endif %}

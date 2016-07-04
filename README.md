@@ -18,11 +18,10 @@ Major features:
 # How to Run
 
 1. Firstly, make sure all the relevant requirements installed.
-2. Do some configure in SYSUVoice/settings.py.
-
+2. Do some configure in config.py.
 
 
 3. Start corresponding database service.
-4. Change directory  , run `python manage.py runserver`.  Just looks like the followings:
+4. Change directory, run `python manage.py runserver`. 
 
 
