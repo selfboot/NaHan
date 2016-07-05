@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PROJECT VERSION\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2016-07-03 14:47+0800\n"
+"POT-Creation-Date: 2016-07-05 17:39+0800\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -57,11 +57,11 @@ msgstr ""
 msgid "content of this site"
 msgstr ""
 
-#: templates/user/panel.html:28 templates/user/signin.html:21
+#: templates/user/panel.html:28 templates/user/signin.html:22
 msgid "sign in"
 msgstr ""
 
-#: templates/user/panel.html:31 templates/user/signin.html:23
+#: templates/user/panel.html:31 templates/user/signin.html:24
 msgid "reg"
 msgstr ""
 
@@ -73,19 +73,141 @@ msgstr ""
 msgid "site messages"
 msgstr ""
 
-#: templates/user/signin.html:5
-msgid "user sign in"
+#: templates/user/passwd_reset.html:3 templates/user/passwd_reset.html:10
+msgid "reset password"
 msgstr ""
 
-#: templates/user/signin.html:10
-msgid "email"
+#: templates/user/passwd_reset.html:13
+msgid "register email"
 msgstr ""
 
-#: templates/user/signin.html:15
+#: templates/user/passwd_reset.html:22
+msgid "submit"
+msgstr ""
+
+#: templates/user/passwd_reset_confirm.html:3
+msgid "reset password confirm"
+msgstr ""
+
+#: templates/user/passwd_reset_confirm.html:10
+msgid "Enter new password"
+msgstr ""
+
+#: templates/user/passwd_reset_confirm.html:13 templates/user/reg.html:19
+#: templates/user/signin.html:16
 msgid "password"
 msgstr ""
 
-#: templates/user/signin.html:24
+#: templates/user/passwd_reset_confirm.html:18 templates/user/reg.html:24
+msgid "repeat password"
+msgstr ""
+
+#: templates/user/passwd_reset_confirm.html:25
+msgid "Confirm"
+msgstr ""
+
+#: templates/user/passwd_reset_done.html:2
+#: templates/user/passwd_reset_sent.html:2
+msgid "Password reset email sent"
+msgstr ""
+
+#: templates/user/passwd_reset_done.html:7
+msgid "Successful!"
+msgstr ""
+
+#: templates/user/passwd_reset_done.html:9
+msgid "Password reset successfully.  You can jump to"
+msgstr ""
+
+#: templates/user/passwd_reset_done.html:10
+msgid "to see what's happened recently."
+msgstr ""
+
+#: templates/user/passwd_reset_done.html:16
+msgid "Failed!"
+msgstr ""
+
+#: templates/user/passwd_reset_done.html:18
+msgid ""
+"Password reset failed somehow.  Please make sure your reset link is legal"
+" and not used already!"
+msgstr ""
+
+#: templates/user/passwd_reset_email.html:1
+msgid "Dear"
+msgstr ""
+
+#: templates/user/passwd_reset_email.html:2
+msgid "To reset your password"
+msgstr ""
+
+#: templates/user/passwd_reset_email.html:2
+msgid "click here."
+msgstr ""
+
+#: templates/user/passwd_reset_email.html:3
+msgid ""
+"Alternatively, you can paste the following link in your browser's address"
+" bar:"
+msgstr ""
+
+#: templates/user/passwd_reset_email.html:5
+msgid "If you have not requested a password reset simply ignore this message."
+msgstr ""
+
+#: templates/user/passwd_reset_email.html:6
+msgid ""
+"Sincerely, \n"
+" The NaHan Team"
+msgstr ""
+
+#: templates/user/passwd_reset_email.html:7
+msgid "Note: replies to this email address are not monitored."
+msgstr ""
+
+#: templates/user/passwd_reset_sent.html:6
+msgid "Email Sent"
+msgstr ""
+
+#: templates/user/passwd_reset_sent.html:8
+msgid ""
+"We have sent you an email with a link to reset your password. Please "
+"check your email and click the link to continue."
+msgstr ""
+
+#: templates/user/reg.html:5
+msgid "register a account"
+msgstr ""
+
+#: templates/user/reg.html:7
+msgid "username"
+msgstr ""
+
+#: templates/user/reg.html:8
+msgid "letters,digits,underscore"
+msgstr ""
+
+#: templates/user/reg.html:13
+msgid "Email"
+msgstr ""
+
+#: templates/user/reg.html:31
+msgid "register"
+msgstr ""
+
+#: templates/user/reg.html:33
+msgid "sign in?"
+msgstr ""
+
+#: templates/user/signin.html:6
+msgid "user sign in"
+msgstr ""
+
+#: templates/user/signin.html:11
+msgid "email"
+msgstr ""
+
+#: templates/user/signin.html:25
 msgid "forget password?"
 msgstr ""
 
@@ -103,5 +225,53 @@ msgstr ""
 
 #: templates/voice/topic_list.html:30
 msgid "clicks"
+msgstr ""
+
+#: user/views.py:34
+msgid "Invalid username or password."
+msgstr ""
+
+#: user/views.py:60
+msgid "Username can not be empty."
+msgstr ""
+
+#: user/views.py:62
+msgid "Username can only contain letters digits and underscore."
+msgstr ""
+
+#: user/views.py:64
+msgid "Username already exists."
+msgstr ""
+
+#: user/views.py:68
+msgid "Email address can not be empty."
+msgstr ""
+
+#: user/views.py:70 user/views.py:142
+msgid "Email address is invalid."
+msgstr ""
+
+#: user/views.py:72
+msgid "Email already exists."
+msgstr ""
+
+#: user/views.py:76 user/views.py:115 user/views.py:169
+msgid "Passwords don't match."
+msgstr ""
+
+#: user/views.py:78 user/views.py:117 user/views.py:171
+msgid "Passwords can not be empty."
+msgstr ""
+
+#: user/views.py:140
+msgid "The email can not be empty"
+msgstr ""
+
+#: user/views.py:144
+msgid "The email has not be registered"
+msgstr ""
+
+#: voice/views.py:20
+msgid "Latest Topics"
 msgstr ""
 

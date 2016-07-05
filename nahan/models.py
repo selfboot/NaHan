@@ -4,10 +4,12 @@
 # @Last Modified time: 2016-07-01 15:57:33
 import hashlib
 import urllib
-from . import db, login_manager
 from datetime import datetime
 from flask_login import UserMixin
+from flask import current_app
 from werkzeug.security import generate_password_hash, check_password_hash
+from itsdangerous import TimedJSONWebSignatureSerializer as Serializer
+from . import db, login_manager
 
 
 class User(UserMixin, db.Model):
@@ -76,6 +78,22 @@ class User(UserMixin, db.Model):
     def unread_nofity_count(self):
         # TODO
         return 1
+
+    def generate_reset_token(self, expiration=3600):
+        s = Serializer(current_app.config['SECRET_KEY'], expiration)
+        return s.dumps({'reset': self.id})
+
+    def reset_password(self, token, new_password):
+        s = Serializer(current_app.config['SECRET_KEY'])
+        try:
+            data = s.loads(token)
+        except:
+            return False
+        if data.get('reset') != self.id:
+            return False
+        self.password = new_password
+        db.session.commit()
+        return True
 
 
 @login_manager.user_loader

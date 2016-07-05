@@ -1,0 +1,7 @@
+<p>{{ _('Dear') }} {{ user.username }}:</p>
+<p>{{ _('To reset your password') }} <a href="{{ url_for('user.password_reset', token=token, _external=True) }}">{{ _('click here.') }}</a></p>
+<p>{{ _("Alternatively, you can paste the following link in your browser's address bar:") }}</p>
+<p>{{ url_for('user.password_reset', token=token, _external=True) }}</p>
+<p>{{ _('If you have not requested a password reset simply ignore this message.') }}</p>
+<p>{{ _('Sincerely, \n The NaHan Team') }} </p>
+<p class="text-info">{{ _('Note: replies to this email address are not monitored.') }}</small></p>

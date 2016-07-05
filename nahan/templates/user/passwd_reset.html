@@ -1,0 +1,28 @@
+{% extends 'base.html' %}
+{% block title %}
+{{ _('reset password') }}
+{% endblock %}
+
+{% block inside_row %}
+
+<div class="panel panel-default col-md-6 col-md-offset-3">
+    <form class="form-horizontal panel-body password-reset" method="post">
+        <h2 class="text-center" style="margin-bottom:1em"> {{ _('reset password') }} </h2>
+
+		<div class="form-group ">
+			<label for="email"> {{ _('register email') }} </label>
+            <input class="form-control" id="email" name="email" placeholder=example@gmail.com type="text">
+            {% if message_email %}
+            <div class="messages col-sm-10"> <p class="text-danger"> {{ message_email }} </p> </div>
+            {% endif %}
+        </div>
+
+        <div class="form-group">
+            <button class="btn btn-default btn-success pull-right">
+                {{ _('submit') }}
+            </button>
+        </div>
+
+    </form>
+</div>
+{% endblock %}
