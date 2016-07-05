@@ -3,7 +3,7 @@
 # @Author: xuezaigds@gmail.com
 # @Last Modified time: 2016-07-01 09:44:09
 
-from flask import render_template, redirect, request, url_for, flash, current_app
+from flask import render_template, redirect, request, url_for, flash, abort
 from flask_login import login_user, logout_user, login_required, current_user
 from flask_babel import gettext
 import re
@@ -15,7 +15,6 @@ from .. import db
 
 alphanumeric = re.compile(r'^[0-9a-zA-Z\_]*$')
 email_address = re.compile(r'[a-zA-z0-9]+\@[a-zA-Z0-9]+\.+[a-zA-Z]')
-token_uid_dict = {}
 
 
 @user.route('/signin', methods=['GET', 'POST'])
@@ -147,7 +146,9 @@ def password_reset_request():
             return render_template('user/passwd_reset.html', message_email=message_email)
         else:
             token = u.generate_reset_token()
-            token_uid_dict[token] = u.id
+            # Clear the token status to "True".
+            u.is_password_reset_link_valid = True
+            db.session.commit()
             send_email(u.email, 'Reset Your Password',
                        'user/passwd_reset_email',
                        user=u, token=token)
@@ -158,7 +159,11 @@ def password_reset_request():
 @user.route('/password/reset/<token>', methods=['GET', 'POST'])
 def password_reset(token):
     if request.method == "GET":
-        return render_template('user/passwd_reset_confirm.html', form=None)
+        u = User.verify_token(token)
+        if u and u.is_password_reset_link_valid:
+            return render_template('user/passwd_reset_confirm.html', form=None)
+        else:
+            return render_template('user/passwd_reset_done.html', message='Failed')
     elif request.method == 'POST':
         _form = request.form
         new_password = _form['password']
@@ -174,13 +179,12 @@ def password_reset(token):
             return render_template('user/passwd_reset_confirm.html', message_p=message_p)
         else:
             # Get the token without input the email address.
-            if token in token_uid_dict:
-                uid = token_uid_dict[token]
-                u = User.query.filter_by(id=uid).first()
-                if u.reset_password(token, new_password):
-                    reset_result = "Successful"
-                else:
-                    reset_result = "Failed"
+            u = User.verify_token(token)
+            if u and u.is_password_reset_link_valid:
+                u.password = new_password
+                u.is_password_reset_link_valid = False
+                db.session.commit()
+                reset_result = "Successful"
             else:
                 reset_result = "Failed"
 

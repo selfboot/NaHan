@@ -20,6 +20,7 @@ class User(UserMixin, db.Model):
     email = db.Column(db.String(64), unique=True, index=True)
 
     is_superuser = db.Column(db.Boolean, default=False)
+    is_password_reset_link_valid = db.Column(db.Boolean, default=True)
 
     nickname = db.Column(db.String(64), nullable=True)
     website = db.Column(db.String(64), nullable=True)
@@ -79,21 +80,21 @@ class User(UserMixin, db.Model):
         # TODO
         return 1
 
-    def generate_reset_token(self, expiration=3600):
+    def generate_reset_token(self, expiration=600):
         s = Serializer(current_app.config['SECRET_KEY'], expiration)
-        return s.dumps({'reset': self.id})
+        return s.dumps({'id': self.id})
 
-    def reset_password(self, token, new_password):
+    @staticmethod
+    def verify_token(token):
         s = Serializer(current_app.config['SECRET_KEY'])
         try:
             data = s.loads(token)
         except:
-            return False
-        if data.get('reset') != self.id:
-            return False
-        self.password = new_password
-        db.session.commit()
-        return True
+            return None
+        uid = data.get('id')
+        if uid:
+            return User.query.get(uid)
+        return None
 
 
 @login_manager.user_loader
