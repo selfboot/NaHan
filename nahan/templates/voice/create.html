@@ -1,0 +1,63 @@
+{% extends 'base_with_sidebar.html' %}
+{% block left %}
+{% include 'user/panel.html' %}
+{% endblock %}
+{% block right %}
+<div class="panel panel-default">
+    <div class="panel-heading title-breadcrumb">
+        <a href="{{ url_for('voice.index') }}">{{ _('home') }}</a>
+        <span>{{ _('new topic') }}</span>
+    </div>
+    <div class="panel-body">
+    	{% if message %}
+		<div class="messages">
+			<p class="text-danger">
+				{{ message }}
+			</p>
+		</div>
+
+		{% endif %}
+        {% if current_user.is_authenticated %}
+        <form class="form" action="{{ url_for('voice.create') }}" method="post">
+            <div class="form-group">
+                <label>{{ _('title') }}</label>
+                <input placeholder="{{ _('the_title') }}" type="text" class="form-control" id="title" name="title" />
+            </div>
+            <div class="form-group">
+                <label>{{ _('content') }}</label>
+                <textarea placeholder="{{ _('content') }}"  class="form-control" id="content" name="content"></textarea>
+            </div>
+            <div class="form-group">
+                <div class="input-group">
+                    <label>{{ _('node') }}</label>
+                    <select class="form-control" id="node" name="node">
+                        {% for opt in nodes%}
+                            <option> {{ opt }}</option>
+                        {% endfor%}
+                    </select>
+                </div>
+            </div>
+
+            <div class="form-submit text-right">
+                <a class="btn btn-default" id="pre-btn">
+                    {{ _('preview') }}
+                </a>
+                <button class="btn btn-info" type="submit" id="submit">
+                    {{ _('submit') }}(Ctrl+Enter)
+                </button>
+            </div>
+        </form>
+        <div class="previewer">
+        </div>
+        {% else %}
+        <div class="alert alert-info">
+            {{ _('please sign in before post') }}
+        </div>
+        <a href="{{ url_for('user.signin') }}" class="btn btn-info">{{ _('sign in') }}</a>
+        {% endif %}
+    </div>
+</div><!--end reply panel-->
+{% endblock %}
+{% block footer_ext %}
+<script src="{{ url_for('static', filename='js/previewer.js') }}"></script>
+{% endblock %}

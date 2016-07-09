@@ -4,6 +4,7 @@
 # @Last Modified time: 2016-07-01 15:57:33
 import hashlib
 import urllib
+import markdown
 from datetime import datetime
 from flask_login import UserMixin
 from flask import current_app
@@ -103,6 +104,14 @@ def load_user(user_id):
 
 
 class Topic(db.Model):
+    def __init__(self, user_id, title, content, node_id):
+        self.user_id = user_id
+        self.title = title
+        self.content = content
+        self.content_rendered = markdown.markdown(content, ['codehilite'], safe_mode='escape')
+        self.time_created = datetime.now()
+        self.node_id = node_id
+
     __tablename__ = "topic"
     id = db.Column(db.Integer, primary_key=True)
 
@@ -125,6 +134,41 @@ class Topic(db.Model):
     appends = db.Column(db.Text(), default="")
     comments = db.Column(db.Text(), default="")
 
+    def extract_appends(self):
+        if self.appends:
+            append_id = list(map(int, self.appends.split(',')))
+            all_appends = [TopicAppend.query.filter_by(id=i).first() for i in append_id]
+            live_appends = list(filter(lambda x: isinstance(x, TopicAppend) and not x.deleted, all_appends))
+            return live_appends
+        else:
+            return []
+
+    def extract_comments(self):
+        if self.comments:
+            comment_id = list(map(int, self.comments.split(',')))
+            all_comments = [Comment.query.filter_by(id=i).first() for i in comment_id]
+            live_comments = list(filter(lambda x: isinstance(x, Comment) and not x.deleted, all_comments))
+            return live_comments
+        else:
+            return []
+
+    def add_comments(self, cid):
+        if self.comments:
+            comments = self.comments.split(",")
+            comments.append(str(cid))
+            self.comments = ",".join(comments)
+        else:
+            self.comments = "%d" % cid
+
+        self.last_replied = datetime.now()
+        self.reply_count += 1
+
+    def user(self):
+        return User.query.filter_by(id=self.user_id).first()
+
+    def node(self):
+        return Node.query.filter_by(id=self.node_id).first()
+
 
 class TopicAppend(db.Model):
     __tablename__ = "append"
@@ -139,6 +183,13 @@ class TopicAppend(db.Model):
 
 
 class Comment(db.Model):
+    def __init__(self, content, user_id, topic_id):
+        self.content = content
+        self.content_rendered = markdown.markdown(content, ['codehilite'], safe_mode='escape')
+        self.time_created = datetime.now()
+        self.user_id = user_id
+        self.topic_id = topic_id
+
     __tablename__ = "comment"
     id = db.Column(db.Integer, primary_key=True)
 
@@ -151,6 +202,9 @@ class Comment(db.Model):
     # User make a comment at one topic.
     user_id = db.Column(db.Integer)
     topic_id = db.Column(db.Integer)
+
+    def user(self):
+        return User.query.filter_by(id=self.user_id).first()
 
 
 class Node(db.Model):
@@ -165,6 +219,10 @@ class Node(db.Model):
 
     def __unicode__(self):
         return self.title
+
+    @classmethod
+    def get_id(cls, node_name):
+        return Node.query.filter_by(title=node_name).first().id
 
 
 class Notify(db.Model):

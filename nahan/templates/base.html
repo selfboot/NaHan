@@ -7,7 +7,7 @@
         {% block header_ext%}
         {% endblock %}
         <title>
-            {% block title %}{{title}}-{% if pager %}page {{ pager }}-{% endif %} _('site_name'){% endblock %}
+            {% block title %}{{title}}-{% if pager %}page {{ pager }}-{% endif %} {{_('sitename')}}{% endblock %}
         </title>
 
         <!-- Bootstrap -->
@@ -22,12 +22,28 @@
                 <div class="navbar-header">
                     <a class="navbar-brand" href="{{ url_for('voice.index') }}">{{_('bbs name')}}</a>
                 </div>
-                <div class="navbar-collapse collapse">
-                <ul class="nav navbar-nav">
-                    <li class=""><a href="{{ url_for('voice.hot') }}">{{ _('hottest post') }}</a></li>
-                     <li class=""><a href="{{ url_for('voice.all_nodes') }}">{{ _('all nodes') }}</a></li>
 
-                </ul>
+                <div class="navbar-collapse collapse">
+
+                    <ul class="nav navbar-nav">
+                        <li class=""><a href="{{ url_for('voice.hot') }}">{{ _('hottest post') }}</a></li>
+                         <li class=""><a href="{{ url_for('voice.all_nodes') }}">{{ _('all nodes') }}</a></li>
+                    </ul>
+
+                    {% if current_user.is_authenticated %}
+                    <div class="navbar-form navbar-right">
+                        <a class="btn btn-info" id="new-btn" href=" {{url_for('voice.create')}}">
+                            {{ _('New Topic') }}
+                        </a>
+                    </div>
+                    {% else %}
+                    <div class="navbar-form navbar-right">
+                        <a class="btn btn-info" id="signin-btn" href=" {{url_for('user.signin')}}">
+                            {{ _('Sign In?') }}
+                        </a>
+                    </div>
+                    {% endif %}
+
                     <div class="navbar-form navbar-right" role="search">
                         <div class="form-group">
                             <input onkeydown="if(event.keyCode==13){search();}" type="text" id="search" class="form-control" name="search" placeholder="{{ _('enter key words') }}">

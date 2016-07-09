@@ -1,0 +1,146 @@
+{% extends 'base_with_sidebar.html' %}
+{% block left %}
+{% include 'user/panel.html' %}
+{% endblock %}
+{% block right %}
+
+<div class="panel panel-default">
+	<div class="topic-heading panel-heading">
+		<div class="row">
+			<a href="{{ url_for('user.info', uid = topic.user_id) }}" class="col-md-1 pull-right"><img title="{{ current_user.username}}" class="avatar-middle pull-right" src="{{topic.user().avatar()['middle']}}"></a>
+			<div class="col-md-10">
+				<p class="topic-breadcrumb">
+                        <a href="{{ url_for('voice.index') }}">{{ _("logoname") }}</a>  ›   <a href="{{ url_for('voice.node_view', nid = topic.node_id) }}">{{ topic.node().title }}</a>
+                </p>
+				<h3 class="list-post-title-in-topic">{{ topic.title }}</h3>
+				<p class="list-meta">
+					<span class="label label-default list-meta-node"><a href="{{ url_for('voice.node_view', nid=topic.node_id) }}">{{ topic.node().title }}</a></span>
+					<span class="list-count">{{ topic.click }}</span>
+					<span class="list-time">{{ topic.time_created }}</span>
+					<span class="list-username"><a href="{{ url_for('user.info', uid=topic.user_id) }}">{{topic.user().username}}</a></span>
+					{% if current_user.id == topic.user_id %}
+					<a class="label-success label" href="{{ url_for('voice.append', tid = topic.id) }}">{{ _('topic appendix') }}</a>
+					{% endif %}
+					{% if current_user.is_administrator or topic.user_id == current_user.id %}
+					<a class="label-warning label" href="{{ url_for('voice.edit', tid=topic.id) }}">{{ _('edit') }}</a>
+					<a class="label-danger label" href="{{ url_for('voice.delete', tid=topic.id) }}">{{ _('delete') }}</a>
+					{% endif %}
+				</p>
+			</div>
+		</div>
+	</div>
+	<div class="panel-body">
+		{{ topic.content_rendered | safe}}
+	</div>
+	{% if topic.appends %}
+	<ul class="list-group">
+		{% for a in topic.extract_appends() %}
+		<div class="list-group-item list-appendix-item">
+			<p class="appendix-meta">
+                {{ loop.index }} {{ _('appendix') }} {{ a.time_created }}
+			</p>
+			{{a.content_rendered | safe}}
+		</div>
+		{% endfor %}
+	</ul>
+	{% endif %}
+</div><!--end content panel-->
+
+<div class="panel panel-default">
+	<div class="panel-heading">
+		<p class="panel-title">
+			{% if topic.reply_count %}
+			{{ topic.reply_count }} {{ _('reply') }}
+			{% else %}
+			{{ _('no replies yet') }}
+			{% endif %}
+		</p>
+	</div>
+	{% if topic.reply_count != 0 %}
+	<ul class="list-group">
+        {% for c in comments %}
+            <div class="list-group-item list-topic-item" id="post-{{c.id}}">
+                <div class="row">
+                    <a href="{{ url_for('user.info', uid=c.user_id) }}" class="col-md-1"><img title="{{c.user().username}}" class="avatar-middle" src=" {{ c.user().avatar()['middle'] }} "></a>
+                    <div class="col-xs-11">
+                        <div class="row">
+                            <div class="reply-author col-sm-10">
+                                <a href="{{ url_for('user.info', uid=c.user_id) }}">{{c.user().username}}</a>
+                                <span class="list-time">{{c.time_created }}</span>
+                                {% if current_user.is_administrator %}
+                                <a class="delete" href="{{ url_for('voice.comment_delete', cid=c.id)}}">{{ _('delete') }}</a>
+                                {% endif %}
+                            </div>
+                            <div class="col-sm-2">
+                                {% if current_user.is_authenticated %}
+                                <a href="#create_reply" data-user="{{c.user().username}}" class="label-info label pull-right reply-btn">{{ _('reply') }}</a>
+                                {% endif %}
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="reply-content col-md-11" style="margin-top:0.8em">
+                                {{c.content_rendered | safe}}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        {% endfor %}
+	</ul>
+	<div class="panel-footer">
+        {{ pagination.links }}
+	</div>
+	{% else %}
+	<div class="panel-body">
+		<div class="alert alert-info">
+			{{ _('no replies yet') }}
+		</div>
+	</div>
+	{% endif %}
+</div><!--end reply panel-->
+
+<div class="panel panel-default" id="create_reply">
+	<div class="panel-heading">
+		<p class="panel-title">
+			{{ _('reply') }}
+		</p>
+	</div>
+	<div class="panel-body">
+		{% if message %}
+		<div class="messages">
+			<p class="text-danger">
+				{{ message }}
+			</p>
+		</div>
+		{% endif %}
+		{% if current_user.is_authenticated %}
+		<form class="form" action="{{ url_for('voice.view', tid=topic.id) }}" method="post">
+			<div class="form-group ">
+				<label class="sr-only" for="content">{{ _('content') }}</label>
+				<textarea class="form-control" id="content" name="content"></textarea>
+			</div>
+
+			<div class="form-submit text-right">
+				<a class="btn btn-default" id="pre-btn"> {{ _('preview') }} </a>
+				<button class="btn btn-info" type="submit" id="submit">
+					{{ _('submit') }}(Ctrl+Enter)
+				</button>
+			</div>
+		</form>
+		<div class="previewer">
+
+		</div>
+		{% else %}
+		<div class="alert alert-info">
+			{{ _('please sign in before reply') }}
+		</div>
+		<a href="{{ url_for('user.signin') }}" class="btn btn-info">{{ _('sign in') }}</a>
+		{% endif %}
+	</div>
+
+</div><!--end reply panel-->
+{% endblock %}
+{% block footer_ext %}
+<script src="{{ url_for('static', filename='js/previewer.js') }}"></script>
+<script src="{{ url_for('static', filename='js/mention.js') }}"></script>
+{% endblock %}

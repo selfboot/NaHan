@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PROJECT VERSION\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2016-07-05 17:39+0800\n"
+"POT-Creation-Date: 2016-07-09 21:06+0800\n"
 "PO-Revision-Date: 2016-07-03 11:01+0800\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language: zh_Hans_CN\n"
@@ -18,29 +18,57 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Generated-By: Babel 2.3.4\n"
 
+#: templates/404.html:5
+msgid "404 Not Found"
+msgstr "404 页面未找到"
+
+#: templates/500.html:3
+msgid "500 Internal Error"
+msgstr "500 内部错误"
+
+#: templates/base.html:10
+msgid "sitename"
+msgstr "站点名字"
+
 #: templates/base.html:23
 msgid "bbs name"
 msgstr "呐喊"
 
-#: templates/base.html:27
+#: templates/base.html:29
 msgid "hottest post"
 msgstr "热点话题"
 
-#: templates/base.html:28
+#: templates/base.html:30
 msgid "all nodes"
 msgstr "所有节点"
 
-#: templates/base.html:33
+#: templates/base.html:36
+msgid "New Topic"
+msgstr "新话题"
+
+#: templates/base.html:42
+msgid "Sign In?"
+msgstr "登录?"
+
+#: templates/base.html:49
 msgid "enter key words"
 msgstr "输入关键字"
 
-#: templates/base.html:36
+#: templates/base.html:52
 msgid "Search"
 msgstr "搜索"
 
-#: templates/base.html:54
+#: templates/base.html:70
 msgid "copyright by"
 msgstr "版权"
+
+#: templates/user/panel.html:9
+msgid "The "
+msgstr "第 "
+
+#: templates/user/panel.html:9
+msgid "th users"
+msgstr " 个用户"
 
 #: templates/user/panel.html:15
 msgid "info"
@@ -59,6 +87,7 @@ msgid "content of this site"
 msgstr "代言人"
 
 #: templates/user/panel.html:28 templates/user/signin.html:22
+#: templates/voice/create.html:56 templates/voice/topic.html:137
 msgid "sign in"
 msgstr "登录"
 
@@ -82,7 +111,8 @@ msgstr "重置密码"
 msgid "register email"
 msgstr "注册邮箱"
 
-#: templates/user/passwd_reset.html:22
+#: templates/user/passwd_reset.html:22 templates/voice/create.html:46
+#: templates/voice/topic.html:126
 msgid "submit"
 msgstr "提交"
 
@@ -212,66 +242,133 @@ msgstr "邮箱"
 msgid "forget password?"
 msgstr "忘记密码?"
 
-#: templates/voice/topic_list.html:6
+#: templates/voice/create.html:8
 msgid "home"
 msgstr "主页"
 
-#: templates/voice/topic_list.html:10
+#: templates/voice/create.html:9
 msgid "new topic"
 msgstr "新话题"
 
-#: templates/voice/topic_list.html:16
+#: templates/voice/create.html:23
+msgid "title"
+msgstr "标题"
+
+#: templates/voice/create.html:24
+msgid "the_title"
+msgstr "这里是标题"
+
+#: templates/voice/create.html:27 templates/voice/create.html:28
+#: templates/voice/topic.html:119
+msgid "content"
+msgstr "内容"
+
+#: templates/voice/create.html:32
+msgid "node"
+msgstr "节点"
+
+#: templates/voice/create.html:43 templates/voice/topic.html:124
+msgid "preview"
+msgstr "预览"
+
+#: templates/voice/create.html:54
+msgid "please sign in before post"
+msgstr "请登录然后进行评论"
+
+#: templates/voice/list.html:6 voice/views.py:28 voice/views.py:29
+msgid "Latest Topics"
+msgstr "最新话题"
+
+#: templates/voice/list.html:12
 msgid "sorry, but we can't find the topics you need"
 msgstr "对不起,你查找的话题不存在"
 
-#: templates/voice/topic_list.html:30
+#: templates/voice/list.html:25
 msgid "clicks"
 msgstr "点击数"
 
-#: user/views.py:34
+#: templates/voice/node_all.html:9
+msgid "node navigation"
+msgstr "节点导航"
+
+#: templates/voice/topic.html:13
+msgid "logoname"
+msgstr "NaHan"
+
+#: templates/voice/topic.html:22
+msgid "topic appendix"
+msgstr "追加内容"
+
+#: templates/voice/topic.html:25
+msgid "edit"
+msgstr "编辑"
+
+#: templates/voice/topic.html:26 templates/voice/topic.html:71
+msgid "delete"
+msgstr "删除"
+
+#: templates/voice/topic.html:40
+msgid "appendix"
+msgstr "追加"
+
+#: templates/voice/topic.html:53 templates/voice/topic.html:76
+#: templates/voice/topic.html:105
+msgid "reply"
+msgstr "回复"
+
+#: templates/voice/topic.html:55 templates/voice/topic.html:96
+msgid "no replies yet"
+msgstr "目前没有回复"
+
+#: templates/voice/topic.html:135
+msgid "please sign in before reply"
+msgstr "登录后才可以回复"
+
+#: user/views.py:33
 msgid "Invalid username or password."
 msgstr "用户名或密码错误"
 
-#: user/views.py:60
+#: user/views.py:59
 msgid "Username can not be empty."
 msgstr "用户名为空"
 
-#: user/views.py:62
+#: user/views.py:61
 msgid "Username can only contain letters digits and underscore."
 msgstr "用户名只能包含字母、数字和下划线"
 
-#: user/views.py:64
+#: user/views.py:63
 msgid "Username already exists."
 msgstr "用户名已经存在"
 
-#: user/views.py:68
+#: user/views.py:67
 msgid "Email address can not be empty."
 msgstr "邮箱地址不能为空"
 
-#: user/views.py:70 user/views.py:142
+#: user/views.py:69 user/views.py:141
 msgid "Email address is invalid."
 msgstr "邮箱地址不合法"
 
-#: user/views.py:72
+#: user/views.py:71
 msgid "Email already exists."
 msgstr "邮箱已经被占用"
 
-#: user/views.py:76 user/views.py:115 user/views.py:169
+#: user/views.py:75 user/views.py:114 user/views.py:174
 msgid "Passwords don't match."
 msgstr "两次密码不一致"
 
-#: user/views.py:78 user/views.py:117 user/views.py:171
+#: user/views.py:77 user/views.py:116 user/views.py:176
 msgid "Passwords can not be empty."
 msgstr "密码不能为空"
 
-#: user/views.py:140
+#: user/views.py:139
 msgid "The email can not be empty"
 msgstr "邮箱地址不能为空"
 
-#: user/views.py:144
+#: user/views.py:143
 msgid "The email has not be registered"
 msgstr "该邮箱尚未注册"
 
-#: voice/views.py:20
-msgid "Latest Topics"
-msgstr "最新话题"
+#: voice/views.py:56
+msgid "Comment cannot be empty or too large"
+msgstr "评论为空或者太长"
+

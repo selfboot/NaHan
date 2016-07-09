@@ -17,7 +17,7 @@ class Config:
     MAIL_USERNAME = os.environ.get('MAIL_USERNAME')
     MAIL_PASSWORD = os.environ.get('MAIL_PASSWORD')
     FORUM_MAIL_SUBJECT_PREFIX = 'NaHan'
-    FORUM_MAIL_SENDER = 'Nahan <nahan@selfboot.cn>'
+    FORUM_MAIL_SENDER = 'Nahan <selfboot@qq.com>'
 
     BABEL_DEFAULT_LOCALE = 'zh'
     BABEL_DEFAULT_TIMEZONE = 'CST'

@@ -1,0 +1,26 @@
+{% extends 'base_with_sidebar.html' %}
+{% block left %}
+{% include 'user/panel.html' %}
+{% endblock %}
+
+{% block right %}
+<div class="panel panel-default">
+    <div class="panel-heading">
+        <h3 class="panel-title">{{ _('node navigation') }}</h3>
+    </div>
+    <div class="panel-body">
+        <div class="col-md-1"></div>
+        <div class="col-md-10">
+            {% for node in nodes %}
+            <span class="label label-default" style="margin-right:2em">
+            <a href="{{ url_for ('voice.node_view', nid = node.id) }}">{{ node.title }}</a>
+            </span>
+            {% endfor %}
+        </div>
+        <div class="col-md-1"></div>
+    </div>
+</div>
+{% endblock %}
+
+{% block footer_ext %}
+{% endblock %}
