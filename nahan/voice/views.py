@@ -21,8 +21,11 @@ def index():
     # topic_count = Topic.query.count()
     # comment_count = Comment.query.count()
     page = int(request.args.get('page', 1))
-    topics = Topic.query.filter_by(deleted=False).order_by(Topic.time_created).all()[:120]
-    pagination = Pagination(page=page, total=len(topics), per_page=15)
+    per_page = 10
+    offset = (page-1)*per_page
+    topics_all = Topic.query.filter_by(deleted=False).order_by(Topic.time_created).all()[:120]
+    topics = topics_all[offset:offset+per_page]
+    pagination = Pagination(page=page, total=len(topics_all), per_page=per_page,record_name='topics',CSS_FRAMEWORK = 'bootstrap',bs_version=3)
     return render_template('voice/index.html',
                            topics=topics,
                            title=gettext('Latest Topics'),
@@ -38,9 +41,12 @@ def hot():
 @voice.route("/voice/view/<int:tid>", methods=['GET', 'POST'])
 def view(tid):
     topic = Topic.query.filter_by(id=tid).first()
-    live_comments = topic.extract_comments()
+    live_comments_all = topic.extract_comments()
+    per_page = 10
     page = int(request.args.get('page', 1))
-    pagination = Pagination(page=page, total=len(live_comments), per_page=15, record_name="live_comments")
+    offset = (page-1)*per_page
+    live_comments = live_comments_all[offset:offset+per_page]
+    pagination = Pagination(page=page, total=len(live_comments), per_page=15, record_name="live_comments",CSS_FRAMEWORK = 'bootstrap',bs_version=3)
 
     if request.method == 'GET':
         topic.click += 1
