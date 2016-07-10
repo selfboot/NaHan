@@ -154,14 +154,18 @@ class Topic(db.Model):
 
     def add_comments(self, cid):
         if self.comments:
-            comments = self.comments.split(",")
-            comments.append(str(cid))
-            self.comments = ",".join(comments)
+            self.comments += ",%d" % cid
         else:
             self.comments = "%d" % cid
 
         self.last_replied = datetime.now()
         self.reply_count += 1
+
+    def add_appends(self, aid):
+        if self.appends:
+            self.appends += ",%d" % aid
+        else:
+            self.appends = "%d" % aid
 
     def user(self):
         return User.query.filter_by(id=self.user_id).first()
@@ -171,6 +175,12 @@ class Topic(db.Model):
 
 
 class TopicAppend(db.Model):
+    def __init__(self, content, topic_id):
+        self.content = content
+        self.topic_id = topic_id
+        self.content_rendered = markdown.markdown(content, ['codehilite'], safe_mode='escape')
+        self.time_created = datetime.now()
+
     __tablename__ = "append"
     id = db.Column(db.Integer, primary_key=True)
 
@@ -178,7 +188,6 @@ class TopicAppend(db.Model):
     content = db.Column(db.Text())
     content_rendered = db.Column(db.Text())
     deleted = db.Column(db.Boolean(), default=False)
-
     topic_id = db.Column(db.Integer)
 
 

@@ -12,17 +12,17 @@
 				<p class="topic-breadcrumb">
                         <a href="{{ url_for('voice.index') }}">{{ _("logoname") }}</a>  ›   <a href="{{ url_for('voice.node_view', nid = topic.node_id) }}">{{ topic.node().title }}</a>
                 </p>
-				<h3 class="list-post-title-in-topic">{{ topic.title }}</h3>
+				<h3 class="list-post-title-in-topic"><a href="{{ url_for('voice.view', tid=topic.id)}}" style="color:inherit">{{ topic.title }}</a></h3>
 				<p class="list-meta">
 					<span class="label label-default list-meta-node"><a href="{{ url_for('voice.node_view', nid=topic.node_id) }}">{{ topic.node().title }}</a></span>
 					<span class="list-count">{{ topic.click }}</span>
 					<span class="list-time">{{ topic.time_created }}</span>
 					<span class="list-username"><a href="{{ url_for('user.info', uid=topic.user_id) }}">{{topic.user().username}}</a></span>
 					{% if current_user.id == topic.user_id %}
-					<a class="label-success label" href="{{ url_for('voice.append', tid = topic.id) }}">{{ _('topic appendix') }}</a>
+					<a class="label-success label" href="{{ url_for('voice.appendix', tid = topic.id) }}">{{ _('topic appendix') }}</a>
+                    <a class="label-warning label" href="{{ url_for('voice.edit', tid=topic.id) }}">{{ _('edit') }}</a>
 					{% endif %}
-					{% if current_user.is_administrator or topic.user_id == current_user.id %}
-					<a class="label-warning label" href="{{ url_for('voice.edit', tid=topic.id) }}">{{ _('edit') }}</a>
+					{% if current_user.is_administrator() %}
 					<a class="label-danger label" href="{{ url_for('voice.delete', tid=topic.id) }}">{{ _('delete') }}</a>
 					{% endif %}
 				</p>
@@ -33,11 +33,11 @@
 		{{ topic.content_rendered | safe}}
 	</div>
 	{% if topic.appends %}
-	<ul class="list-group">
+	<ul class="list-group" id="append">
 		{% for a in topic.extract_appends() %}
 		<div class="list-group-item list-appendix-item">
 			<p class="appendix-meta">
-                {{ loop.index }} {{ _('appendix') }} {{ a.time_created }}
+                {{ _('The ')}}{{ loop.index }} {{ _('appendix') }} {{ a.time_created }}
 			</p>
 			{{a.content_rendered | safe}}
 		</div>

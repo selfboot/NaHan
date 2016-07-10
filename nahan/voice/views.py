@@ -63,7 +63,7 @@ def view(tid):
 
         topic.add_comments(r.id)
         db.session.commit()
-        return render_template('voice/topic.html', topic=topic, comments=live_comments,
+        return render_template('voice/topic.html', topic=topic, comments=live_comments+[r],
                                pagination=pagination)
     else:
         abort(404)
@@ -86,9 +86,28 @@ def create():
         return redirect(url_for('voice.view', tid=topic_id))
 
 
-@voice.route("/voice/append/<int:tid>")
-def append(tid):
-    return "Append %d" % tid
+@voice.route("/voice/append/<int:tid>", methods=['GET', 'POST'])
+def appendix(tid):
+    topic = Topic.query.filter_by(id=tid).first()
+    if current_user.id != topic.user().id:
+        abort(403)
+
+    if request.method == 'GET':
+        return render_template('voice/append.html', topic=topic)
+
+    elif request.method == 'POST':
+        append_c = request.form['content']
+        if not append_c:
+            message = gettext('content cannot be empty')
+            return render_template(
+                'voice/append.html', topic=topic, message=message)
+
+        topic_append = TopicAppend(append_c, tid)
+        db.session.add(topic_append)
+        db.session.commit()
+        topic.add_appends(topic_append.id)
+        db.session.commit()
+        return redirect(url_for('voice.view', tid=topic.id, _anchor='append'))
 
 
 @voice.route("/voice/delete/<int:tid>")
@@ -96,9 +115,22 @@ def delete(tid):
     return "Delete %d" % tid
 
 
-@voice.route("/voice/edit/<int:tid>")
+@voice.route("/voice/edit/<int:tid>", methods=['GET', 'POST'])
 def edit(tid):
-    return "Edit %d" % tid
+    topic = Topic.query.filter_by(id=tid).first()
+    if current_user.id != topic.user().id and (not current_user.is_administrator()):
+        return redirect(url_for('voice.view'), tid=topic.id)
+    if request.method == 'GET':
+        return render_template('voice/edit.html', topic=topic)
+    elif request.method == 'POST':
+        topic.content = request.form['content']
+        if not topic.content:
+            message = gettext('content cannot be empty')
+            return render_template('voice/edit.html', topic=topic, message=message)
+
+        topic.content_rendered = markdown.markdown(topic.content, ['codehilite'], safe_mode='escape')
+        db.session.commit()
+        return redirect(url_for('voice.view', tid=topic.id))
 
 
 @voice.route("/previewer", methods=['POST'])
@@ -131,10 +163,7 @@ def comment_delete(cid):
 
 #     url(r'^post/(?P<post_id>\d+)/delete/$',
 #         'del_reply', name='delete_post'),
-#     url(r'^node/(?P<node_id>\d+)/create/$',
-#         'create_topic', name='create_topic'),
 #     url(r'^search/(?P<keyword>.*?)/$',
 #         'search', name='search'),
 #     url(r'^hottest/$', 'hottest', name='hottest'),
-#     url(r'^previewer/$', 'previewer', name='previewer'),
 # )
