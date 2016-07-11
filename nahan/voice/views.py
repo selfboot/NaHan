@@ -3,7 +3,7 @@
 # @Author: xuezaigds@gmail.com
 # @Last Modified time: 2016-07-01 09:44:03
 
-from flask import render_template, redirect, request, url_for, abort
+from flask import render_template, redirect, request, url_for, abort, current_app
 from . import voice
 from flask_babel import gettext
 from ..models import Topic, TopicAppend, Node, Notify, Comment, User
@@ -16,16 +16,16 @@ from flask_paginate import Pagination
 
 @voice.route('/')
 def index():
-    # nodes = Node.query.all()
-    # user_count = User.query.count()
-    # topic_count = Topic.query.count()
-    # comment_count = Comment.query.count()
+    per_page = current_app.config['PER_PAGE']
     page = int(request.args.get('page', 1))
-    per_page = 10
     offset = (page-1)*per_page
-    topics_all = Topic.query.filter_by(deleted=False).order_by(Topic.time_created).all()[:120]
+    topics_all = Topic.query.filter_by(deleted=False).order_by(Topic.time_created).all()[:-120:-1]
     topics = topics_all[offset:offset+per_page]
-    pagination = Pagination(page=page, total=len(topics_all), per_page=per_page,record_name='topics',CSS_FRAMEWORK = 'bootstrap',bs_version=3)
+    pagination = Pagination(page=page, total=len(topics_all),
+                            per_page=per_page,
+                            record_name='topics',
+                            CSS_FRAMEWORK='bootstrap',
+                            bs_version=3)
     return render_template('voice/index.html',
                            topics=topics,
                            title=gettext('Latest Topics'),
@@ -35,24 +35,48 @@ def index():
 
 @voice.route("/voice/hot")
 def hot():
-    return "Hot"
+    """ Show the hottest topics recently.
+
+    Sort the topic by reply_count, if have same reply_count, then sort by click.
+    """
+    per_page = current_app.config['PER_PAGE']
+    page = int(request.args.get('page', 1))
+    offset = (page-1)*per_page
+    topics_all = Topic.query.filter_by(deleted=False).order_by(Topic.reply_count, Topic.click).all()[:-120:-1]
+    topics = topics_all[offset:offset+per_page]
+    pagination = Pagination(page=page, total=len(topics_all),
+                            per_page=per_page,
+                            record_name='topics',
+                            CSS_FRAMEWORK='bootstrap',
+                            bs_version=3)
+    return render_template('voice/index.html',
+                           topics=topics,
+                           title=gettext('Latest Topics'),
+                           post_list_title=gettext('Latest Topics'),
+                           pagination=pagination)
 
 
 @voice.route("/voice/view/<int:tid>", methods=['GET', 'POST'])
 def view(tid):
+    per_page = current_app.config['PER_PAGE']
     topic = Topic.query.filter_by(id=tid).first()
     live_comments_all = topic.extract_comments()
-    per_page = 10
     page = int(request.args.get('page', 1))
     offset = (page-1)*per_page
-    live_comments = live_comments_all[offset:offset+per_page]
-    pagination = Pagination(page=page, total=len(live_comments), per_page=15, record_name="live_comments",CSS_FRAMEWORK = 'bootstrap',bs_version=3)
+    live_comments = live_comments_all[offset:offset + per_page]
+    pagination = Pagination(page=page, total=len(live_comments_all),
+                            per_page=per_page,
+                            record_name="live_comments",
+                            CSS_FRAMEWORK='bootstrap',
+                            bs_version=3)
 
     if request.method == 'GET':
         topic.click += 1
         db.session.commit()
-        return render_template('voice/topic.html', topic=topic,
-                               comments=live_comments, pagination=pagination)
+        return render_template('voice/topic.html',
+                               topic=topic,
+                               comments=live_comments,
+                               pagination=pagination)
 
     # Save the comment and update the topic view page.
     elif request.method == 'POST':
@@ -60,16 +84,23 @@ def view(tid):
 
         if not reply_content or len(reply_content) > 140:
             message = gettext('Comment cannot be empty or too large')
-            return render_template("voice/topic.html", message=message,
-                                   topic=topic, pagination=pagination)
+            return render_template("voice/topic.html",
+                                   message=message,
+                                   topic=topic,
+                                   comments=live_comments,
+                                   pagination=pagination)
 
-        r = Comment(reply_content, current_user.id, tid)
-        db.session.add(r)
+        c = Comment(reply_content, current_user.id, tid)
+        db.session.add(c)
         db.session.commit()
 
-        topic.add_comments(r.id)
+        topic.add_comments(c.id)
         db.session.commit()
-        return render_template('voice/topic.html', topic=topic, comments=live_comments+[r],
+        # Add the new comment to
+        live_comments_all += [c]
+        live_comments = live_comments_all[offset:offset + per_page]
+        return render_template('voice/topic.html', topic=topic,
+                               comments=live_comments,
                                pagination=pagination)
     else:
         abort(404)
@@ -159,7 +190,23 @@ def all_nodes():
 
 @voice.route("/node/view/<int:nid>")
 def node_view(nid):
-    return "Node %d" % nid
+    per_page = current_app.config['PER_PAGE']
+    page = int(request.args.get('page', 1))
+    offset = (page-1)*per_page
+    topics_all = Topic.query.filter_by(deleted=False, node_id=nid).order_by(Topic.reply_count,
+                                                                            Topic.click).all()[:-120:-1]
+    topics = topics_all[offset:offset+per_page]
+    pagination = Pagination(page=page, total=len(topics_all),
+                            per_page=per_page,
+                            record_name='topics',
+                            CSS_FRAMEWORK='bootstrap',
+                            bs_version=3)
+    return render_template('voice/node_view.html',
+                           topics=topics,
+                           title=gettext('Node view'),
+                           post_list_title=gettext("This node's Topics"),
+                           pagination=pagination)
+    return render_template('voice/node_view.html')
 
 
 @voice.route("/comment/delete/<int:cid>")

@@ -22,6 +22,7 @@ class Config:
     BABEL_DEFAULT_LOCALE = 'zh'
     BABEL_DEFAULT_TIMEZONE = 'CST'
 
+    PER_PAGE = 10
     @staticmethod
     def init_app(app):
         pass
