@@ -3,12 +3,16 @@
 # @Author: xuezaigds@gmail.com
 # @Last Modified time: 2016-07-01 09:44:09
 
-from flask import render_template, redirect, request, url_for, flash, abort
+from flask import render_template, redirect, request, url_for, make_response, current_app
 from flask_login import login_user, logout_user, login_required, current_user
 from flask_babel import gettext
+from flask_paginate import Pagination
 import re
+from datetime import datetime
+from PIL import Image
+from os import path
 from . import user
-from ..models import User
+from ..models import User, Topic
 from ..email import send_email
 from .. import db
 
@@ -38,7 +42,6 @@ def signin():
 @login_required
 def signout():
     logout_user()
-    flash('You have been logged out.')
     return redirect(url_for('voice.index'))
 
 
@@ -92,38 +95,6 @@ def reg():
             # TODO, Confirm the email.
 
             return redirect(url_for('user.signin'))
-
-
-@user.route("/password", methods=['GET', 'POST'])
-@login_required
-def password_change():
-    if request.method == 'GET':
-        return render_template('user/passwd_change.html', form=None)
-    elif request.method == 'POST':
-        _form = request.form
-        cur_password = _form['old-password']
-        new_password = _form['password']
-        new_password_2 = _form['password2']
-
-        if not cur_password:
-            message_cur = "The old password can not be empty."
-        elif not current_user.verify_passwor(cur_password):
-            message_cur = "The old password is not correct."
-
-        if new_password != new_password_2:
-            message_new = gettext("Passwords don't match.")
-        elif new_password_2 == "" or new_password == "":
-            message_new = gettext("Passwords can not be empty.")
-
-        if message_cur or message_new:
-            return render_template("user/passwd_change.html", form=_form,
-                                   message_cur=message_cur,
-                                   message_new=message_new)
-        else:
-            current_user.password = new_password
-            db.session.commit()
-            message_success = "Reset password successfully"
-            return render_template("user/passwd_change.html", message_success=message_success)
 
 
 @user.route('/password/reset', methods=['GET', 'POST'])
@@ -193,12 +164,120 @@ def password_reset(token):
 
 @user.route('/<int:uid>')
 def info(uid):
-    return "%s" % uid
+    u = User.query.filter_by(id=uid).first_or_404()
+
+    per_page = current_app.config['PER_PAGE']
+    page = int(request.args.get('page', 1))
+    offset = (page-1)*per_page
+    topics_all = Topic.query.filter_by(deleted=False, user_id=uid).order_by(Topic.reply_count,
+                                                                            Topic.click).all()[:-120:-1]
+    topics = topics_all[offset:offset+per_page]
+    pagination = Pagination(page=page, total=len(topics_all),
+                            per_page=per_page,
+                            record_name='topics',
+                            CSS_FRAMEWORK='bootstrap',
+                            bs_version=3)
+    return render_template('user/info.html',
+                           topics=topics,
+                           title=u.username + gettext("'s Topics"),
+                           post_list_title=u.username + gettext("'s Topics"),
+                           pagination=pagination,
+                           user=u)
 
 
-@user.route('/setting')
-def setting():
-    return "Setting"
+@user.route("/setting/password", methods=['GET', 'POST'])
+@login_required
+def setting_password():
+    if request.method == 'GET':
+        return render_template('user/setting_passwd.html', form=None)
+    elif request.method == 'POST':
+        _form = request.form
+        cur_password = _form['old_password']
+        new_password = _form['password']
+        new_password_2 = _form['password2']
+
+        message_cur, message_new = "", ""
+        if not cur_password:
+            message_cur = "The old password can not be empty."
+        elif not current_user.verify_password(cur_password):
+            message_cur = "The old password is not correct."
+
+        if new_password != new_password_2:
+            message_new = gettext("Passwords don't match.")
+        elif new_password_2 == "" or new_password == "":
+            message_new = gettext("Passwords can not be empty.")
+
+        if message_cur or message_new:
+            return render_template("user/setting_passwd.html", form=_form,
+                                   message_cur=message_cur,
+                                   message_new=message_new)
+        else:
+            current_user.password = new_password
+            db.session.commit()
+            message_success = gettext("Update password done!")
+            return render_template("user/setting_passwd.html",
+                                   message_success=message_success)
+
+
+@user.route('/setting/info', methods=['GET', 'POST'])
+@login_required
+def setting_info():
+    if request.method == 'GET':
+        return render_template('user/setting_info.html', form=None)
+    elif request.method == 'POST':
+        _form = request.form
+        email_addr = _form["email"]
+        web_addr = _form["website"]
+
+        message_email = ""
+        if not email_addr:
+            message_email = gettext('Email address can not be empty.')
+        elif not email_address.match(email_addr):
+            message_email = gettext('Email address is invalid.')
+
+        # TODO
+        # Change the user's email need to verify the old_email addr's ownership
+        if message_email:
+            return render_template("user/setting_info.html", message_email=message_email)
+        else:
+            current_user.website = web_addr
+            current_user.email = email_addr
+            db.session.commit()
+            message_success = gettext('Update info done!')
+            return render_template('user/setting_info.html', message_success=message_success)
+
+
+@user.route("/setting/avatar", methods=['GET', 'POST'])
+@login_required
+def setting_avatar():
+    if request.method == 'GET':
+        return render_template('user/setting_avatar.html', form=None)
+    elif request.method == 'POST':
+        _file = request.files['file']
+        # If user does not select file, browser also submit a empty part without filename
+        if _file.filename == '':
+            message_fail = gettext('No selected file')
+            return render_template('user/setting_avatar.html', message_fail=message_fail)
+
+        allowed_extensions = current_app.config['ALLOWED_EXTENSIONS']
+        upload_folder = current_app.config['UPLOAD_FOLDER']
+        file_appendix = _file.filename.rsplit('.', 1)[1]
+        if _file and '.' in _file.filename and file_appendix in allowed_extensions:
+            im = Image.open(_file)
+            im.thumbnail((128, 128), Image.ANTIALIAS)
+            im.save("%s/%d.png" % (upload_folder, current_user.id), 'PNG')
+
+            current_user.use_avatar = False
+            current_user.avatar_url = url_for("static", filename="upload/%d.png" % current_user.id)
+            db.session.commit()
+            message_success = gettext('Update avatar done!')
+            # Need to reload the whole page, otherwise the avatar is still old because of the cache.
+            response = make_response(render_template('user/setting_avatar.html', message_success=message_success))
+            response.headers['Last-Modified'] = datetime.now()
+            return response
+        else:
+            message_fail = gettext("Invalid file")
+            return render_template('user/setting_avatar.html', message_fail=message_fail)
 
 
 @user.route("/mention")
@@ -207,12 +286,5 @@ def mention():
 
 
 # urlpatterns = patterns(
-#     'account.views',
-#     url(r'^(?P<user_id>\d+)/info/$',
-#         'user_info', name='user_info'),
 #     url(r'^super/$', 'super_login', name='super_login'),
-#     url(r'^avatar/$', 'user_avatar', name='user_avatar'),
-#     url(r'^reset/password/done/$',
-#         'password_reset_done',
-#         name='password_reset_done')
 # )

@@ -55,21 +55,13 @@ class User(UserMixin, db.Model):
             return self.username
 
     def avatar(self):
-        da = ''  # default avatar
-        dic = {}
         if self.use_avatar:
             mail = self.email.lower()
             avatar_url = "http://www.gravatar.com/avatar/"
             base_url = avatar_url + hashlib.md5(mail).hexdigest() + "?"
-            dic['small'] = base_url + urllib.urlencode({'d': da, 's': '40'})
-            dic['middle'] = base_url + urllib.urlencode({'d': da, 's': '48'})
-            dic['large'] = base_url + urllib.urlencode({'d': da, 's': '80'})
-            return dic
-        elif self.avatar_url:
-            dic['small'] = self.avatar_url
-            dic['middle'] = self.avatar_url
-            dic['large'] = self.avatar_url
-        return dic
+            return base_url + urllib.urlencode({'d': "", 's': '128'})
+        else:
+            return self.avatar_url
 
     def verify_password(self, password):
         return check_password_hash(self.password_hash, password)

@@ -7,7 +7,7 @@
 <div class="panel panel-default">
     <div class="topic-heading panel-heading">
 		<div class="row">
-			<a href="{{ url_for('user.info', uid = topic.user_id) }}" class="col-md-1 pull-right"><img title="{{ current_user.username}}" class="avatar-middle pull-right" src="{{topic.user().avatar()['middle']}}"></a>
+			<a href="{{ url_for('user.info', uid = topic.user_id) }}" class="col-md-1 pull-right"><img title="{{ current_user.username}}" class="avatar-middle pull-right" src="{{topic.user().avatar()}}"></a>
 			<div class="col-md-10">
 				<p class="topic-breadcrumb">
                         <a href="{{ url_for('voice.index') }}">{{ _("logoname") }}</a>  ›   <a href="{{ url_for('voice.node_view', nid = topic.node_id) }}">{{ topic.node().title }}</a>

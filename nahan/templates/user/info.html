@@ -1,0 +1,27 @@
+{% extends 'base_with_sidebar.html' %}
+{% block left %}
+{% include 'user/panel.html' %}
+{% endblock %}
+
+{% block right %}
+<div class="panel panel-default">
+    <div class="panel-body row">
+        <div class="col-xs-2">
+            <img class="avatar-large" src="{{ user.avatar() }}" title="{{user.username}}"/>
+        </div>
+        <div class="col-xs-10">
+            <p class="list-post-title"><strong>{{user.username}} @{{user.username}}</strong></p>
+            <p class="list-meta">{{ _('The') }} {{user.id}} {{ _('th users') }} {{user.date_joined}} {{ _('join.') }}</p>
+            <p class="list-meta"> {{ _('Personal website: ') }}
+            {% if user.website %}
+            <a target="_blank" href="{{user.website}}">{{user.website}}</a>
+            </p>
+            {% else %}
+            {{ _('No site') }}
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% include 'voice/list.html' %}
+{% endblock %}
+

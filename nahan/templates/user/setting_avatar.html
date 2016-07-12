@@ -1,0 +1,43 @@
+{% extends 'base_with_sidebar.html' %}
+{% block left %}
+{% include 'user/panel.html' %}
+{% endblock %}
+
+{% block right %}
+<div class="panel panel-default">
+    <div class="panel-heading">
+        <ul class="nav nav-tabs">
+            <li><a href="{{ url_for('user.setting_info') }}"> {{_('Info')}}</a></li>
+            <li><a href="{{ url_for('user.setting_password') }}"> {{ _('Password') }}</a></li>
+            <li class="active"><a href="">{{ _('Avatar') }}</a></li>
+        </ul>
+    </div>
+
+    {% if message_success %}
+    </br>
+    </br>
+    <h2 class="text-center text-success" style="margin-bottom:1em"> {{ message_success }} </h2>
+    </br>
+    </br>
+
+    {% else %}
+    <form class="panel-body" method="post" action="" enctype="multipart/form-data">
+        <div class="form-group col-md-8 col-md-offset-2">
+            <label class="" for="avatar">{{ _('upload new avatar') }}</label>
+            <input type="file" name="file" id="avatar" style="margin-top:1em">
+            <label style="margin-top:1em">{{ _('maximum 512K, png and jpeg only') }}</label>
+        </div>
+        {% if message_fail %}
+        <div class="form-group col-md-8 col-md-offset-2">
+            <label class="text-center text-danger" style="margin-bottom:1em"> {{ message_fail }} </label>
+        </div>
+        {% endif %}
+        <div class="form-group col-md-8 col-md-offset-2">
+            <button class="btn btn-success pull-right">
+                {{ _('update') }}
+            </button>
+        </div>
+    </form>
+    {% endif %}
+</div>
+{% endblock %}

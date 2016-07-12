@@ -1,0 +1,47 @@
+{% extends 'base_with_sidebar.html' %}
+
+{% block left %}
+{% include 'user/panel.html' %}
+{% endblock %}
+
+{% block right %}
+
+<div class="panel panel-default">
+    <div class="panel-heading">
+        <ul class="nav nav-tabs">
+            <li class="active"><a href="">{{ _('Info') }}</a></li>
+            <li><a href="{{ url_for('user.setting_password') }}">{{ _('Password') }}</a></li>
+            <li><a href="{{ url_for('user.setting_avatar') }}">{{ _('Avatar') }}</a></li>
+        </ul>
+    </div>
+
+    {% if message_success %}
+    </br>
+    </br>
+    <h2 class="text-center text-success" style="margin-bottom:1em"> {{ message_success }} </h2>
+    </br>
+    </br>
+
+    {% else %}
+    <form class="panel-body" method="post" action="">
+        <div class="form-group col-md-8 col-md-offset-2">
+            <label for="email"> {{ _('Email') }}</label>
+            <input class="form-control" id="email" name="email" type="email" value="{{current_user.email}}">
+            {% if message_email %}
+            <div class="messages"> <p class="text-danger"> {{ message_email }} </p> </div>
+            {% endif %}
+        </div>
+        <div class="form-group col-md-8 col-md-offset-2">
+            <label for="website">{{ _('website') }}</label>
+            <input class="form-control" id="website" name="website" type="url" {% if current_user.website %} value="{{ current_user.website }}" {% else%} placeholder="{{ _('Optional') }}" {%endif%}>
+        </div>
+        <div class="form-group col-md-8 col-md-offset-2">
+            <button class="btn btn-success pull-right">
+                {{ _('update') }}
+            </button>
+        </div>
+    </form>
+    {% endif %}
+</div>
+
+{% endblock %}

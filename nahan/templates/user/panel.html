@@ -2,7 +2,7 @@
     <div class="panel-body">
         {% if current_user.is_authenticated %}
         <div class="row">
-            <a class="col-xs-4"><img title="{{current_user.username}}" class="avatar-large" src="{{current_user.avatar()['middle'] }}"></a>
+            <a class="col-xs-4"><img title="{{current_user.username}}" class="avatar-large" src="{{current_user.avatar()}}"></a>
             <div class="col-xs-8">
             <p class="list-post-title"><strong>{{current_user.username}}</strong></p>
             <p class="list-meta" style="margin-top: 1em">
@@ -15,7 +15,7 @@
                 <a href="{{ url_for('user.info', uid=current_user.id) }}" class="btn btn-block"> <span class="glyphicon glyphicon-home"></span> {{ _('info') }} </a>
             </div>
             <div class="col-xs-4">
-                <a href="{{ url_for('user.setting') }}" class="btn btn-block"> <span class="glyphicon glyphicon-cog"></span> {{ _('settings') }} </a>
+                <a href="{{ url_for('user.setting_info') }}" class="btn btn-block"> <span class="glyphicon glyphicon-cog"></span> {{ _('settings') }} </a>
             </div>
             <div class="col-xs-4">
                 <a href="{{ url_for('user.signout') }}" class="btn btn-block"> <span class="glyphicon glyphicon-log-out"></span> {{ _('log out') }} </a>

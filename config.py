@@ -10,7 +10,7 @@ class Config:
     SQLALCHEMY_RECORD_QUERIES = True
     SQLALCHEMY_TRACK_MODIFICATIONS = True
 
-    # If use QQ, please see http://service.mail.qq.com/cgi-bin/help?id=28 firstly.
+    # If use QQ email, please see http://service.mail.qq.com/cgi-bin/help?id=28 firstly.
     MAIL_SERVER = 'smtp.qq.com'
     MAIL_PORT = 465
     MAIL_USE_SSL = True
@@ -23,6 +23,10 @@ class Config:
     BABEL_DEFAULT_TIMEZONE = 'CST'
 
     PER_PAGE = 10
+    UPLOAD_FOLDER = os.path.join(basedir, 'nahan/static/upload')
+    ALLOWED_EXTENSIONS = set(['png', 'jpg', 'jpeg'])
+    MAX_CONTENT_LENGTH = 512 * 1024
+
     @staticmethod
     def init_app(app):
         pass
