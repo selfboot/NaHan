@@ -3,14 +3,12 @@
 # @Author: xuezaigds@gmail.com
 # @Last Modified time: 2016-07-01 09:44:09
 
-from flask import render_template, redirect, request, url_for, make_response, current_app
+from flask import render_template, redirect, request, url_for, abort, current_app
 from flask_login import login_user, logout_user, login_required, current_user
 from flask_babel import gettext
 from flask_paginate import Pagination
 import re
-from datetime import datetime
 from PIL import Image
-from os import path
 from . import user
 from ..models import User, Topic
 from ..email import send_email
@@ -30,7 +28,7 @@ def signin():
     elif request.method == 'POST':
         _form = request.form
         u = User.query.filter_by(email=_form['email']).first()
-        if u is not None and u.verify_password(_form['password']):
+        if u and u.verify_password(_form['password']):
             login_user(u)
             return redirect(request.args.get('next') or url_for('voice.index'))
         else:
@@ -263,27 +261,41 @@ def setting_avatar():
         upload_folder = current_app.config['UPLOAD_FOLDER']
         file_appendix = _file.filename.rsplit('.', 1)[1]
         if _file and '.' in _file.filename and file_appendix in allowed_extensions:
+            # Resize the image.
             im = Image.open(_file)
             im.thumbnail((128, 128), Image.ANTIALIAS)
             im.save("%s/%d.png" % (upload_folder, current_user.id), 'PNG')
 
-            current_user.use_avatar = False
             current_user.avatar_url = url_for("static", filename="upload/%d.png" % current_user.id)
             db.session.commit()
             message_success = gettext('Update avatar done!')
             # Need to reload the whole page, otherwise the avatar is still old because of the cache.
-            response = make_response(render_template('user/setting_avatar.html', message_success=message_success))
-            response.headers['Last-Modified'] = datetime.now()
-            return response
+            return render_template('user/setting_avatar.html', message_success=message_success)
         else:
             message_fail = gettext("Invalid file")
             return render_template('user/setting_avatar.html', message_fail=message_fail)
 
 
-@user.route("/mention")
-def mention():
-    return "Mention"
+@user.route("/notify")
+@login_required
+def notify():
+    if request.method == "GET":
+        new = current_user.extract_unread_notify()
+        old = current_user.extract_read_notify()
 
+        # Mark all the unread notify as read(here we consume the notify is read once open this link).
+        if current_user.unread_notify:
+            if current_user.read_notify:
+                current_user.read_notify = "%s,%s" % (current_user.unread_notify, current_user.read_notify)
+            else:
+                current_user.read_notify = current_user.unread_notify
+
+        current_user.unread_notify = ""
+        db.session.commit()
+
+        return render_template('user/notify.html', old=old, new=new)
+    else:
+        abort(404)
 
 # urlpatterns = patterns(
 #     url(r'^super/$', 'super_login', name='super_login'),

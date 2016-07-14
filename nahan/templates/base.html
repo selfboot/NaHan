@@ -38,9 +38,16 @@
                     </div>
                     {% else %}
                     <div class="navbar-form navbar-right">
-                        <a class="btn btn-info" id="signin-btn" href=" {{url_for('user.signin')}}">
-                            {{ _('Sign In?') }}
-                        </a>
+                        <div class="dropdown">
+                          <button type="button" class="btn btn-info btn-primary dropdown-toggle" data-toggle="dropdown">
+                            {{ _('sign in?') }}  <b class="caret"></b>
+                          </button>
+                          <ul class="dropdown-menu">
+                            <li><a class="dropdown-item" href="{{ url_for('user.signin') }}">{{ _('sign in?') }} </a></li>
+                            <li><a class="dropdown-item" href="{{ url_for('user.reg') }}">{{_('register a account') }}?</a></li>
+                            <li><a class="dropdown-item" href="{{ url_for('user.password_reset_request') }}">{{ _('forget password?') }}</a></li>
+                          </ul>
+                        </div>
                     </div>
                     {% endif %}
 

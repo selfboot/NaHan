@@ -1,0 +1,83 @@
+{% extends 'base_with_sidebar.html' %}
+{% block left %}
+{% include 'user/panel.html' %}
+{% endblock %}
+
+{% block right %}
+<div class="panel panel-default">
+    {% if new %}
+    <div class="panel-heading">
+        <p class="panel-title">
+            {{ _('Unread Mentions') }}
+        </p>
+    </div>
+    <ul class="list-group">
+        {% for n in new %}
+        <div class="list-group-item list-topic-item">
+            <div class="row">
+                <a href="{{ url_for('user.info', uid = n.sender_id) }}" class="col-xs-1"><img title="{{n.sender.username}}" class="avatar-middle" src="{{n.sender.avatar_url}}"></a>
+                <div class="col-xs-10">
+                    <div class="reply-author">
+                        <a href="{{ url_for('user.info', uid = n.sender_id) }}">{{n.sender.username}}</a>
+                        <span class="list-time">{{n.time_created }}</span>
+                    </div>
+                    <div class="reply-content">
+                        {% if n.comment_id %}
+                        {{ _('In comment') }}
+                        <a href="{{ url_for('voice.view', tid = n.topic_id) }}#comment-{{n.comment_id}}" > {{n.topic.title}}</a>
+                        {{ _('Mentioned you') }}
+                        {% else %}
+                        {{ _('In topic') }}
+                        <a href="{{ url_for('voice.view', tid= n.topic_id) }}" > {{n.topic.title}}</a>
+                        {{ _('Mentioned you') }}
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+    </ul>
+    {% endif %}
+    {% if old %}
+    <div class="panel-heading">
+        <p class="panel-title">
+            {{ _('Old Mentions') }}
+        </p>
+    </div>
+    <ul class="list-group">
+        {% for n in old %}
+        <div class="list-group-item list-topic-item">
+            <div class="row ">
+                <a href="{{ url_for('user.info', uid = n.sender_id) }}" class="col-xs-1"><img title="{{n.sender.username}}" class="avatar-middle" src="{{n.sender.avatar_url }}"></a>
+                <div class="col-xs-10">
+                    <div class="reply-author">
+                        <a href="{{ url_for('user.info', uid = n.sender_id) }}">{{ n.sender.username }}</a>
+                        <span class="list-time">{{ n.time_created }}</span>
+                    </div>
+                    <div class="reply-content">
+                        {% if n.comment_id %}
+                        {{ _('In comment') }}
+                        <a href="{{ url_for('voice.view', tid=n.topic_id) }}#comment-{{n.comment_id}}" > {{n.topic.title}}</a>
+                        {{ _('Mentioned you') }}
+                        {% else %}
+                        {{ _('In topic') }}
+                        <a href="{{ url_for('voice.view', tid=n.topic_id) }}" > {{n.topic.title}}</a>
+                        {{ _('Mentioned you') }}
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+    </ul>
+    {% endif %}
+    {% if not old and not new %}
+        <div class="panel-heading">
+        <p class="panel-title">
+            {{ _('No Mentions') }}
+        </p>
+    </div>
+    {% endif %}
+</div>
+
+{% endblock %}

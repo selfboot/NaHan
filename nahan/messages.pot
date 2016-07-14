@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PROJECT VERSION\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2016-07-12 12:15+0800\n"
+"POT-Creation-Date: 2016-07-14 12:12+0800\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -45,19 +45,27 @@ msgstr ""
 msgid "New Topic"
 msgstr ""
 
-#: templates/base.html:42
-msgid "Sign In?"
+#: templates/base.html:43 templates/base.html:46 templates/user/reg.html:33
+msgid "sign in?"
 msgstr ""
 
-#: templates/base.html:49
+#: templates/base.html:47 templates/user/reg.html:5
+msgid "register a account"
+msgstr ""
+
+#: templates/base.html:48 templates/user/signin.html:25
+msgid "forget password?"
+msgstr ""
+
+#: templates/base.html:56
 msgid "enter key words"
 msgstr ""
 
-#: templates/base.html:52
+#: templates/base.html:59
 msgid "Search"
 msgstr ""
 
-#: templates/base.html:70
+#: templates/base.html:77
 msgid "copyright by"
 msgstr ""
 
@@ -81,6 +89,31 @@ msgstr ""
 msgid "No site"
 msgstr ""
 
+#: templates/user/notify.html:11
+msgid "Unread Mentions"
+msgstr ""
+
+#: templates/user/notify.html:26 templates/user/notify.html:59
+msgid "In comment"
+msgstr ""
+
+#: templates/user/notify.html:28 templates/user/notify.html:32
+#: templates/user/notify.html:61 templates/user/notify.html:65
+msgid "Mentioned you"
+msgstr ""
+
+#: templates/user/notify.html:30 templates/user/notify.html:63
+msgid "In topic"
+msgstr ""
+
+#: templates/user/notify.html:44
+msgid "Old Mentions"
+msgstr ""
+
+#: templates/user/notify.html:77
+msgid "No Mentions"
+msgstr ""
+
 #: templates/user/panel.html:9 templates/voice/topic.html:40
 msgid "The "
 msgstr ""
@@ -98,23 +131,26 @@ msgid "log out"
 msgstr ""
 
 #: templates/user/panel.html:25
-msgid "content of this site"
+msgid "Speaker for children."
 msgstr ""
 
-#: templates/user/panel.html:28 templates/user/signin.html:22
-#: templates/voice/create.html:56 templates/voice/topic.html:137
-msgid "sign in"
+#: templates/user/panel.html:27
+msgid " Do you ever SEE what children play."
 msgstr ""
 
-#: templates/user/panel.html:31 templates/user/signin.html:24
-msgid "reg"
+#: templates/user/panel.html:28
+msgid " Do you ever HEAR what children speak."
 msgstr ""
 
-#: templates/user/panel.html:38
+#: templates/user/panel.html:29
+msgid " Do you ever Think what children think."
+msgstr ""
+
+#: templates/user/panel.html:36
 msgid "new messages"
 msgstr ""
 
-#: templates/user/panel.html:42
+#: templates/user/panel.html:40
 msgid "site messages"
 msgstr ""
 
@@ -223,10 +259,6 @@ msgid ""
 "check your email and click the link to continue."
 msgstr ""
 
-#: templates/user/reg.html:5
-msgid "register a account"
-msgstr ""
-
 #: templates/user/reg.html:7
 msgid "username"
 msgstr ""
@@ -245,10 +277,6 @@ msgstr ""
 
 #: templates/user/reg.html:31
 msgid "register"
-msgstr ""
-
-#: templates/user/reg.html:33
-msgid "sign in?"
 msgstr ""
 
 #: templates/user/setting_avatar.html:10 templates/user/setting_info.html:12
@@ -299,8 +327,13 @@ msgstr ""
 msgid "email"
 msgstr ""
 
-#: templates/user/signin.html:25
-msgid "forget password?"
+#: templates/user/signin.html:22 templates/voice/create.html:56
+#: templates/voice/topic.html:137
+msgid "sign in"
+msgstr ""
+
+#: templates/user/signin.html:24
+msgid "reg"
 msgstr ""
 
 #: templates/voice/append.html:13 templates/voice/edit.html:13
@@ -363,8 +396,8 @@ msgstr ""
 msgid "please sign in before post"
 msgstr ""
 
-#: templates/voice/list.html:6 voice/views.py:31 voice/views.py:32
-#: voice/views.py:54 voice/views.py:55
+#: templates/voice/list.html:6 voice/views.py:32 voice/views.py:33
+#: voice/views.py:55 voice/views.py:56
 msgid "Latest Topics"
 msgstr ""
 
@@ -393,87 +426,87 @@ msgstr ""
 msgid "please sign in before reply"
 msgstr ""
 
-#: user/views.py:37
+#: user/views.py:35
 msgid "Invalid username or password."
 msgstr ""
 
-#: user/views.py:62
+#: user/views.py:60
 msgid "Username can not be empty."
 msgstr ""
 
-#: user/views.py:64
+#: user/views.py:62
 msgid "Username can only contain letters digits and underscore."
 msgstr ""
 
-#: user/views.py:66
+#: user/views.py:64
 msgid "Username already exists."
 msgstr ""
 
-#: user/views.py:70 user/views.py:234
+#: user/views.py:68 user/views.py:232
 msgid "Email address can not be empty."
 msgstr ""
 
-#: user/views.py:72 user/views.py:112 user/views.py:236
+#: user/views.py:70 user/views.py:110 user/views.py:234
 msgid "Email address is invalid."
 msgstr ""
 
-#: user/views.py:74
+#: user/views.py:72
 msgid "Email already exists."
 msgstr ""
 
-#: user/views.py:78 user/views.py:145 user/views.py:206
+#: user/views.py:76 user/views.py:143 user/views.py:204
 msgid "Passwords don't match."
 msgstr ""
 
-#: user/views.py:80 user/views.py:147 user/views.py:208
+#: user/views.py:78 user/views.py:145 user/views.py:206
 msgid "Passwords can not be empty."
 msgstr ""
 
-#: user/views.py:110
+#: user/views.py:108
 msgid "The email can not be empty"
 msgstr ""
 
-#: user/views.py:114
+#: user/views.py:112
 msgid "The email has not be registered"
 msgstr ""
 
-#: user/views.py:182 user/views.py:183
+#: user/views.py:180 user/views.py:181
 msgid "'s Topics"
 msgstr ""
 
-#: user/views.py:217
+#: user/views.py:215
 msgid "Update password done!"
 msgstr ""
 
-#: user/views.py:246
+#: user/views.py:244
 msgid "Update info done!"
 msgstr ""
 
-#: user/views.py:259
+#: user/views.py:257
 msgid "No selected file"
 msgstr ""
 
-#: user/views.py:273
+#: user/views.py:271
 msgid "Update avatar done!"
 msgstr ""
 
-#: user/views.py:279
+#: user/views.py:275
 msgid "Invalid file"
 msgstr ""
 
-#: voice/views.py:86
+#: voice/views.py:90
 msgid "Comment cannot be empty or too large"
 msgstr ""
 
-#: voice/views.py:138 voice/views.py:165
+#: voice/views.py:162 voice/views.py:197
 msgid "content cannot be empty"
 msgstr ""
 
-#: voice/views.py:206
+#: voice/views.py:244
 msgid "Node view"
 msgstr ""
 
-#: voice/views.py:207
+#: voice/views.py:245
 msgid "This node's Topics"
 msgstr ""
 

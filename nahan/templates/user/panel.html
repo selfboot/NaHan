@@ -2,7 +2,7 @@
     <div class="panel-body">
         {% if current_user.is_authenticated %}
         <div class="row">
-            <a class="col-xs-4"><img title="{{current_user.username}}" class="avatar-large" src="{{current_user.avatar()}}"></a>
+            <a class="col-xs-4"><img title="{{current_user.username}}" class="avatar-large" src="{{current_user.avatar_url}}"></a>
             <div class="col-xs-8">
             <p class="list-post-title"><strong>{{current_user.username}}</strong></p>
             <p class="list-meta" style="margin-top: 1em">
@@ -22,24 +22,23 @@
             </div>
         </div>
         {% else %}
-        <p>{{  _('content of this site') }}</p>
-        <!--<div class="row">-->
-            <!--<div class="col-md-6">-->
-                <!--<a href="{{ url_for('user.signin') }}" class="btn btn-block btn-info">{{ _('sign in') }}</a>-->
-            <!--</div>-->
-            <!--<div class="col-md-6">-->
-                <!--<a href="{{ url_for('user.reg') }}" class="btn btn-block btn-default">{{ _('reg') }}</a>-->
-            <!--</div>-->
-        <!--</div>-->
+        <p class="list-post-title text-center"><strong>{{  _('Speaker for children.') }}</strong></p>
+        <div class="row" style="margin: 1em 0 0 1em">
+        <p class="list-meta">{{ _(' Do you ever SEE what children play.') }}</p>
+        <p class="list-meta">{{ _(' Do you ever HEAR what children speak.') }}</p>
+        <p class="list-meta">{{ _(' Do you ever Think what children think.') }}</p>
+        </div>
         {% endif %}
     </div>
-    {% if current_user.unread_notify %}
-    <div class="panel-footer">
-        <span class="notification"><a href="{{ url_for('user.mention') }}">{{current_user.unread_nofity_count()}}{{ _('new messages') }}</a></span>
-    </div>
-    {% elif current_user.is_authenticated %}
-    <div class="panel-footer">
-        <span class="notification"><a href="{{ url_for('user.mention') }}">{{ _('site messages') }}</a></span>
-    </div>
+    {% if current_user.is_authenticated %}
+        {% if current_user.unread_notify %}
+        <div class="panel-footer">
+            <span class="notification"><a href="{{ url_for('user.notify') }}">{{current_user.unread_notify_count()}}{{ _('new messages') }}</a></span>
+        </div>
+        {% else  %}
+        <div class="panel-footer">
+            <span class="notification"><a href="{{ url_for('user.notify') }}">{{ _('site messages') }}</a></span>
+        </div>
+        {% endif %}
     {% endif %}
 </div>

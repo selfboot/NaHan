@@ -2,12 +2,11 @@
 # -*- coding: utf-8 -*-
 # @Author: xuezaigds@gmail.com
 # @Last Modified time: 2016-07-01 15:57:33
-import hashlib
-import urllib
+
 import markdown
 from datetime import datetime
 from flask_login import UserMixin
-from flask import current_app
+from flask import current_app, url_for
 from werkzeug.security import generate_password_hash, check_password_hash
 from itsdangerous import TimedJSONWebSignatureSerializer as Serializer
 from . import db, login_manager
@@ -23,10 +22,8 @@ class User(UserMixin, db.Model):
     is_superuser = db.Column(db.Boolean, default=False)
     is_password_reset_link_valid = db.Column(db.Boolean, default=True)
 
-    nickname = db.Column(db.String(64), nullable=True)
     website = db.Column(db.String(64), nullable=True)
-    avatar_url = db.Column(db.String(64), nullable=True)
-    use_avatar = db.Column(db.Boolean, default=True)
+    avatar_url = db.Column(db.String(64), default="http://www.gravatar.com/avatar/")
 
     last_login = db.Column(db.DateTime(), default=datetime.utcnow)
     date_joined = db.Column(db.DateTime(), default=datetime.utcnow)
@@ -47,31 +44,13 @@ class User(UserMixin, db.Model):
     def password(self, password):
         self.password_hash = generate_password_hash(password)
 
-    @property
-    def print_name(self):
-        if self.nickname:
-            return self.nickname
-        else:
-            return self.username
-
-    def avatar(self):
-        if self.use_avatar:
-            mail = self.email.lower()
-            avatar_url = "http://www.gravatar.com/avatar/"
-            base_url = avatar_url + hashlib.md5(mail).hexdigest() + "?"
-            return base_url + urllib.urlencode({'d': "", 's': '128'})
-        else:
-            return self.avatar_url
-
     def verify_password(self, password):
         return check_password_hash(self.password_hash, password)
 
-    def is_administrator(self):
-        return self.is_superuser
-
-    def unread_nofity_count(self):
-        # TODO
-        return 1
+    def unread_notify_count(self):
+        if not self.unread_notify:
+            return 0
+        return len(self.unread_notify.split(","))
 
     def generate_reset_token(self, expiration=600):
         s = Serializer(current_app.config['SECRET_KEY'], expiration)
@@ -88,6 +67,22 @@ class User(UserMixin, db.Model):
         if uid:
             return User.query.get(uid)
         return None
+
+    def extract_unread_notify(self):
+        if self.unread_notify:
+            notify_id = list(map(int, self.unread_notify.split(',')))
+            all_notify = [Notify.query.filter_by(id=i).first() for i in notify_id]
+            return all_notify
+        else:
+            return []
+
+    def extract_read_notify(self):
+        if self.read_notify:
+            notify_id = list(map(int, self.read_notify.split(',')))
+            all_notify = [Notify.query.filter_by(id=i).first() for i in notify_id]
+            return all_notify
+        else:
+            return []
 
 
 @login_manager.user_loader
@@ -227,15 +222,33 @@ class Node(db.Model):
 
 
 class Notify(db.Model):
+    def __init__(self, sender_id, receiver_id, topic_id, comment_id=None):
+        self.sender_id = sender_id
+        self.receiver_id = receiver_id
+        self.topic_id = topic_id
+        self.comment_id = comment_id
+        self.time_created = datetime.now()
+
     __tablename__ = "notify"
     id = db.Column(db.Integer, primary_key=True)
 
-    content = db.Column(db.Text())
-    is_read = db.Column(db.Boolean(), default=False)
+    # Deprecated, because we can use two set in user to mark whether a notify is read or not.
+    # is_read = db.Column(db.Boolean(), default=False)
     time_created = db.Column(db.DateTime(), default=datetime.utcnow)
 
-    # Sender send a message at comment_id of topic_id to receiver_id
+    # User can at somebody at topic, appendix and reply.
     sender_id = db.Column(db.Integer)
     receiver_id = db.Column(db.Integer)
-    comment_id = db.Column(db.Integer)
-    topic_id = db.Column(db.Integer)
+
+    comment_id = db.Column(db.Integer, nullable=True)
+    topic_id = db.Column(db.Integer, nullable=True)
+
+    # Need to get more info about this notify:
+    # sender_name, topic_title and so on.
+    @property
+    def topic(self):
+        return Topic.query.filter_by(id=self.topic_id).first()
+
+    @property
+    def sender(self):
+        return User.query.filter_by(id=self.sender_id).first()

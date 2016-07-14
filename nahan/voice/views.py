@@ -6,11 +6,12 @@
 from flask import render_template, redirect, request, url_for, abort, current_app
 from . import voice
 from flask_babel import gettext
-from ..models import Topic, TopicAppend, Node, Notify, Comment, User
-from flask_login import login_user, logout_user, login_required, current_user
+from ..models import Topic, TopicAppend, Node, Comment
+from flask_login import login_required, current_user
 import json
 import markdown
 from .. import db
+from ..util import add_user_links_in_content, add_notify_in_content
 from flask_paginate import Pagination
 
 
@@ -59,7 +60,7 @@ def hot():
 @voice.route("/voice/view/<int:tid>", methods=['GET', 'POST'])
 def view(tid):
     per_page = current_app.config['PER_PAGE']
-    topic = Topic.query.filter_by(id=tid).first()
+    topic = Topic.query.filter_by(id=tid).first_or_404()
     live_comments_all = topic.extract_comments()
     page = int(request.args.get('page', 1))
     offset = (page-1)*per_page
@@ -80,6 +81,9 @@ def view(tid):
 
     # Save the comment and update the topic view page.
     elif request.method == 'POST':
+        if not current_user.is_authenticated:
+            abort(403)
+
         reply_content = request.form['content']
 
         if not reply_content or len(reply_content) > 140:
@@ -90,13 +94,23 @@ def view(tid):
                                    comments=live_comments,
                                    pagination=pagination)
 
+        """
+        Need to process the @user notify in the reply.
+        We need to generate links about the user who is mentioned.
+        And at the same time, we need a simple notify system to generate a message.
+        """
         c = Comment(reply_content, current_user.id, tid)
+        c.content_rendered = add_user_links_in_content(c.content_rendered)
         db.session.add(c)
         db.session.commit()
 
         topic.add_comments(c.id)
         db.session.commit()
-        # Add the new comment to
+
+        # Generate notify from the reply content.
+        add_notify_in_content(c.content, current_user.id, tid, c.id)
+
+        # Add the new comment to current page.
         live_comments_all += [c]
         live_comments = live_comments_all[offset:offset + per_page]
         return render_template('voice/topic.html', topic=topic,
@@ -107,6 +121,7 @@ def view(tid):
 
 
 @voice.route("/voice/create", methods=['GET', 'POST'])
+@login_required
 def create():
     # Add the topic to a specified node.
     if request.method == 'GET':
@@ -116,17 +131,26 @@ def create():
         content = request.form['content']
         node_id = Node.get_id(request.form['node'])
         user_id = current_user.id
+
         new_topic = Topic(user_id, title, content, node_id)
+        new_topic.content_rendered = add_user_links_in_content(new_topic.content_rendered)
         db.session.add(new_topic)
         db.session.commit()
         topic_id = new_topic.id
+
+        # Generate notify from the topic content.
+        add_notify_in_content(new_topic.content, current_user.id, topic_id)
+
         return redirect(url_for('voice.view', tid=topic_id))
+    else:
+        abort(404)
 
 
 @voice.route("/voice/append/<int:tid>", methods=['GET', 'POST'])
+@login_required
 def appendix(tid):
-    topic = Topic.query.filter_by(id=tid).first()
-    if current_user.id != topic.user().id:
+    topic = Topic.query.filter_by(id=tid).first_or_404()
+    if current_user.id != topic.user().id and (not current_user.is_superuser):
         abort(403)
 
     if request.method == 'GET':
@@ -140,11 +164,18 @@ def appendix(tid):
                 'voice/append.html', topic=topic, message=message)
 
         topic_append = TopicAppend(append_c, tid)
+        topic_append.content_rendered = add_user_links_in_content(topic_append.content_rendered)
         db.session.add(topic_append)
         db.session.commit()
         topic.add_appends(topic_append.id)
         db.session.commit()
+
+        # Generate notify from the topic content.
+        add_notify_in_content(topic_append.content, current_user.id, tid)
+
         return redirect(url_for('voice.view', tid=topic.id, _anchor='append'))
+    else:
+        abort(404)
 
 
 @voice.route("/voice/delete/<int:tid>")
@@ -153,10 +184,11 @@ def delete(tid):
 
 
 @voice.route("/voice/edit/<int:tid>", methods=['GET', 'POST'])
+@login_required
 def edit(tid):
-    topic = Topic.query.filter_by(id=tid).first()
-    if current_user.id != topic.user().id and (not current_user.is_administrator()):
-        return redirect(url_for('voice.view'), tid=topic.id)
+    topic = Topic.query.filter_by(id=tid).first_or_404()
+    if current_user.id != topic.user().id and (not current_user.is_superuser):
+        abort(403)
     if request.method == 'GET':
         return render_template('voice/edit.html', topic=topic)
     elif request.method == 'POST':
@@ -165,8 +197,12 @@ def edit(tid):
             message = gettext('content cannot be empty')
             return render_template('voice/edit.html', topic=topic, message=message)
 
-        topic.content_rendered = markdown.markdown(topic.content, ['codehilite'], safe_mode='escape')
+        content_rendered = markdown.markdown(topic.content, ['codehilite'], safe_mode='escape')
+        topic.content_rendered = add_user_links_in_content(content_rendered)
         db.session.commit()
+
+        # Generate notify from the topic content.
+        add_notify_in_content(topic.content, current_user.id, topic.id)
         return redirect(url_for('voice.view', tid=topic.id))
 
 
@@ -178,7 +214,9 @@ def previewer():
     """
     c = request.form['content']
     md = dict()
-    md['marked'] = markdown.markdown(c, ['codehilite'], safe_mode='escape')
+    content = markdown.markdown(c, ['codehilite'], safe_mode='escape')
+    content = add_user_links_in_content(content)
+    md['marked'] = content
     if request.method == 'POST':
         return json.dumps(md)
 
