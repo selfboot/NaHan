@@ -23,7 +23,7 @@
 						<p class="list-meta">
 							<span class="label label-default list-meta-node"><a href="{{ url_for('voice.node_view', nid=t.node_id) }}">{{t.node().title}}</a></span>
 							<span class="list-count"> {{t.click}} {{ _('clicks') }}</span>
-							<span class="list-time">{{ t.time_created }}</span>
+							<span class="list-time">{{ t.time_created | natural_time}}</span>
 							<span class="list-username"><a href="{{ url_for('user.info', uid=t.user_id) }}">{{t.user().username}}</a></span>
 							<span class="list-reply-count-xs visible-xs">{{t.reply_count}}</span>
 						</p>

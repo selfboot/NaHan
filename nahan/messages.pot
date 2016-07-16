@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PROJECT VERSION\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2016-07-14 12:12+0800\n"
+"POT-Creation-Date: 2016-07-16 22:19+0800\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -16,6 +16,70 @@ msgstr ""
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Generated-By: Babel 2.3.4\n"
+
+#: util.py:66
+msgid "just now"
+msgstr ""
+
+#: util.py:77
+msgid "year"
+msgstr ""
+
+#: util.py:77
+msgid "years"
+msgstr ""
+
+#: util.py:78
+msgid "month"
+msgstr ""
+
+#: util.py:78
+msgid "months"
+msgstr ""
+
+#: util.py:79
+msgid "week"
+msgstr ""
+
+#: util.py:79
+msgid "weeks"
+msgstr ""
+
+#: util.py:80
+msgid "day"
+msgstr ""
+
+#: util.py:80
+msgid "days"
+msgstr ""
+
+#: util.py:81
+msgid "hour"
+msgstr ""
+
+#: util.py:81
+msgid "hours"
+msgstr ""
+
+#: util.py:82
+msgid "minute"
+msgstr ""
+
+#: util.py:82
+msgid "minutes"
+msgstr ""
+
+#: util.py:83
+msgid "second"
+msgstr ""
+
+#: util.py:83
+msgid "seconds"
+msgstr ""
+
+#: util.py:89
+msgid " ago"
+msgstr ""
 
 #: templates/404.html:5
 msgid "404 Not Found"

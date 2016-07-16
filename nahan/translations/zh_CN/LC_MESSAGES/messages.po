@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PROJECT VERSION\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2016-07-14 12:12+0800\n"
+"POT-Creation-Date: 2016-07-16 22:19+0800\n"
 "PO-Revision-Date: 2016-07-03 11:01+0800\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language: zh_Hans_CN\n"
@@ -17,6 +17,70 @@ msgstr ""
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Generated-By: Babel 2.3.4\n"
+
+#: util.py:66
+msgid "just now"
+msgstr "刚刚"
+
+#: util.py:77
+msgid "year"
+msgstr "年"
+
+#: util.py:77
+msgid "years"
+msgstr "年"
+
+#: util.py:78
+msgid "month"
+msgstr "月"
+
+#: util.py:78
+msgid "months"
+msgstr "月"
+
+#: util.py:79
+msgid "week"
+msgstr "周"
+
+#: util.py:79
+msgid "weeks"
+msgstr "周"
+
+#: util.py:80
+msgid "day"
+msgstr "天"
+
+#: util.py:80
+msgid "days"
+msgstr "天"
+
+#: util.py:81
+msgid "hour"
+msgstr "小时"
+
+#: util.py:81
+msgid "hours"
+msgstr "小时"
+
+#: util.py:82
+msgid "minute"
+msgstr "分钟"
+
+#: util.py:82
+msgid "minutes"
+msgstr "分钟"
+
+#: util.py:83
+msgid "second"
+msgstr "秒"
+
+#: util.py:83
+msgid "seconds"
+msgstr "秒"
+
+#: util.py:89
+msgid " ago"
+msgstr "前"
 
 #: templates/404.html:5
 msgid "404 Not Found"

@@ -16,7 +16,7 @@
 				<p class="list-meta">
 					<span class="label label-default list-meta-node"><a href="{{ url_for('voice.node_view', nid=topic.node_id) }}">{{ topic.node().title }}</a></span>
 					<span class="list-count">{{ topic.click }}</span>
-					<span class="list-time">{{ topic.time_created }}</span>
+					<span class="list-time">{{ topic.time_created | natural_time}}</span>
 					<span class="list-username"><a href="{{ url_for('user.info', uid=topic.user_id) }}">{{topic.user().username}}</a></span>
 					{% if current_user.id == topic.user_id %}
 					<a class="label-success label" href="{{ url_for('voice.appendix', tid = topic.id) }}">{{ _('topic appendix') }}</a>
@@ -37,7 +37,7 @@
 		{% for a in topic.extract_appends() %}
 		<div class="list-group-item list-appendix-item">
 			<p class="appendix-meta">
-                {{ _('The ')}}{{ loop.index }} {{ _('appendix') }} {{ a.time_created }}
+                {{ _('The ')}}{{ loop.index }} {{ _('appendix') }} {{ a.time_created | natural_time }}
 			</p>
 			{{a.content_rendered | safe}}
 		</div>
@@ -66,7 +66,7 @@
                         <div class="row">
                             <div class="reply-author col-sm-10">
                                 <a href="{{ url_for('user.info', uid=c.user_id) }}">{{c.user().username}}</a>
-                                <span class="list-time">{{c.time_created }}</span>
+                                <span class="list-time">{{c.time_created | natural_time}}</span>
                                 {% if current_user.is_superuser %}
                                 <a class="delete" href="{{ url_for('voice.comment_delete', cid=c.id)}}">{{ _('delete') }}</a>
                                 {% endif %}

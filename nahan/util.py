@@ -2,18 +2,19 @@
 # -*- coding: utf-8 -*-
 # @Author: xuezaigds@gmail.com
 # @Last Modified time: 2016-07-13 15:57:33
-
+from datetime import datetime
 import re
 from flask import url_for
+from .voice import voice as voice_blueprint
 from models import User, Notify
 from . import db
+from flask_babel import gettext
 
 
 def add_user_links_in_content(content_rendered):
     """ Replace the @user with the link of the user.
 
     :param content_rendered: the content after rendering by markdown.
-    :param User: The User class object defined in models.py
     """
     for at_name in re.findall(r'@(.*?)(?:\s|</\w+>)', content_rendered):
         receiver_u = User.query.filter_by(username=at_name).first()
@@ -59,3 +60,33 @@ def add_notify_in_content(content, sender_id, topic_id, comment_id=None):
 
     # Add notifies to all the receiver's data set.
     db.session.commit()
+
+
+@voice_blueprint.app_template_filter()
+def natural_time(dt):
+    """ Returns string representing "time since", 3 days ago, 5 hours ago etc.
+
+    For datetime values, returns a string representing how many seconds,
+    minutes or hours ago it was – falling back to the timesince format
+    if the value is more than a day old.
+    """
+    now = datetime.now()
+    # Here sometimes now may be small than dt in a weird way, so set to zero if it happens.
+    diff = now - dt if now >= dt else now-now
+
+    periods = (
+        (diff.days / 365, gettext("year"), gettext("years")),
+        (diff.days / 30, gettext("month"), gettext("months")),
+        (diff.days / 7, gettext("week"), gettext("weeks")),
+        (diff.days, gettext("day"), gettext("days")),
+        (diff.seconds / 3600, gettext("hour"), gettext("hours")),
+        (diff.seconds / 60, gettext("minute"), gettext("minutes")),
+        (diff.seconds, gettext("second"), gettext("seconds")),
+    )
+
+    for period, singular, plural in periods:
+
+        if period:
+            return "%d %s%s" % (period, singular if period == 1 else plural, gettext(' ago'))
+
+    return gettext("just now")

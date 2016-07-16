@@ -113,7 +113,13 @@ def view(tid):
         # Add the new comment to current page.
         live_comments_all += [c]
         live_comments = live_comments_all[offset:offset + per_page]
-        return render_template('voice/topic.html', topic=topic,
+        pagination = Pagination(page=page, total=len(live_comments_all),
+                                per_page=per_page,
+                                record_name="live_comments",
+                                CSS_FRAMEWORK='bootstrap',
+                                bs_version=3)
+        return render_template('voice/topic.html',
+                               topic=topic,
                                comments=live_comments,
                                pagination=pagination)
     else:

@@ -19,7 +19,7 @@
                 <div class="col-xs-10">
                     <div class="reply-author">
                         <a href="{{ url_for('user.info', uid = n.sender_id) }}">{{n.sender.username}}</a>
-                        <span class="list-time">{{n.time_created }}</span>
+                        <span class="list-time">{{n.time_created | natural_time}}</span>
                     </div>
                     <div class="reply-content">
                         {% if n.comment_id %}
@@ -52,7 +52,7 @@
                 <div class="col-xs-10">
                     <div class="reply-author">
                         <a href="{{ url_for('user.info', uid = n.sender_id) }}">{{ n.sender.username }}</a>
-                        <span class="list-time">{{ n.time_created }}</span>
+                        <span class="list-time">{{ n.time_created | natural_time }}</span>
                     </div>
                     <div class="reply-content">
                         {% if n.comment_id %}
