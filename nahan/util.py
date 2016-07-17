@@ -85,7 +85,6 @@ def natural_time(dt):
     )
 
     for period, singular, plural in periods:
-
         if period:
             return "%d %s%s" % (period, singular if period == 1 else plural, gettext(' ago'))
 

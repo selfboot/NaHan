@@ -1,6 +1,6 @@
 function search() {
     var keyword = $('#search').val();
-    var dst = "/search/" + keyword + "/";
+    var dst = "/search/" + keyword;
     if (keyword != '') {
         window.location = dst;
     } else {

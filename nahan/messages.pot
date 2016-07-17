@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PROJECT VERSION\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2016-07-16 22:19+0800\n"
+"POT-Creation-Date: 2016-07-17 21:28+0800\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -17,68 +17,68 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Generated-By: Babel 2.3.4\n"
 
-#: util.py:66
-msgid "just now"
-msgstr ""
-
-#: util.py:77
+#: util.py:78
 msgid "year"
 msgstr ""
 
-#: util.py:77
+#: util.py:78
 msgid "years"
 msgstr ""
 
-#: util.py:78
+#: util.py:79
 msgid "month"
 msgstr ""
 
-#: util.py:78
+#: util.py:79
 msgid "months"
 msgstr ""
 
-#: util.py:79
+#: util.py:80
 msgid "week"
 msgstr ""
 
-#: util.py:79
+#: util.py:80
 msgid "weeks"
 msgstr ""
 
-#: util.py:80
+#: util.py:81
 msgid "day"
 msgstr ""
 
-#: util.py:80
+#: util.py:81
 msgid "days"
 msgstr ""
 
-#: util.py:81
+#: util.py:82
 msgid "hour"
 msgstr ""
 
-#: util.py:81
+#: util.py:82
 msgid "hours"
 msgstr ""
 
-#: util.py:82
+#: util.py:83
 msgid "minute"
 msgstr ""
 
-#: util.py:82
+#: util.py:83
 msgid "minutes"
 msgstr ""
 
-#: util.py:83
+#: util.py:84
 msgid "second"
 msgstr ""
 
-#: util.py:83
+#: util.py:84
 msgid "seconds"
 msgstr ""
 
 #: util.py:89
 msgid " ago"
+msgstr ""
+
+#: util.py:91
+msgid "just now"
 msgstr ""
 
 #: templates/404.html:5
@@ -142,15 +142,11 @@ msgid "th users"
 msgstr ""
 
 #: templates/user/info.html:14
-msgid "join."
+msgid " join."
 msgstr ""
 
-#: templates/user/info.html:15
+#: templates/user/info.html:16
 msgid "Personal website: "
-msgstr ""
-
-#: templates/user/info.html:20
-msgid "No site"
 msgstr ""
 
 #: templates/user/notify.html:11
@@ -460,8 +456,8 @@ msgstr ""
 msgid "please sign in before post"
 msgstr ""
 
-#: templates/voice/list.html:6 voice/views.py:32 voice/views.py:33
-#: voice/views.py:55 voice/views.py:56
+#: templates/voice/list.html:6 voice/views.py:33 voice/views.py:34
+#: voice/views.py:56 voice/views.py:57
 msgid "Latest Topics"
 msgstr ""
 
@@ -558,19 +554,27 @@ msgstr ""
 msgid "Invalid file"
 msgstr ""
 
-#: voice/views.py:90
+#: voice/views.py:91
 msgid "Comment cannot be empty or too large"
 msgstr ""
 
-#: voice/views.py:162 voice/views.py:197
+#: voice/views.py:169 voice/views.py:204
 msgid "content cannot be empty"
 msgstr ""
 
-#: voice/views.py:244
+#: voice/views.py:251
 msgid "Node view"
 msgstr ""
 
-#: voice/views.py:245
+#: voice/views.py:252
 msgid "This node's Topics"
+msgstr ""
+
+#: voice/views.py:290
+msgid " -search result"
+msgstr ""
+
+#: voice/views.py:292
+msgid "'s search result"
 msgstr ""
 

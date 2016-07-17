@@ -1,5 +1,3 @@
-# Chinese (Simplified, China) translations for PROJECT.
-# Copyright (C) 2016 ORGANIZATION
 # This file is distributed under the same license as the PROJECT project.
 # FIRST AUTHOR <EMAIL@ADDRESS>, 2016.
 #
@@ -7,7 +5,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PROJECT VERSION\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2016-07-16 22:19+0800\n"
+"POT-Creation-Date: 2016-07-17 21:28+0800\n"
 "PO-Revision-Date: 2016-07-03 11:01+0800\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language: zh_Hans_CN\n"
@@ -18,69 +16,69 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Generated-By: Babel 2.3.4\n"
 
-#: util.py:66
-msgid "just now"
-msgstr "刚刚"
-
-#: util.py:77
+#: util.py:78
 msgid "year"
 msgstr "年"
 
-#: util.py:77
+#: util.py:78
 msgid "years"
 msgstr "年"
 
-#: util.py:78
+#: util.py:79
 msgid "month"
 msgstr "月"
 
-#: util.py:78
+#: util.py:79
 msgid "months"
 msgstr "月"
 
-#: util.py:79
+#: util.py:80
 msgid "week"
 msgstr "周"
 
-#: util.py:79
+#: util.py:80
 msgid "weeks"
 msgstr "周"
 
-#: util.py:80
+#: util.py:81
 msgid "day"
 msgstr "天"
 
-#: util.py:80
+#: util.py:81
 msgid "days"
 msgstr "天"
 
-#: util.py:81
+#: util.py:82
 msgid "hour"
 msgstr "小时"
 
-#: util.py:81
+#: util.py:82
 msgid "hours"
 msgstr "小时"
 
-#: util.py:82
+#: util.py:83
 msgid "minute"
 msgstr "分钟"
 
-#: util.py:82
+#: util.py:83
 msgid "minutes"
 msgstr "分钟"
 
-#: util.py:83
+#: util.py:84
 msgid "second"
 msgstr "秒"
 
-#: util.py:83
+#: util.py:84
 msgid "seconds"
 msgstr "秒"
 
 #: util.py:89
 msgid " ago"
 msgstr "前"
+
+#: util.py:91
+msgid "just now"
+msgstr "刚刚"
 
 #: templates/404.html:5
 msgid "404 Not Found"
@@ -143,16 +141,12 @@ msgid "th users"
 msgstr " 个用户"
 
 #: templates/user/info.html:14
-msgid "join."
-msgstr "加入."
+msgid " join."
+msgstr "加入"
 
-#: templates/user/info.html:15
+#: templates/user/info.html:16
 msgid "Personal website: "
 msgstr "个人站点"
-
-#: templates/user/info.html:20
-msgid "No site"
-msgstr "没有站点"
 
 #: templates/user/notify.html:11
 msgid "Unread Mentions"
@@ -461,8 +455,8 @@ msgstr "节点"
 msgid "please sign in before post"
 msgstr "请登录然后进行评论"
 
-#: templates/voice/list.html:6 voice/views.py:32 voice/views.py:33
-#: voice/views.py:55 voice/views.py:56
+#: templates/voice/list.html:6 voice/views.py:33 voice/views.py:34
+#: voice/views.py:56 voice/views.py:57
 msgid "Latest Topics"
 msgstr "最新话题"
 
@@ -559,19 +553,26 @@ msgstr "成功更新头像"
 msgid "Invalid file"
 msgstr "文件太大或者不是图片文件"
 
-#: voice/views.py:90
+#: voice/views.py:91
 msgid "Comment cannot be empty or too large"
 msgstr "评论为空或者太长"
 
-#: voice/views.py:162 voice/views.py:197
+#: voice/views.py:169 voice/views.py:204
 msgid "content cannot be empty"
 msgstr "内容不能为空"
 
-#: voice/views.py:244
+#: voice/views.py:251
 msgid "Node view"
 msgstr "节点导航"
 
-#: voice/views.py:245
+#: voice/views.py:252
 msgid "This node's Topics"
 msgstr "节点下的话题"
 
+#: voice/views.py:290
+msgid " -search result"
+msgstr "-搜索结果"
+
+#: voice/views.py:292
+msgid "'s search result"
+msgstr "的搜索结果"

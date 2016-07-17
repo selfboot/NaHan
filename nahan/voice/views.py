@@ -13,6 +13,7 @@ import markdown
 from .. import db
 from ..util import add_user_links_in_content, add_notify_in_content
 from flask_paginate import Pagination
+from sqlalchemy import and_
 
 
 @voice.route('/')
@@ -258,9 +259,40 @@ def comment_delete(cid):
     return "Delete %d" % cid
 
 
+@voice.route("/search/<keywords>")
+def search(keywords):
+    """ Search the topic which contains all the keywords in title or content.
+
+    Refer to:
+    Object Relational Tutorial
+    http://docs.sqlalchemy.org/en/rel_0_9/orm/tutorial.html#common-filter-operators
+    query.filter(User.name.like('%ed%'))
+    query.filter(and_(User.name == 'ed', User.fullname == 'Ed Jones'))
+    query.filter(or_(User.name == 'ed', User.name == 'wendy'))
+    """
+
+    keys = keywords.split(' ')
+    title_topics = Topic.query.filter(and_(*[Topic.title.like("%"+k+"%") for k in keys])).all()
+    content_topics = Topic.query.filter(and_(*[Topic.content.like("%"+k+"%") for k in keys])).all()
+    all_topics = title_topics + content_topics
+
+    per_page = current_app.config['PER_PAGE']
+    page = int(request.args.get('page', 1))
+    offset = (page-1)*per_page
+    topics = all_topics[offset:offset + per_page]
+    pagination = Pagination(page=page, total=len(all_topics),
+                            per_page=per_page,
+                            record_name="topic",
+                            CSS_FRAMEWORK='bootstrap',
+                            bs_version=3)
+    return render_template(
+        'voice/index.html',
+        title="%s%s" % (keywords, gettext(' -search result')),
+        topics=topics,
+        post_list_title="%s%s" % (keywords, gettext("'s search result")),
+        pagination=pagination)
+
+
 #     url(r'^post/(?P<post_id>\d+)/delete/$',
 #         'del_reply', name='delete_post'),
-#     url(r'^search/(?P<keyword>.*?)/$',
-#         'search', name='search'),
-#     url(r'^hottest/$', 'hottest', name='hottest'),
 # )
