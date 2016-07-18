@@ -44,7 +44,7 @@
 		<form class="form" action="{{ url_for('voice.appendix', tid=topic.id)}}" method="post">
 			<div class="form-group ">
 				<label class="sr-only" for="content">{{ _('content') }}</label>
-				<textarea placeholder="{{ _('appendix') }}"  class="form-control" id="content" name="content"></textarea>
+				<textarea placeholder="{{ _('content') }}"  class="form-control" id="content" name="content"></textarea>
 			</div>
 			<div class="form-submit text-right">
 				<a class="btn btn-default" id="pre-btn">{{ _('preview') }}</a>
@@ -62,7 +62,7 @@
 		{% for a in topic.extract_appends() %}
 		<div class="list-group-item list-appendix-item">
 			<p class="appendix-meta">
-                {{ loop.index }} {{ _('appendix') }} {{ a.time_created | natural_time }}
+				{{ _('The ')}}{{ loop.index }} {{ _('appendix') }} {{ a.time_created | natural_time }}
 			</p>
 			{{a.content_rendered | safe}}
 		</div>

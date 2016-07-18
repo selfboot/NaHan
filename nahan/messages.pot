@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PROJECT VERSION\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2016-07-17 21:28+0800\n"
+"POT-Creation-Date: 2016-07-18 10:50+0800\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -17,67 +17,67 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Generated-By: Babel 2.3.4\n"
 
-#: util.py:78
+#: util.py:80
 msgid "year"
 msgstr ""
 
-#: util.py:78
+#: util.py:80
 msgid "years"
 msgstr ""
 
-#: util.py:79
+#: util.py:81
 msgid "month"
 msgstr ""
 
-#: util.py:79
+#: util.py:81
 msgid "months"
 msgstr ""
 
-#: util.py:80
+#: util.py:82
 msgid "week"
 msgstr ""
 
-#: util.py:80
+#: util.py:82
 msgid "weeks"
 msgstr ""
 
-#: util.py:81
+#: util.py:83
 msgid "day"
 msgstr ""
 
-#: util.py:81
+#: util.py:83
 msgid "days"
 msgstr ""
 
-#: util.py:82
+#: util.py:84
 msgid "hour"
 msgstr ""
 
-#: util.py:82
+#: util.py:84
 msgid "hours"
 msgstr ""
 
-#: util.py:83
+#: util.py:85
 msgid "minute"
 msgstr ""
 
-#: util.py:83
+#: util.py:85
 msgid "minutes"
 msgstr ""
 
-#: util.py:84
+#: util.py:86
 msgid "second"
 msgstr ""
 
-#: util.py:84
+#: util.py:86
 msgid "seconds"
 msgstr ""
 
-#: util.py:89
+#: util.py:91
 msgid " ago"
 msgstr ""
 
-#: util.py:91
+#: util.py:93
 msgid "just now"
 msgstr ""
 
@@ -89,8 +89,8 @@ msgstr ""
 msgid "500 Internal Error"
 msgstr ""
 
-#: templates/base.html:10
-msgid "sitename"
+#: templates/base.html:10 templates/user/panel.html:25
+msgid "Speaker for children"
 msgstr ""
 
 #: templates/base.html:23
@@ -190,10 +190,6 @@ msgstr ""
 msgid "log out"
 msgstr ""
 
-#: templates/user/panel.html:25
-msgid "Speaker for children."
-msgstr ""
-
 #: templates/user/panel.html:27
 msgid " Do you ever SEE what children play."
 msgstr ""
@@ -224,7 +220,7 @@ msgstr ""
 
 #: templates/user/passwd_reset.html:22 templates/voice/append.html:52
 #: templates/voice/create.html:46 templates/voice/edit.html:51
-#: templates/voice/topic.html:126
+#: templates/voice/topic.html:129
 msgid "submit"
 msgstr ""
 
@@ -388,7 +384,7 @@ msgid "email"
 msgstr ""
 
 #: templates/user/signin.html:22 templates/voice/create.html:56
-#: templates/voice/topic.html:137
+#: templates/voice/topic.html:140
 msgid "sign in"
 msgstr ""
 
@@ -412,13 +408,14 @@ msgid "edit"
 msgstr ""
 
 #: templates/voice/append.html:26 templates/voice/edit.html:26
-#: templates/voice/topic.html:26 templates/voice/topic.html:71
+#: templates/voice/topic.html:26 templates/voice/topic.html:42
+#: templates/voice/topic.html:74
 msgid "delete"
 msgstr ""
 
 #: templates/voice/append.html:46 templates/voice/create.html:27
 #: templates/voice/create.html:28 templates/voice/edit.html:43
-#: templates/voice/edit.html:44 templates/voice/topic.html:119
+#: templates/voice/edit.html:44 templates/voice/topic.html:122
 msgid "content"
 msgstr ""
 
@@ -428,7 +425,7 @@ msgid "appendix"
 msgstr ""
 
 #: templates/voice/append.html:50 templates/voice/create.html:43
-#: templates/voice/edit.html:48 templates/voice/topic.html:124
+#: templates/voice/edit.html:48 templates/voice/topic.html:127
 msgid "preview"
 msgstr ""
 
@@ -473,16 +470,16 @@ msgstr ""
 msgid "node navigation"
 msgstr ""
 
-#: templates/voice/topic.html:53 templates/voice/topic.html:76
-#: templates/voice/topic.html:105
+#: templates/voice/topic.html:56 templates/voice/topic.html:79
+#: templates/voice/topic.html:108
 msgid "reply"
 msgstr ""
 
-#: templates/voice/topic.html:55 templates/voice/topic.html:96
+#: templates/voice/topic.html:58 templates/voice/topic.html:99
 msgid "no replies yet"
 msgstr ""
 
-#: templates/voice/topic.html:135
+#: templates/voice/topic.html:138
 msgid "please sign in before reply"
 msgstr ""
 
@@ -558,23 +555,27 @@ msgstr ""
 msgid "Comment cannot be empty or too large"
 msgstr ""
 
-#: voice/views.py:169 voice/views.py:204
+#: voice/views.py:169 voice/views.py:199
 msgid "content cannot be empty"
 msgstr ""
 
-#: voice/views.py:251
+#: voice/views.py:248
 msgid "Node view"
 msgstr ""
 
-#: voice/views.py:252
-msgid "This node's Topics"
+#: voice/views.py:249
+msgid "Node "
 msgstr ""
 
-#: voice/views.py:290
+#: voice/views.py:249
+msgid "'s topics"
+msgstr ""
+
+#: voice/views.py:288
 msgid " -search result"
 msgstr ""
 
-#: voice/views.py:292
+#: voice/views.py:290
 msgid "'s search result"
 msgstr ""
 

@@ -1,10 +1,10 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-	<meta charset="UTF-8">
-	<title>{{ _('404 Not Found') }}</title>
-</head>
-<body>
-    <script type="text/javascript" src="http://www.qq.com/404/search_children.js" charset="utf-8" homePageUrl="{{ url_for('voice.index') }}" homePageName="迷路了吧，点击这里回到主页吧"></script>
-</body>
-</html>
+{% extends 'base.html' %}
+{% block title %}
+{{ _('404 Not Found') }}
+{% endblock %}
+{% block inside_row %}
+<div class="panel panel-default col-md-6 col-md-offset-3 text-center alert alert-danger">
+    <p>{{ _('404 Not Found')}}</p>
+    </div>
+</div>
+{% endblock %}

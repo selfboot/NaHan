@@ -53,7 +53,7 @@ def hot():
                             bs_version=3)
     return render_template('voice/index.html',
                            topics=topics,
-                           title=gettext('Latest Topics'),
+                           title=gettext('Hottest Topics'),
                            post_list_title=gettext('Latest Topics'),
                            pagination=pagination)
 
@@ -61,7 +61,7 @@ def hot():
 @voice.route("/voice/view/<int:tid>", methods=['GET', 'POST'])
 def view(tid):
     per_page = current_app.config['PER_PAGE']
-    topic = Topic.query.filter_by(id=tid).first_or_404()
+    topic = Topic.query.filter_by(id=tid, deleted=False).first_or_404()
     live_comments_all = topic.extract_comments()
     page = int(request.args.get('page', 1))
     offset = (page-1)*per_page
@@ -76,6 +76,7 @@ def view(tid):
         topic.click += 1
         db.session.commit()
         return render_template('voice/topic.html',
+                               title=gettext('Topic'),
                                topic=topic,
                                comments=live_comments,
                                pagination=pagination)
@@ -90,6 +91,7 @@ def view(tid):
         if not reply_content or len(reply_content) > 140:
             message = gettext('Comment cannot be empty or too large')
             return render_template("voice/topic.html",
+                                   title=gettext('Topic'),
                                    message=message,
                                    topic=topic,
                                    comments=live_comments,
@@ -120,6 +122,7 @@ def view(tid):
                                 CSS_FRAMEWORK='bootstrap',
                                 bs_version=3)
         return render_template('voice/topic.html',
+                               title=gettext('Topic'),
                                topic=topic,
                                comments=live_comments,
                                pagination=pagination)
@@ -132,7 +135,9 @@ def view(tid):
 def create():
     # Add the topic to a specified node.
     if request.method == 'GET':
-        return render_template('voice/create.html', nodes=Node.query.all())
+        return render_template('voice/create.html',
+                               title=gettext('Create Topic'),
+                               nodes=Node.query.all())
     elif request.method == 'POST':
         title = request.form['title']
         content = request.form['content']
@@ -156,7 +161,7 @@ def create():
 @voice.route("/voice/append/<int:tid>", methods=['GET', 'POST'])
 @login_required
 def appendix(tid):
-    topic = Topic.query.filter_by(id=tid).first_or_404()
+    topic = Topic.query.filter_by(id=tid, deleted=False).first_or_404()
     if current_user.id != topic.user().id and (not current_user.is_superuser):
         abort(403)
 
@@ -185,15 +190,10 @@ def appendix(tid):
         abort(404)
 
 
-@voice.route("/voice/delete/<int:tid>")
-def delete(tid):
-    return "Delete %d" % tid
-
-
 @voice.route("/voice/edit/<int:tid>", methods=['GET', 'POST'])
 @login_required
 def edit(tid):
-    topic = Topic.query.filter_by(id=tid).first_or_404()
+    topic = Topic.query.filter_by(id=tid, deleted=False).first_or_404()
     if current_user.id != topic.user().id and (not current_user.is_superuser):
         abort(403)
     if request.method == 'GET':
@@ -230,11 +230,15 @@ def previewer():
 
 @voice.route("/nodes")
 def all_nodes():
-    return render_template('voice/node_all.html', nodes=Node.query.all())
+    return render_template('voice/node_all.html',
+                           title=gettext('All nodes'),
+                           nodes=Node.query.all())
 
 
 @voice.route("/node/view/<int:nid>")
 def node_view(nid):
+    n = Node.query.filter_by(id=nid).first_or_404()
+    node_title = n.title
     per_page = current_app.config['PER_PAGE']
     page = int(request.args.get('page', 1))
     offset = (page-1)*per_page
@@ -249,14 +253,9 @@ def node_view(nid):
     return render_template('voice/node_view.html',
                            topics=topics,
                            title=gettext('Node view'),
-                           post_list_title=gettext("This node's Topics"),
+                           post_list_title=gettext("Node ") + node_title + gettext("'s topics"),
                            pagination=pagination)
     return render_template('voice/node_view.html')
-
-
-@voice.route("/comment/delete/<int:cid>")
-def comment_delete(cid):
-    return "Delete %d" % cid
 
 
 @voice.route("/search/<keywords>")
@@ -272,9 +271,15 @@ def search(keywords):
     """
 
     keys = keywords.split(' ')
-    title_topics = Topic.query.filter(and_(*[Topic.title.like("%"+k+"%") for k in keys])).all()
-    content_topics = Topic.query.filter(and_(*[Topic.content.like("%"+k+"%") for k in keys])).all()
-    all_topics = title_topics + content_topics
+    all_topics = set(Topic.query.filter(and_(Topic.deleted==False,
+                                             *[Topic.title.like("%"+k+"%") for k in keys])).all())
+    content_topics = set(Topic.query.filter(and_(Topic.deleted==False,
+                                                 *[Topic.content.like("%"+k+"%") for k in keys])).all())
+
+    # Remove duplicated search result, because the keywords occur in both title and content.
+    all_topics.update(content_topics)
+    all_topics = list(all_topics)
+    all_topics.sort(key=lambda x: x.time_created, reverse=True)
 
     per_page = current_app.config['PER_PAGE']
     page = int(request.args.get('page', 1))
@@ -293,6 +298,47 @@ def search(keywords):
         pagination=pagination)
 
 
-#     url(r'^post/(?P<post_id>\d+)/delete/$',
-#         'del_reply', name='delete_post'),
-# )
+@voice.route("/voice/delete/<int:tid>")
+def delete(tid):
+    t = Topic.query.filter_by(id=tid, deleted=False).first_or_404()
+    t.deleted = True
+    db.session.commit()
+    # Delete all the comment and appendix in this topic.
+    map(lambda a: append_delete(a.id), t.extract_appends())
+    map(lambda c: comment_delete(c.id), t.extract_comments())
+    return redirect(url_for("voice.index"))
+
+
+@voice.route("/voice/delete_appendix/<int:aid>")
+def append_delete(aid):
+    ta = TopicAppend.query.filter_by(id=aid, deleted=False).first_or_404()
+    ta.deleted = True
+    db.session.commit()
+    return redirect(url_for("voice.view", tid=ta.topic_id))
+
+
+@voice.route("/comment/delete/<int:cid>")
+def comment_delete(cid):
+    c = Comment.query.filter_by(id=cid, deleted=False).first_or_404()
+    c.deleted = True
+
+    # Delete this comment in corresponding topic.  Just need to minus the reply count.
+    t = Topic.query.filter_by(id=c.topic_id).first()
+    t.reply_count -= 1
+    db.session.commit()
+    return redirect(url_for("voice.view", tid=c.topic_id))
+
+
+@voice.app_errorhandler(404)
+def voice_404(err):
+    return render_template('404.html'), 404
+
+
+@voice.app_errorhandler(403)
+def voice_403(err):
+    return render_template('403.html'), 403
+
+
+@voice.app_errorhandler(500)
+def voice_500(err):
+    return render_template('500.html'), 500

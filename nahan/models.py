@@ -124,8 +124,9 @@ class Topic(db.Model):
     def extract_appends(self):
         if self.appends:
             append_id = list(map(int, self.appends.split(',')))
-            all_appends = [TopicAppend.query.filter_by(id=i).first() for i in append_id]
-            live_appends = list(filter(lambda x: isinstance(x, TopicAppend) and not x.deleted, all_appends))
+            all_appends = [TopicAppend.query.filter_by(id=i,
+                                                       deleted=False).first() for i in append_id]
+            live_appends = list(filter(lambda x: x, all_appends))
             return live_appends
         else:
             return []
@@ -133,8 +134,9 @@ class Topic(db.Model):
     def extract_comments(self):
         if self.comments:
             comment_id = list(map(int, self.comments.split(',')))
-            all_comments = [Comment.query.filter_by(id=i).first() for i in comment_id]
-            live_comments = list(filter(lambda x: isinstance(x, Comment) and not x.deleted, all_comments))
+            all_comments = [Comment.query.filter_by(id=i,
+                                                    deleted=False).first() for i in comment_id]
+            live_comments = list(filter(lambda x: x, all_comments))
             return live_comments
         else:
             return []

@@ -5,7 +5,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PROJECT VERSION\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2016-07-17 21:28+0800\n"
+"POT-Creation-Date: 2016-07-18 10:50+0800\n"
 "PO-Revision-Date: 2016-07-03 11:01+0800\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language: zh_Hans_CN\n"
@@ -16,67 +16,67 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Generated-By: Babel 2.3.4\n"
 
-#: util.py:78
+#: util.py:80
 msgid "year"
 msgstr "年"
 
-#: util.py:78
+#: util.py:80
 msgid "years"
 msgstr "年"
 
-#: util.py:79
+#: util.py:81
 msgid "month"
 msgstr "月"
 
-#: util.py:79
+#: util.py:81
 msgid "months"
 msgstr "月"
 
-#: util.py:80
+#: util.py:82
 msgid "week"
 msgstr "周"
 
-#: util.py:80
+#: util.py:82
 msgid "weeks"
 msgstr "周"
 
-#: util.py:81
+#: util.py:83
 msgid "day"
 msgstr "天"
 
-#: util.py:81
+#: util.py:83
 msgid "days"
 msgstr "天"
 
-#: util.py:82
+#: util.py:84
 msgid "hour"
 msgstr "小时"
 
-#: util.py:82
+#: util.py:84
 msgid "hours"
 msgstr "小时"
 
-#: util.py:83
+#: util.py:85
 msgid "minute"
 msgstr "分钟"
 
-#: util.py:83
+#: util.py:85
 msgid "minutes"
 msgstr "分钟"
 
-#: util.py:84
+#: util.py:86
 msgid "second"
 msgstr "秒"
 
-#: util.py:84
+#: util.py:86
 msgid "seconds"
 msgstr "秒"
 
-#: util.py:89
+#: util.py:91
 msgid " ago"
 msgstr "前"
 
-#: util.py:91
+#: util.py:93
 msgid "just now"
 msgstr "刚刚"
 
@@ -88,9 +88,9 @@ msgstr "404 页面未找到"
 msgid "500 Internal Error"
 msgstr "500 内部错误"
 
-#: templates/base.html:10
-msgid "sitename"
-msgstr "站点名字"
+#: templates/base.html:10 templates/user/panel.html:25
+msgid "Speaker for children"
+msgstr "儿童代言人"
 
 #: templates/base.html:23
 msgid "bbs name"
@@ -179,7 +179,7 @@ msgstr "第 "
 
 #: templates/user/panel.html:15
 msgid "info"
-msgstr "信息"
+msgstr "主页"
 
 #: templates/user/panel.html:18
 msgid "settings"
@@ -188,10 +188,6 @@ msgstr "设置"
 #: templates/user/panel.html:21
 msgid "log out"
 msgstr "登出"
-
-#: templates/user/panel.html:25
-msgid "Speaker for children."
-msgstr "儿童代言人"
 
 #: templates/user/panel.html:27
 msgid " Do you ever SEE what children play."
@@ -223,7 +219,7 @@ msgstr "注册邮箱"
 
 #: templates/user/passwd_reset.html:22 templates/voice/append.html:52
 #: templates/voice/create.html:46 templates/voice/edit.html:51
-#: templates/voice/topic.html:126
+#: templates/voice/topic.html:129
 msgid "submit"
 msgstr "提交"
 
@@ -387,7 +383,7 @@ msgid "email"
 msgstr "邮箱"
 
 #: templates/user/signin.html:22 templates/voice/create.html:56
-#: templates/voice/topic.html:137
+#: templates/voice/topic.html:140
 msgid "sign in"
 msgstr "登录"
 
@@ -411,29 +407,30 @@ msgid "edit"
 msgstr "编辑"
 
 #: templates/voice/append.html:26 templates/voice/edit.html:26
-#: templates/voice/topic.html:26 templates/voice/topic.html:71
+#: templates/voice/topic.html:26 templates/voice/topic.html:42
+#: templates/voice/topic.html:74
 msgid "delete"
 msgstr "删除"
 
 #: templates/voice/append.html:46 templates/voice/create.html:27
 #: templates/voice/create.html:28 templates/voice/edit.html:43
-#: templates/voice/edit.html:44 templates/voice/topic.html:119
+#: templates/voice/edit.html:44 templates/voice/topic.html:122
 msgid "content"
 msgstr "内容"
 
 #: templates/voice/append.html:47 templates/voice/append.html:65
 #: templates/voice/edit.html:65 templates/voice/topic.html:40
 msgid "appendix"
-msgstr "追加"
+msgstr "次追加"
 
 #: templates/voice/append.html:50 templates/voice/create.html:43
-#: templates/voice/edit.html:48 templates/voice/topic.html:124
+#: templates/voice/edit.html:48 templates/voice/topic.html:127
 msgid "preview"
 msgstr "预览"
 
 #: templates/voice/create.html:8
 msgid "home"
-msgstr "主页"
+msgstr "呐喊"
 
 #: templates/voice/create.html:9
 msgid "new topic"
@@ -472,16 +469,16 @@ msgstr "点击数"
 msgid "node navigation"
 msgstr "节点导航"
 
-#: templates/voice/topic.html:53 templates/voice/topic.html:76
-#: templates/voice/topic.html:105
+#: templates/voice/topic.html:56 templates/voice/topic.html:79
+#: templates/voice/topic.html:108
 msgid "reply"
 msgstr "回复"
 
-#: templates/voice/topic.html:55 templates/voice/topic.html:96
+#: templates/voice/topic.html:58 templates/voice/topic.html:99
 msgid "no replies yet"
 msgstr "目前没有回复"
 
-#: templates/voice/topic.html:135
+#: templates/voice/topic.html:138
 msgid "please sign in before reply"
 msgstr "登录后才可以回复"
 
@@ -557,22 +554,26 @@ msgstr "文件太大或者不是图片文件"
 msgid "Comment cannot be empty or too large"
 msgstr "评论为空或者太长"
 
-#: voice/views.py:169 voice/views.py:204
+#: voice/views.py:169 voice/views.py:199
 msgid "content cannot be empty"
 msgstr "内容不能为空"
 
-#: voice/views.py:251
+#: voice/views.py:248
 msgid "Node view"
 msgstr "节点导航"
 
-#: voice/views.py:252
-msgid "This node's Topics"
-msgstr "节点下的话题"
+#: voice/views.py:249
+msgid "Node "
+msgstr "节点 "
 
-#: voice/views.py:290
+#: voice/views.py:249
+msgid "'s topics"
+msgstr " 下的话题"
+
+#: voice/views.py:288
 msgid " -search result"
 msgstr "-搜索结果"
 
-#: voice/views.py:292
+#: voice/views.py:290
 msgid "'s search result"
 msgstr "的搜索结果"

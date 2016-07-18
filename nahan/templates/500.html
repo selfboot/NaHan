@@ -3,10 +3,7 @@
 {{ _('500 Internal Error') }}
 {% endblock %}
 {% block inside_row %}
-<div class="panel panel-default col-md-6 col-md-offset-3">
-    <div class="text-center alert alert-danger" style="margin-top:10px;">
-    <p>Internal Error Detected</p>
-    </div>
-    <a href="{{ url_for('voice.index') }}" class="btn btn-block btn-info" style="margin-bottom:10px;">_('Go back')</a>
+<div class="panel panel-default col-md-6 col-md-offset-3 text-center alert alert-danger">
+    <p> {{ _('Internal Error Detected') }} </p>
 </div>
 {% endblock %}

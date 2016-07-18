@@ -38,7 +38,10 @@
 		<div class="list-group-item list-appendix-item">
 			<p class="appendix-meta">
                 {{ _('The ')}}{{ loop.index }} {{ _('appendix') }} {{ a.time_created | natural_time }}
-			</p>
+            {% if current_user.is_superuser %}
+            <a class="label-danger label delete" href="{{ url_for('voice.append_delete', aid=a.id)}}">{{ _('delete') }}</a>
+            {% endif %}
+            </p>
 			{{a.content_rendered | safe}}
 		</div>
 		{% endfor %}
@@ -68,7 +71,7 @@
                                 <a href="{{ url_for('user.info', uid=c.user_id) }}">{{c.user().username}}</a>
                                 <span class="list-time">{{c.time_created | natural_time}}</span>
                                 {% if current_user.is_superuser %}
-                                <a class="delete" href="{{ url_for('voice.comment_delete', cid=c.id)}}">{{ _('delete') }}</a>
+                                <a class="label-danger label delete" href="{{ url_for('voice.comment_delete', cid=c.id)}}">{{ _('delete') }}</a>
                                 {% endif %}
                             </div>
                             <div class="col-sm-2">

@@ -71,7 +71,9 @@ def natural_time(dt):
     if the value is more than a day old.
     """
     now = datetime.now()
-    # Here sometimes now may be small than dt in a weird way, so set to zero if it happens.
+    # print "-->", now   2016-07-18 09:27:25.840414
+    # print "---", dt    2016-07-18 09:27:26
+    # The dt is truncated to seconds when saved in mysql.  So sometimes now may be small than dt.
     diff = now - dt if now >= dt else now-now
 
     periods = (

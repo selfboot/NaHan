@@ -293,9 +293,27 @@ def notify():
         current_user.unread_notify = ""
         db.session.commit()
 
-        return render_template('user/notify.html', old=old, new=new)
+        return render_template('user/notify.html',
+                               title=gettext('Notify'),
+                               old=old, new=new)
     else:
         abort(404)
+
+
+@user.app_errorhandler(404)
+def voice_404(err):
+    return render_template('404.html'), 404
+
+
+@user.app_errorhandler(403)
+def voice_403(err):
+    return render_template('403.html'), 403
+
+
+@user.app_errorhandler(500)
+def voice_500(err):
+    return render_template('500.html'), 500
+
 
 # urlpatterns = patterns(
 #     url(r'^super/$', 'super_login', name='super_login'),
