@@ -32,4 +32,6 @@ def create_app(config_name):
     app.register_blueprint(user_blueprint, url_prefix='/user')
     from .voice import voice as voice_blueprint
     app.register_blueprint(voice_blueprint)
+    from .brother import brother as brother_blueprint
+    app.register_blueprint(brother_blueprint)
     return app

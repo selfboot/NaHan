@@ -313,8 +313,3 @@ def voice_403(err):
 @user.app_errorhandler(500)
 def voice_500(err):
     return render_template('500.html'), 500
-
-
-# urlpatterns = patterns(
-#     url(r'^super/$', 'super_login', name='super_login'),
-# )

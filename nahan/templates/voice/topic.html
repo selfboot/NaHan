@@ -137,7 +137,7 @@
 		<div class="alert alert-info">
 			{{ _('please sign in before reply') }}
 		</div>
-		<a href="{{ url_for('user.signin') }}" class="btn btn-info">{{ _('sign in') }}</a>
+		<a href="{{ url_for('user.signin', next=request.url) }}" class="btn btn-info">{{ _('sign in') }}</a>
 		{% endif %}
 	</div>
 

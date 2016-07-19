@@ -13,7 +13,6 @@
         <!-- Bootstrap -->
         <link href="{{ url_for('static', filename='css/bootstrap.min.css') }}" rel="stylesheet">
         <link href="{{ url_for('static', filename='css/base.css') }}" rel="stylesheet">
-        <link href="{{ url_for('static', filename='css/codehilite.css') }}" rel="stylesheet">
 
     </head>
     <body>
@@ -24,10 +23,9 @@
                 </div>
 
                 <div class="navbar-collapse collapse">
-
                     <ul class="nav navbar-nav">
-                        <li class=""><a href="{{ url_for('voice.hot') }}">{{ _('hottest post') }}</a></li>
-                         <li class=""><a href="{{ url_for('voice.all_nodes') }}">{{ _('all nodes') }}</a></li>
+                        <li><a href="{{ url_for('voice.hot') }}">{{ _('hottest post') }}</a></li>
+                        <li><a href="{{ url_for('voice.all_nodes') }}">{{ _('all nodes') }}</a></li>
                     </ul>
 
                     {% if current_user.is_authenticated %}

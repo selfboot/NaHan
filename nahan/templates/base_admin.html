@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    {% block header_ext%}
+    {% endblock %}
+    <title>{% if title %}{{ title }}{% endif %}-{{ _('admin') }}-{{ _("sitename") }}</title>
+
+    <!-- Core CSS - Include with every page -->
+    <link href="{{ url_for('static', filename='css/bootstrap.min.css') }}" rel="stylesheet">
+    <link href="{{ url_for('static', filename='css/base.css') }}" rel="stylesheet">
+    <link href="{{ url_for('static', filename='css/jquery.dataTables.min.css') }}" rel="stylesheet">
+
+</head>
+
+<body>
+    <nav class="navbar navbar-default navbar-fixed-top">
+        <div class="container">
+            <div class="navbar-collapse collapse">
+                <ul class="nav navbar-nav">
+                    <li> <a href="{{ url_for('brother.user_manage') }}" >{{ _('user management') }}</a></li>
+                    <li> <a href="{{ url_for('brother.node_manage') }}" >{{ _('node management') }}</a></li>
+                    <li> <a href="{{ url_for('brother.topic_manage')}}" >{{ _('topic management') }}</a></li>
+                </ul>
+                <div class="navbar-form navbar-right">
+                    <a class="btn btn-info" id="new-btn" href="{{url_for('brother.signout')}}">
+                        {{ _('log out') }}
+                    </a>
+                </div>
+            </div>
+        </div><!--end nav container-->
+    </nav><!--end nav-->
+
+    <div id="wrap">
+        <div class="container" id="main">
+            {% block main %}
+            {% endblock %}
+        </div><!--end main-->
+    </div><!--end wrap-->
+    <!-- Core Scripts - Include with every page -->
+    <script src="{{ url_for('static', filename='js/jquery.min.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/bootstrap.min.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/jquery.dataTables.min.js') }}"></script>
+    {% block footer_ext %}{% endblock %}
+</body>
+
+</html>
