@@ -21,7 +21,7 @@ def index():
     per_page = current_app.config['PER_PAGE']
     page = int(request.args.get('page', 1))
     offset = (page-1)*per_page
-    topics_all = Topic.query.filter_by(deleted=False).order_by(Topic.time_created).all()[:-120:-1]
+    topics_all = list(filter(lambda t: not t.deleted, Topic.query.all()))
     topics = topics_all[offset:offset+per_page]
     pagination = Pagination(page=page, total=len(topics_all),
                             per_page=per_page,
@@ -44,7 +44,9 @@ def hot():
     per_page = current_app.config['PER_PAGE']
     page = int(request.args.get('page', 1))
     offset = (page-1)*per_page
-    topics_all = Topic.query.filter_by(deleted=False).order_by(Topic.reply_count, Topic.click).all()[:-120:-1]
+    topics_all = list(filter(lambda t: not t.deleted, Topic.query.all()))
+    topics_all.sort(key=lambda t: (t.reply_count, t.click), reverse=True)
+    topics_all = topics_all[:120]
     topics = topics_all[offset:offset+per_page]
     pagination = Pagination(page=page, total=len(topics_all),
                             per_page=per_page,
@@ -61,7 +63,9 @@ def hot():
 @voice.route("/voice/view/<int:tid>", methods=['GET', 'POST'])
 def view(tid):
     per_page = current_app.config['PER_PAGE']
-    topic = Topic.query.filter_by(id=tid, deleted=False).first_or_404()
+    topic = Topic.query.filter_by(id=tid).first_or_404()
+    if topic.deleted:
+        abort(404)
     live_comments_all = topic.extract_comments()
     page = int(request.args.get('page', 1))
     offset = (page-1)*per_page
@@ -133,15 +137,18 @@ def view(tid):
 @voice.route("/voice/create", methods=['GET', 'POST'])
 @login_required
 def create():
-    # Add the topic to a specified node.
+    """ Add the topic to a specified node.
+
+    Create a topic object, and update the user's topic list, the node's topic list at the same time.
+    """
     if request.method == 'GET':
         return render_template('voice/create.html',
                                title=gettext('Create Topic'),
-                               nodes=Node.query.all())
+                               nodes=Node.query.filter_by(deleted=False).all())
     elif request.method == 'POST':
         title = request.form['title']
         content = request.form['content']
-        node_id = Node.get_id(request.form['node'])
+        node_id = int(request.form['node'])
         user_id = current_user.id
 
         new_topic = Topic(user_id, title, content, node_id)
@@ -153,6 +160,11 @@ def create():
         # Generate notify from the topic content.
         add_notify_in_content(new_topic.content, current_user.id, topic_id)
 
+        # Update the user's and node's topics
+        current_user.add_topic(topic_id)
+        Node.query.filter_by(id=node_id).first().add_topic(topic_id)
+        db.session.commit()
+
         return redirect(url_for('voice.view', tid=topic_id))
     else:
         abort(404)
@@ -161,8 +173,10 @@ def create():
 @voice.route("/voice/append/<int:tid>", methods=['GET', 'POST'])
 @login_required
 def appendix(tid):
-    topic = Topic.query.filter_by(id=tid, deleted=False).first_or_404()
-    if current_user.id != topic.user().id and (not current_user.is_superuser):
+    topic = Topic.query.filter_by(id=tid).first_or_404()
+    if topic.deleted:
+        abort(404)
+    if current_user.id != topic.user().id:
         abort(403)
 
     if request.method == 'GET':
@@ -193,8 +207,10 @@ def appendix(tid):
 @voice.route("/voice/edit/<int:tid>", methods=['GET', 'POST'])
 @login_required
 def edit(tid):
-    topic = Topic.query.filter_by(id=tid, deleted=False).first_or_404()
-    if current_user.id != topic.user().id and (not current_user.is_superuser):
+    topic = Topic.query.filter_by(id=tid).first_or_404()
+    if topic.deleted:
+        abort(404)
+    if current_user.id != topic.user().id:
         abort(403)
     if request.method == 'GET':
         return render_template('voice/edit.html', topic=topic)
@@ -232,18 +248,20 @@ def previewer():
 def all_nodes():
     return render_template('voice/node_all.html',
                            title=gettext('All nodes'),
-                           nodes=Node.query.all())
+                           nodes=Node.query.filter_by(deleted=False).all())
 
 
 @voice.route("/node/view/<int:nid>")
 def node_view(nid):
-    n = Node.query.filter_by(id=nid).first_or_404()
+    n = Node.query.filter_by(id=nid, deleted=False).first_or_404()
     node_title = n.title
     per_page = current_app.config['PER_PAGE']
     page = int(request.args.get('page', 1))
     offset = (page-1)*per_page
-    topics_all = Topic.query.filter_by(deleted=False, node_id=nid).order_by(Topic.reply_count,
-                                                                            Topic.click).all()[:-120:-1]
+
+    topics_all = list(filter(lambda t: not t.deleted, Topic.query.filter_by(node_id=nid)))
+    topics_all.sort(key=lambda t: (t.reply_count, t.click), reverse=True)
+    topics_all = topics_all[:120]
     topics = topics_all[offset:offset+per_page]
     pagination = Pagination(page=page, total=len(topics_all),
                             per_page=per_page,
@@ -296,37 +314,6 @@ def search(keywords):
         topics=topics,
         post_list_title="%s%s" % (keywords, gettext("'s search result")),
         pagination=pagination)
-
-
-@voice.route("/voice/delete/<int:tid>")
-def delete(tid):
-    t = Topic.query.filter_by(id=tid, deleted=False).first_or_404()
-    t.deleted = True
-    db.session.commit()
-    # Delete all the comment and appendix in this topic.
-    map(lambda a: append_delete(a.id), t.extract_appends())
-    map(lambda c: comment_delete(c.id), t.extract_comments())
-    return redirect(url_for("voice.index"))
-
-
-@voice.route("/voice/delete_appendix/<int:aid>")
-def append_delete(aid):
-    ta = TopicAppend.query.filter_by(id=aid, deleted=False).first_or_404()
-    ta.deleted = True
-    db.session.commit()
-    return redirect(url_for("voice.view", tid=ta.topic_id))
-
-
-@voice.route("/comment/delete/<int:cid>")
-def comment_delete(cid):
-    c = Comment.query.filter_by(id=cid, deleted=False).first_or_404()
-    c.deleted = True
-
-    # Delete this comment in corresponding topic.  Just need to minus the reply count.
-    t = Topic.query.filter_by(id=c.topic_id).first()
-    t.reply_count -= 1
-    db.session.commit()
-    return redirect(url_for("voice.view", tid=c.topic_id))
 
 
 @voice.app_errorhandler(404)

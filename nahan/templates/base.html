@@ -7,7 +7,7 @@
         {% block header_ext%}
         {% endblock %}
         <title>
-            {% block title %}{{title}}-{{_('Speaker for children')}}{% endblock %}
+            {% block title %}{% if title %}{{ title }}{% endif %}-{{_('Speaker for children')}}{% endblock %}
         </title>
 
         <!-- Bootstrap -->
@@ -36,16 +36,18 @@
                     </div>
                     {% else %}
                     <div class="navbar-form navbar-right">
-                        <div class="dropdown">
+                        <ul class="nav navbar-nav">
+                        <li class="dropdown">
                           <button type="button" class="btn btn-info btn-primary dropdown-toggle" data-toggle="dropdown">
                             {{ _('sign in?') }}  <b class="caret"></b>
                           </button>
-                          <ul class="dropdown-menu">
-                            <li><a class="dropdown-item" href="{{ url_for('user.signin') }}">{{ _('sign in?') }} </a></li>
-                            <li><a class="dropdown-item" href="{{ url_for('user.reg') }}">{{_('register a account') }}?</a></li>
-                            <li><a class="dropdown-item" href="{{ url_for('user.password_reset_request') }}">{{ _('forget password?') }}</a></li>
-                          </ul>
-                        </div>
+                            <ul class="dropdown-menu">
+                            <li><a href="{{ url_for('user.signin') }}">{{ _('sign in?') }} </a></li>
+                            <li><a href="{{ url_for('user.reg') }}">{{_('register a account') }}?</a></li>
+                            <li><a href="{{ url_for('user.password_reset_request') }}">{{ _('forget password?') }}</a></li>
+                            </ul>
+                        </li>
+                        </ul>
                     </div>
                     {% endif %}
 

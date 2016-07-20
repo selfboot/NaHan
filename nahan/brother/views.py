@@ -7,6 +7,7 @@ from flask import render_template, redirect, request, url_for, abort, current_ap
 from flask_login import login_user, logout_user, current_user
 from flask_babel import gettext
 from functools import wraps
+from ..util import natural_time
 from ..models import User, Topic, Node, Comment, TopicAppend
 from . import brother
 from .. import db
@@ -26,14 +27,14 @@ def superuser_login(func):
 def auth():
     if request.method == 'GET':
         if current_user.is_authenticated and current_user.is_superuser:
-            return redirect(request.args.get('next') or url_for('brother.user_manage'))
+            return redirect(request.args.get('next') or url_for('brother.user_manage', classify="normal"))
         return render_template("brother/auth.html", form=None)
     elif request.method == 'POST':
         _form = request.form
         u = User.query.filter_by(email=_form['email']).first()
         if u and u.verify_password(_form['password']) and u.is_superuser:
             login_user(u)
-            return redirect(request.args.get('next') or url_for('brother.user_manage'))
+            return redirect(request.args.get('next') or url_for('brother.user_manage', classify="normal"))
         else:
             message = gettext('Invalid username or password.')
             return render_template('brother/auth.html', form=_form, message=message)
@@ -46,10 +47,46 @@ def signout():
     return redirect(url_for('brother.auth'))
 
 
-@brother.route("/admin/topics/")
+@brother.route("/admin/topics/<string:classify>")
 @superuser_login
-def topic_manage():
-    return render_template('brother/topic.html', title=gettext('topics'))
+def topic_manage(classify):
+    if request.method == 'GET':
+        if classify == 'normal':
+            return render_template('brother/topic.html', title=gettext('normal topics'))
+        elif classify == 'deleted':
+            return render_template('brother/topic_deleted.html', title=gettext('deleted topics'))
+        else:
+            abort(404)
+    else:
+        abort(404)
+
+
+@brother.route("/admin/nodes/<string:classify>")
+@superuser_login
+def node_manage(classify):
+    if request.method == 'GET':
+        if classify == 'normal':
+            return render_template('brother/node.html', title=gettext('normal nodes'))
+        elif classify == 'deleted':
+            return render_template('brother/node_deleted.html', title=gettext('deleted nodes'))
+        else:
+            abort(404)
+    else:
+        abort(404)
+
+
+@brother.route("/admin/users/<string:classify>")
+@superuser_login
+def user_manage(classify):
+    if request.method == 'GET':
+        if classify == 'normal':
+            return render_template('brother/user.html', title=gettext('normal users'))
+        elif classify == 'deleted':
+            return render_template('brother/user_deleted.html', title=gettext('blacklist users'))
+        else:
+            abort(404)
+    else:
+        abort(404)
 
 
 @brother.route("/admin/topic/<int:tid>/")
@@ -58,45 +95,16 @@ def topic_more(tid):
     return "edit %d" % tid
 
 
-@brother.route("/admin/topics/delete/")
+@brother.route("/admin/node/<int:nid>/")
 @superuser_login
-def topic_bulk_delete():
-    ids = request.args.get('ids')
-    ids = ids.split(',')
-    for i in ids:
-        delete(i)
-    return "Deleted"
+def node_more(nid):
+    return "edit %d" % nid
 
 
-@brother.route("/voice/delete/<int:tid>")
-def delete(tid):
-    t = Topic.query.filter_by(id=tid, deleted=False).first_or_404()
-    t.deleted = True
-    db.session.commit()
-    # Delete all the comment and appendix in this topic.
-    map(lambda a: append_delete(a.id), t.extract_appends())
-    map(lambda c: comment_delete(c.id), t.extract_comments())
-    return redirect(url_for("voice.index"))
-
-
-@brother.route("/voice/delete_appendix/<int:aid>")
-def append_delete(aid):
-    ta = TopicAppend.query.filter_by(id=aid, deleted=False).first_or_404()
-    ta.deleted = True
-    db.session.commit()
-    return redirect(url_for("voice.view", tid=ta.topic_id))
-
-
-@brother.route("/comment/delete/<int:cid>")
-def comment_delete(cid):
-    c = Comment.query.filter_by(id=cid, deleted=False).first_or_404()
-    c.deleted = True
-
-    # Delete this comment in corresponding topic.  Just need to minus the reply count.
-    t = Topic.query.filter_by(id=c.topic_id).first()
-    t.reply_count -= 1
-    db.session.commit()
-    return redirect(url_for("voice.view", tid=c.topic_id))
+@brother.route("/admin/user/<int:uid>/")
+@superuser_login
+def user_more(uid):
+    return "edit %d" % uid
 
 
 @brother.route("/admin/topics/list/")
@@ -139,13 +147,185 @@ def topic_table_list():
     return jsonify(**data)
 
 
-@brother.route("/admin/nodes/")
+@brother.route("/admin/nodes/list/")
 @superuser_login
-def node_manage():
-    return render_template('brother/node.html', title=gettext('node'))
+def node_table_list():
+    fields = ['id', 'title', 'description']
+    order_dir = request.args.get('sSortDir_0')
+    order_field = int(request.args.get('iSortCol_0'))
+    length = int(request.args.get('iDisplayLength', 10))
+    start = int(request.args.get('iDisplayStart', 0))
+
+    nodes = Node.query.filter_by(deleted=False).all()
+    # Filter the users according to the keywords.
+    key = request.args.get('sSearch')
+    if key:
+        nodes = list(filter(lambda x: (key == str(x.id) or key in x.title or
+                                       key in x.description), nodes))
+
+    # Sort the data according to specified columns.
+    nodes.sort(key=lambda x: getattr(x, fields[order_field]), reverse=False if order_dir == 'asc' else True)
+
+    # Put data together to response.
+    data = dict()
+    data['aaData'] = []
+    data['iTotalDisplayRecords'] = len(nodes)
+    nodes = nodes[start:start + length]
+    data['iTotalRecords'] = User.query.count()
+    for n in nodes:
+        info_list = [n.id, n.title, n.description]
+        info_list.append('<a href="%s" class="label label-success">%s</a>' %
+                         (url_for('brother.node_more', nid=n.id), gettext('more')))
+        data['aaData'].append(info_list)
+
+    return jsonify(**data)
 
 
-@brother.route("/admin/users/")
+@brother.route("/admin/users/list/<string:boolean>")
 @superuser_login
-def user_manage():
-    return render_template('brother/user.html', title=gettext('user'))
+def user_table_list(boolean):
+    deleted = True if boolean == "True" else False
+    fields = ['id', 'username', 'email', 'last_login', 'is_superuser']
+    order_dir = request.args.get('sSortDir_0')
+    order_field = int(request.args.get('iSortCol_0'))
+    length = int(request.args.get('iDisplayLength', 10))
+    start = int(request.args.get('iDisplayStart', 0))
+
+    users = User.query.filter_by(deleted=deleted).all()
+    # Filter the users according to the keywords.
+    key = request.args.get('sSearch')
+    if key:
+        users = list(filter(lambda x: (key == str(x.id) or key in x.username or
+                                       key in x.email or key in x.last_login), users))
+
+    # Sort the data according to specified columns.
+    users.sort(key=lambda x: getattr(x, fields[order_field]), reverse=False if order_dir == 'asc' else True)
+
+    # Put data together to response.
+    data = dict()
+    data['aaData'] = []
+    data['iTotalDisplayRecords'] = len(users)
+    users = users[start:start + length]
+    data['iTotalRecords'] = User.query.count()
+    for u in users:
+        info_list = [u.id, u.username, u.email, natural_time(u.last_login),
+                     gettext('Yes') if u.is_superuser else gettext('No')]
+        info_list.append('<a href="%s" class="label label-success">%s</a>' %
+                         (url_for('brother.user_more', uid=u.id), gettext('more')))
+        data['aaData'].append(info_list)
+
+    return jsonify(**data)
+
+
+@brother.route("/admin/topics/delete/")
+@superuser_login
+def topic_bulk_delete():
+    ids = request.args.get('ids')
+    ids = ids.split(',')
+    for i in ids:
+        delete(i)
+    return "Done"
+
+
+@brother.route("/admin/nodes/delete/")
+@superuser_login
+def node_bulk_delete():
+    ids = request.args.get('ids')
+    ids = ids.split(',')
+    for i in ids:
+        node_delete(i)
+    return "Done"
+
+
+@brother.route("/admin/users/process/<string:status>")
+@superuser_login
+def user_bulk_process(status):
+    user_status = True if status == 'active' else False
+    ids = request.args.get('ids')
+    ids = ids.split(',')
+    for i in ids:
+        user_process(i, status=user_status)
+    return "Done"
+
+
+@brother.route("/admin/delete_topic/<int:tid>")
+@superuser_login
+def delete(tid):
+    t = Topic.query.filter_by(id=tid, deleted=False).first_or_404()
+    t.deleted = True
+    db.session.commit()
+    # Delete all the comment and appendix in this topic.
+    map(lambda a: append_delete(a.id), t.extract_appends())
+    map(lambda c: comment_delete(c.id), t.extract_comments())
+    return redirect(url_for("brother.topic_manage"))
+
+
+@brother.route("/admin/delete_appendix/<int:aid>")
+@superuser_login
+def append_delete(aid):
+    ta = TopicAppend.query.filter_by(id=aid, deleted=False).first_or_404()
+    ta.deleted = True
+    db.session.commit()
+    return redirect(url_for("brother.topic_more", tid=ta.topic_id))
+
+
+@brother.route("/admin/delete_comment/<int:cid>")
+@superuser_login
+def comment_delete(cid):
+    c = Comment.query.filter_by(id=cid, deleted=False).first_or_404()
+    c.deleted = True
+
+    # Delete this comment in corresponding topic.  Just need to minus the reply count.
+    t = Topic.query.filter_by(id=c.topic_id).first()
+    t.reply_count -= 1
+    db.session.commit()
+    return redirect(url_for("brother.topic_more", tid=c.topic_id))
+
+
+@brother.route("/admin/delete_node/<int:nid>")
+@superuser_login
+def node_delete(nid):
+    """ Delete the useless node by id. (Delete all the topics under this node.)
+    """
+    n = Node.query.filter_by(id=nid).first()
+    n.deleted = True
+    db.session.commit()
+    return redirect(url_for("brother.node_manage"))
+
+
+@brother.route("/admin/process_user/<int:uid>")
+@superuser_login
+def user_process(uid, status=False):
+    """ Move the user to blacklist or reactivate the blocked user.
+
+    Block the user if status == False, or reactivate the user.
+    Delete or add all the topics and comments the user has made at the same time
+    """
+    u = User.query.filter_by(id=uid).first()
+    if u.is_superuser or u.deleted:
+        return redirect(url_for("brother.user_manage"))
+
+    u.deleted = True
+
+    # Delete all the user's topics
+    if u.topics:
+        topic_list = list(map(int, u.topics.split(',')))
+        for t_id in topic_list:
+            t = Topic.query.filter_by(id=t_id).first()
+            t.deleted = True
+
+    # Delete all the user's comments
+    if u.comments:
+        comment_list = list(map(int, u.comments.split(',')))
+        for c_id in comment_list:
+            c = Comment.query.filter_by(id=c_id).first()
+            c.deleted = True
+
+    db.session.commit()
+    return redirect(url_for("brother.user_manage"))
+
+
+@brother.route("/admin/node/create/")
+@superuser_login
+def node_create():
+    return "Create"

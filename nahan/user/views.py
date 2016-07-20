@@ -9,6 +9,7 @@ from flask_babel import gettext
 from flask_paginate import Pagination
 import re
 from PIL import Image
+from datetime import datetime
 from . import user
 from ..models import User, Topic
 from ..email import send_email
@@ -23,17 +24,21 @@ email_address = re.compile(r'[a-zA-z0-9]+\@[a-zA-Z0-9]+\.+[a-zA-Z]')
 def signin():
     if request.method == 'GET':
         if current_user.is_authenticated:
-            return redirect(url_for("voice.index"))
-        return render_template('user/signin.html', form=None)
+            return redirect(request.args.get('next') or url_for("voice.index"))
+        return render_template('user/signin.html',
+                               title=gettext('user sign in'),
+                               form=None)
     elif request.method == 'POST':
         _form = request.form
         u = User.query.filter_by(email=_form['email']).first()
         if u and u.verify_password(_form['password']):
             login_user(u)
+            u.last_login = datetime.now()
+            db.session.commit()
             return redirect(request.args.get('next') or url_for('voice.index'))
         else:
             message = gettext('Invalid username or password.')
-            return render_template('user/signin.html', form=_form, message=message)
+            return render_template('user/signin.html', title=gettext('user sign in'), form=_form, message=message)
 
 
 @user.route('/signout')
@@ -46,7 +51,9 @@ def signout():
 @user.route('/register', methods=['GET', 'POST'])
 def reg():
     if request.method == 'GET':
-        return render_template('user/reg.html', form=None)
+        return render_template('user/reg.html',
+                               title=gettext('register a account'),
+                               form=None)
     elif request.method == 'POST':
         _form = request.form
         username = _form['username']
@@ -79,6 +86,7 @@ def reg():
 
         if message_u or message_p or message_e:
             return render_template("user/reg.html", form=_form,
+                                   title=gettext('register a account'),
                                    message_u=message_u,
                                    message_p=message_p,
                                    message_e=message_e)
@@ -162,13 +170,14 @@ def password_reset(token):
 
 @user.route('/<int:uid>')
 def info(uid):
-    u = User.query.filter_by(id=uid).first_or_404()
+    u = User.query.filter_by(id=uid, deleted=False).first_or_404()
 
     per_page = current_app.config['PER_PAGE']
     page = int(request.args.get('page', 1))
     offset = (page-1)*per_page
-    topics_all = Topic.query.filter_by(deleted=False, user_id=uid).order_by(Topic.reply_count,
-                                                                            Topic.click).all()[:-120:-1]
+    topics_all = list(filter(lambda t: not t.deleted, Topic.query.filter_by(user_id=uid)))
+    topics_all.sort(key=lambda t: (t.reply_count, t.click), reverse=True)
+    topics_all = topics_all[:120]
     topics = topics_all[offset:offset+per_page]
     pagination = Pagination(page=page, total=len(topics_all),
                             per_page=per_page,

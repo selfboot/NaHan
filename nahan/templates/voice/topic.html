@@ -22,9 +22,7 @@
 					<a class="label-success label" href="{{ url_for('voice.appendix', tid = topic.id) }}">{{ _('topic appendix') }}</a>
                     <a class="label-warning label" href="{{ url_for('voice.edit', tid=topic.id) }}">{{ _('edit') }}</a>
 					{% endif %}
-					{% if current_user.is_superuser %}
-					<a class="label-danger label" href="{{ url_for('voice.delete', tid=topic.id) }}">{{ _('delete') }}</a>
-					{% endif %}
+
 				</p>
 			</div>
 		</div>
@@ -38,9 +36,7 @@
 		<div class="list-group-item list-appendix-item">
 			<p class="appendix-meta">
                 {{ _('The ')}}{{ loop.index }} {{ _('appendix') }} {{ a.time_created | natural_time }}
-            {% if current_user.is_superuser %}
-            <a class="label-danger label delete" href="{{ url_for('voice.append_delete', aid=a.id)}}">{{ _('delete') }}</a>
-            {% endif %}
+
             </p>
 			{{a.content_rendered | safe}}
 		</div>
@@ -70,9 +66,7 @@
                             <div class="reply-author col-sm-10">
                                 <a href="{{ url_for('user.info', uid=c.user_id) }}">{{c.user().username}}</a>
                                 <span class="list-time">{{c.time_created | natural_time}}</span>
-                                {% if current_user.is_superuser %}
-                                <a class="label-danger label delete" href="{{ url_for('voice.comment_delete', cid=c.id)}}">{{ _('delete') }}</a>
-                                {% endif %}
+
                             </div>
                             <div class="col-sm-2">
                                 {% if current_user.is_authenticated %}

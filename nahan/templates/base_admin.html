@@ -21,9 +21,31 @@
         <div class="container">
             <div class="navbar-collapse collapse">
                 <ul class="nav navbar-nav">
-                    <li> <a href="{{ url_for('brother.user_manage') }}" >{{ _('user management') }}</a></li>
-                    <li> <a href="{{ url_for('brother.node_manage') }}" >{{ _('node management') }}</a></li>
-                    <li> <a href="{{ url_for('brother.topic_manage')}}" >{{ _('topic management') }}</a></li>
+
+                    <li class="dropdown">
+                    <a data-toggle="dropdown" class="dropdown-toggle">{{ _('user management')}}</a>
+                        <ul class="dropdown-menu">
+                            <li><a href="{{ url_for('brother.user_manage', classify='normal') }}"> {{ _('normal users') }} </a></li>
+                            <li><a href="{{ url_for('brother.user_manage', classify='deleted') }}"> {{ _('blacklist users') }}</a></li>
+                        </ul>
+                    </li>
+
+                    <li class="dropdown">
+                    <a data-toggle="dropdown" class="dropdown-toggle">{{ _('topic management')}}</a>
+                        <ul class="dropdown-menu">
+                            <li><a href="{{ url_for('brother.topic_manage', classify='normal') }}"> {{ _('valid topics') }} </a></li>
+                            <li><a href="{{ url_for('brother.topic_manage', classify='deleted') }}"> {{ _('deleted topics') }}</a></li>
+                        </ul>
+                    </li>
+
+                    <li class="dropdown">
+                    <a data-toggle="dropdown" class="dropdown-toggle"}}>{{ _('node management')}}</a>
+                        <ul class="dropdown-menu">
+                            <li><a href="{{ url_for('brother.node_manage', classify='normal') }}"> {{ _('normal nodes') }} </a></li>
+                            <li><a href="{{ url_for('brother.node_manage', classify='deleted') }}"> {{ _('deleted nodes') }}</a></li>
+                            <li><a href="{{ url_for('brother.node_create') }}"> {{ _('new nodes') }}</a></li>
+                        </ul>
+                    </li>
                 </ul>
                 <div class="navbar-form navbar-right">
                     <a class="btn btn-info" id="new-btn" href="{{url_for('brother.signout')}}">

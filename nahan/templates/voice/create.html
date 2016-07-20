@@ -32,7 +32,7 @@
                     <label>{{ _('node') }}</label>
                     <select class="form-control" id="node" name="node">
                         {% for opt in nodes%}
-                            <option> {{ opt }}</option>
+                            <option value="{{opt.id}}"> {{ opt.title }}</option>
                         {% endfor%}
                     </select>
                 </div>

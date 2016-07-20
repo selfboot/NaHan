@@ -21,6 +21,7 @@ class User(UserMixin, db.Model):
 
     is_superuser = db.Column(db.Boolean, default=False)
     is_password_reset_link_valid = db.Column(db.Boolean, default=True)
+    deleted = db.Column(db.Boolean, default=False)
 
     website = db.Column(db.String(64), nullable=True)
     avatar_url = db.Column(db.String(64), default="http://www.gravatar.com/avatar/")
@@ -84,6 +85,18 @@ class User(UserMixin, db.Model):
         else:
             return []
 
+    def add_topic(self, tid):
+        if self.topics:
+            self.topics += ",%d" % tid
+        else:
+            self.topics = "%d" % tid
+
+    def add_comment(self, cid):
+        if self.comments:
+            self.comments += ",%d" % cid
+        else:
+            self.comments = "%d" % cid
+
 
 @login_manager.user_loader
 def load_user(user_id):
@@ -109,9 +122,13 @@ class Topic(db.Model):
     click = db.Column(db.Integer, default=0)
     reply_count = db.Column(db.Integer, default=0)
 
-    deleted = db.Column(db.Boolean(), default=False)
-    time_created = db.Column(db.DateTime(), default=datetime.utcnow)
-    last_replied = db.Column(db.DateTime(), default=datetime.utcnow)
+    # Topic can be deleted by three situations.
+    topic_deleted = db.Column(db.Boolean(), default=False)
+    node_deleted = db.Column(db.Boolean(), default=False)
+    user_deleted = db.Column(db.Boolean(), default=False)
+
+    time_created = db.Column(db.DateTime(), default=datetime.now)
+    last_replied = db.Column(db.DateTime())
 
     # User create a topic at topic_id which belong to the node.
     user_id = db.Column(db.Integer)
@@ -121,12 +138,15 @@ class Topic(db.Model):
     appends = db.Column(db.Text(), default="")
     comments = db.Column(db.Text(), default="")
 
+    @property
+    def deleted(self):
+        return self.topic_deleted or self.node_deleted or self.user_deleted
+
     def extract_appends(self):
         if self.appends:
             append_id = list(map(int, self.appends.split(',')))
-            all_appends = [TopicAppend.query.filter_by(id=i,
-                                                       deleted=False).first() for i in append_id]
-            live_appends = list(filter(lambda x: x, all_appends))
+            all_appends = [TopicAppend.query.filter_by(id=i).first() for i in append_id]
+            live_appends = list(filter(lambda x: x and not x.deleted, all_appends))
             return live_appends
         else:
             return []
@@ -134,9 +154,8 @@ class Topic(db.Model):
     def extract_comments(self):
         if self.comments:
             comment_id = list(map(int, self.comments.split(',')))
-            all_comments = [Comment.query.filter_by(id=i,
-                                                    deleted=False).first() for i in comment_id]
-            live_comments = list(filter(lambda x: x, all_comments))
+            all_comments = [Comment.query.filter_by(id=i).first() for i in comment_id]
+            live_comments = list(filter(lambda x: x and not x.deleted, all_comments))
             return live_comments
         else:
             return []
@@ -176,8 +195,15 @@ class TopicAppend(db.Model):
     time_created = db.Column(db.DateTime(), default=datetime.utcnow)
     content = db.Column(db.Text())
     content_rendered = db.Column(db.Text())
-    deleted = db.Column(db.Boolean(), default=False)
     topic_id = db.Column(db.Integer)
+
+    # Topic append can be deleted by two situations.
+    topic_deleted = db.Column(db.Boolean(), default=False)
+    append_deleted = db.Column(db.Boolean(), default=False)
+
+    @property
+    def deleted(self):
+        return self.topic_deleted or self.append_deleted
 
 
 class Comment(db.Model):
@@ -201,6 +227,14 @@ class Comment(db.Model):
     user_id = db.Column(db.Integer)
     topic_id = db.Column(db.Integer)
 
+    # Comment can be deleted by two situations.
+    topic_deleted = db.Column(db.Boolean(), default=False)
+    comment_deleted = db.Column(db.Boolean(), default=False)
+
+    @property
+    def deleted(self):
+        return self.topic_deleted or self.comment_deleted
+
     def user(self):
         return User.query.filter_by(id=self.user_id).first()
 
@@ -211,16 +245,18 @@ class Node(db.Model):
 
     title = db.Column(db.String(64))
     description = db.Column(db.Text())
-
-    # Keep all the topics the node have.
+    deleted = db.Column(db.Boolean(), default=False)
+    # Keep all the topics id the node have.
     topics = db.Column(db.Text(), default="")
 
     def __unicode__(self):
         return self.title
 
-    @classmethod
-    def get_id(cls, node_name):
-        return Node.query.filter_by(title=node_name).first().id
+    def add_topic(self, tid):
+        if self.topics:
+            self.topics += ",%d" % tid
+        else:
+            self.topics = "%d" % tid
 
 
 class Notify(db.Model):
@@ -234,16 +270,23 @@ class Notify(db.Model):
     __tablename__ = "notify"
     id = db.Column(db.Integer, primary_key=True)
 
-    # Deprecated, because we can use two set in user to mark whether a notify is read or not.
-    # is_read = db.Column(db.Boolean(), default=False)
-    time_created = db.Column(db.DateTime(), default=datetime.utcnow)
+    time_created = db.Column(db.DateTime(), default=datetime.now())
 
-    # User can at somebody at topic, appendix and reply.
+    # User can @somebody at topic, appendix and reply.
     sender_id = db.Column(db.Integer)
     receiver_id = db.Column(db.Integer)
-
     comment_id = db.Column(db.Integer, nullable=True)
     topic_id = db.Column(db.Integer, nullable=True)
+
+    # Comment can be deleted by two situations.
+    sender_deleted = db.Column(db.Boolean(), default=False)
+    receiver_deleted = db.Column(db.Boolean(), default=False)
+    topic_deleted = db.Column(db.Boolean(), default=False)
+    comment_deleted = db.Column(db.Boolean(), default=False)
+
+    @property
+    def deleted(self):
+        return self.sender_deleted or self.receiver_id or self.topic_deleted or self.comment_deleted
 
     # Need to get more info about this notify:
     # sender_name, topic_title and so on.
