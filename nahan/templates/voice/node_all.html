@@ -4,23 +4,23 @@
 {% endblock %}
 
 {% block right %}
-<div class="panel panel-default">
-    <div class="panel-heading">
-        <h3 class="panel-title">{{ _('node navigation') }}</h3>
+<div class="row">
+    {% if nodes %}
+    {% for node in nodes %}
+    <div class="col-md-3">
+      <a class="thumbnail" href="{{ url_for ('voice.node_view', nid = node.id) }}">
+      <div class="caption">
+        <p class="text-center"><strong>{{ node.title }}</strong></p>
+        <p>{{ node.description }}</p>
+      </div>
+      </a>
     </div>
-    <div class="panel-body">
-        <div class="col-md-1"></div>
-        <div class="col-md-10">
-            {% for node in nodes %}
-            <span class="label label-default" style="margin-right:2em">
-            <a href="{{ url_for ('voice.node_view', nid = node.id) }}">{{ node.title }}</a>
-            </span>
-            {% endfor %}
-        </div>
-        <div class="col-md-1"></div>
-    </div>
-</div>
-{% endblock %}
+    {% endfor %}
 
-{% block footer_ext %}
+    {% else %}
+		<div class="alert alert-danger">
+			{{ _("Sorry, but we can't find any nodes yet.") }}
+		</div>
+    {% endif %}
+</div>
 {% endblock %}

@@ -73,7 +73,8 @@ class User(UserMixin, db.Model):
         if self.unread_notify:
             notify_id = list(map(int, self.unread_notify.split(',')))
             all_notify = [Notify.query.filter_by(id=i).first() for i in notify_id]
-            return all_notify
+            live_notify = list(filter(lambda n: not n.deleted, all_notify))
+            return live_notify
         else:
             return []
 
@@ -81,7 +82,8 @@ class User(UserMixin, db.Model):
         if self.read_notify:
             notify_id = list(map(int, self.read_notify.split(',')))
             all_notify = [Notify.query.filter_by(id=i).first() for i in notify_id]
-            return all_notify
+            live_notify = list(filter(lambda n: not n.deleted, all_notify))
+            return live_notify
         else:
             return []
 
@@ -240,6 +242,10 @@ class Comment(db.Model):
 
 
 class Node(db.Model):
+    def __init__(self, title, description):
+        self.title = title
+        self.description = description
+
     __tablename__ = "node"
     id = db.Column(db.Integer, primary_key=True)
 
@@ -257,6 +263,16 @@ class Node(db.Model):
             self.topics += ",%d" % tid
         else:
             self.topics = "%d" % tid
+
+    def extract_topics(self):
+        if self.topics and self.topics != " ":
+            topics_id = list(map(int, self.topics.split(',')))
+            all_topics = [Topic.query.filter_by(id=i).first() for i in topics_id]
+            # live_topics = list(filter(lambda x: x and not x.deleted, all_topics))
+            # return live_topics
+            return all_topics
+        else:
+            return []
 
 
 class Notify(db.Model):
@@ -286,7 +302,7 @@ class Notify(db.Model):
 
     @property
     def deleted(self):
-        return self.sender_deleted or self.receiver_id or self.topic_deleted or self.comment_deleted
+        return self.sender_deleted or self.receiver_deleted or self.topic_deleted or self.comment_deleted
 
     # Need to get more info about this notify:
     # sender_name, topic_title and so on.

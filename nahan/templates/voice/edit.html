@@ -22,9 +22,6 @@
 					<a class="label-success label" href="{{ url_for('voice.appendix', tid = topic.id) }}">{{ _('topic appendix') }}</a>
                     <a class="label-warning label" href="{{ url_for('voice.edit', tid=topic.id) }}">{{ _('edit') }}</a>
 					{% endif %}
-					{% if current_user.is_superuser %}
-					<a class="label-danger label" href="{{ url_for('voice.delete', tid=topic.id) }}">{{ _('delete') }}</a>
-					{% endif %}
 				</p>
 			</div>
 		</div>
@@ -71,9 +68,6 @@
 	{% endif %}
 </div>
 
-<div class="panel panel-default">
-
-</div><!--end reply panel-->
 {% endblock %}
 {% block footer_ext %}
 <script src="{{ url_for('static', filename='js/previewer.js') }}"></script>}

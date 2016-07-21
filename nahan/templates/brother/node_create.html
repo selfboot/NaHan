@@ -1,0 +1,39 @@
+{% extends 'base_admin.html' %}
+
+{% block main %}
+<div class="col-md-10 col-md-offset-1">
+    <div class="panel panel-default">
+    <div class="panel-heading title-breadcrumb">
+        <a href="{{ url_for('brother.node_manage', classify='normal') }}">{{ _('Node Management') }}</a>
+        <span>{{ _('New Node') }}</span>
+    </div>
+    <div class="panel-body">
+    	{% if message %}
+		<div class="messages">
+			<p class="text-danger">
+				{{ message }}
+			</p>
+		</div>
+		{% endif %}
+
+        <form class="form" action="{{ url_for('brother.node_create') }}" method="post">
+            <div class="form-group">
+                <label>{{ _('Title') }}</label>
+                <input placeholder="{{ _('Node Title') }}" type="text" class="form-control" id="title" name="title" />
+            </div>
+            <div class="form-group">
+                <label>{{ _('Description') }}</label>
+                <textarea placeholder="{{ _('Node Description') }}"  class="form-control" id="content" name="content"></textarea>
+            </div>
+
+            <div class="form-submit text-right">
+                <button class="btn btn-info" type="submit" id="submit">
+                    {{ _('submit') }}(Ctrl+Enter)
+                </button>
+            </div>
+        </form>
+    </div>
+    </div><!--end reply panel-->
+</div>
+
+{% endblock %}

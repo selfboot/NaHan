@@ -5,19 +5,18 @@
     <div class="col-md-10 col-md-offset-1">
         <div class="panel panel-default">
             <div class="panel-heading">
-                {{ _('Blacklist Users') }}
+                {{ _('Deleted topic') }}
             </div>
             <div class="panel-body">
                 <div class="table-responsive">
                     <table class="table table-default table-bordered display" cellspacing="0" id="blacklist">
                         <thead>
                             <tr>
-                                <th>Id</th>
-                                <th>{{ _('Username') }}</th>
-                                <th>{{ _('Email') }}</th>
-                                <th>{{ _('Last Login') }}</th>
-                                <th>{{ _('Is Superuser') }}</th>
-                                <th>{{ _('More') }}</th>
+                                <th>id</th>
+                                <th>{{ _('title') }}</th>
+                                <th>{{ _('username') }}</th>
+                                <th>{{ _("topic's node") }}</th>
+                                <th>{{ _('more') }}</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -25,7 +24,7 @@
                     </table>
                 </div>
                 <p></p>
-                <a class="btn btn-danger" id="bulk-add">{{ _('Active Selected User Again') }}</a>
+                <a class="btn btn-danger" id="bulk-add">{{ _('active selected topic again') }}</a>
             </div>
         </div>
     </div>
@@ -43,7 +42,7 @@ $(document).ready(
             bProcessing: true,
             bServerSide: true,
             bPaginate: true,
-            sAjaxSource: "{{ url_for('brother.user_table_list', boolean='True') }}",
+            sAjaxSource: "{{ url_for('brother.topic_table_list') }}",
             aoColumnDefs: [{ 'bSortable': false, 'aTargets': [ -1 ] }],
             sDom: "<'row'<'col-sm-4'l><'col-sm-8 text-right'f>r>" + "t" + "<'row'<'col-sm-6'i><'col-sm-6 text-right'p><'col-sm-0 text-right'T>>",
             oTableTools: {"sRowSelect": "multi",
@@ -55,7 +54,7 @@ $(document).ready(
 $(document).ready(function() {
     var table = $('#blacklist').DataTable();
 
-    $('#normal tbody').on( 'click', 'tr', function () {
+    $('#blacklist tbody').on( 'click', 'tr', function () {
         $(this).toggleClass('selected');
     } );
 } );
@@ -75,7 +74,7 @@ $(document).ready(
         function(){
             $('#bulk-add').click(
                 function(){
-                    $.get('{{ url_for("brother.user_bulk_process", status="active") }}', {'ids': selected_id()});
+                    $.get('{{ url_for("brother.topic_bulk_delete") }}', {'ids': selected_id()});
                     location.reload();
                 }
                 );

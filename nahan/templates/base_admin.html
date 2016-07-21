@@ -23,33 +23,33 @@
                 <ul class="nav navbar-nav">
 
                     <li class="dropdown">
-                    <a data-toggle="dropdown" class="dropdown-toggle">{{ _('user management')}}</a>
+                    <a data-toggle="dropdown" class="dropdown-toggle">{{ _('User Management')}}</a>
                         <ul class="dropdown-menu">
-                            <li><a href="{{ url_for('brother.user_manage', classify='normal') }}"> {{ _('normal users') }} </a></li>
-                            <li><a href="{{ url_for('brother.user_manage', classify='deleted') }}"> {{ _('blacklist users') }}</a></li>
+                            <li><a href="{{ url_for('brother.user_manage', classify='normal') }}"> {{ _('Normal User') }} </a></li>
+                            <li><a href="{{ url_for('brother.user_manage', classify='deleted') }}"> {{ _('Blacklist User') }}</a></li>
                         </ul>
                     </li>
 
                     <li class="dropdown">
-                    <a data-toggle="dropdown" class="dropdown-toggle">{{ _('topic management')}}</a>
+                    <a data-toggle="dropdown" class="dropdown-toggle">{{ _('Topic Management')}}</a>
                         <ul class="dropdown-menu">
-                            <li><a href="{{ url_for('brother.topic_manage', classify='normal') }}"> {{ _('valid topics') }} </a></li>
-                            <li><a href="{{ url_for('brother.topic_manage', classify='deleted') }}"> {{ _('deleted topics') }}</a></li>
+                            <li><a href="{{ url_for('brother.topic_manage', classify='normal') }}"> {{ _('Normal Topic') }} </a></li>
+                            <li><a href="{{ url_for('brother.topic_manage', classify='deleted') }}"> {{ _('Deleted Topic') }}</a></li>
                         </ul>
                     </li>
 
                     <li class="dropdown">
-                    <a data-toggle="dropdown" class="dropdown-toggle"}}>{{ _('node management')}}</a>
+                    <a data-toggle="dropdown" class="dropdown-toggle"}}>{{ _('Node Management')}}</a>
                         <ul class="dropdown-menu">
-                            <li><a href="{{ url_for('brother.node_manage', classify='normal') }}"> {{ _('normal nodes') }} </a></li>
-                            <li><a href="{{ url_for('brother.node_manage', classify='deleted') }}"> {{ _('deleted nodes') }}</a></li>
-                            <li><a href="{{ url_for('brother.node_create') }}"> {{ _('new nodes') }}</a></li>
+                            <li><a href="{{ url_for('brother.node_manage', classify='normal') }}"> {{ _('Normal Node') }} </a></li>
+                            <li><a href="{{ url_for('brother.node_manage', classify='deleted') }}"> {{ _('Deleted Node') }}</a></li>
+                            <li><a href="{{ url_for('brother.node_create') }}"> {{ _('Create Node') }}</a></li>
                         </ul>
                     </li>
                 </ul>
                 <div class="navbar-form navbar-right">
                     <a class="btn btn-info" id="new-btn" href="{{url_for('brother.signout')}}">
-                        {{ _('log out') }}
+                        {{ _('Log Out') }}
                     </a>
                 </div>
             </div>

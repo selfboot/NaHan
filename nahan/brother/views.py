@@ -95,10 +95,23 @@ def topic_more(tid):
     return "edit %d" % tid
 
 
-@brother.route("/admin/node/<int:nid>/")
+@brother.route("/admin/node/<int:nid>/", methods=['GET', 'POST'])
 @superuser_login
 def node_more(nid):
-    return "edit %d" % nid
+    """ Update the title and description of node despite of node is deleted or not.
+    """
+    n = Node.query.filter_by(id=nid).first_or_404()
+    if request.method == 'GET':
+        return render_template('brother/node_more.html',
+                               title=gettext('More About Node'),
+                               node=n)
+    elif request.method == 'POST':
+        n.title = request.form['title']
+        n.description = request.form['description']
+        db.session.commit()
+        return redirect(url_for('brother.node_manage', classify="normal"))
+    else:
+        abort(404)
 
 
 @brother.route("/admin/user/<int:uid>/")
@@ -110,73 +123,74 @@ def user_more(uid):
 @brother.route("/admin/topics/list/")
 @superuser_login
 def topic_table_list():
-    fields = ['id', 'title']
+    fields = ['id', 'title', 'username', 'node_title']
     order_dir = request.args.get('sSortDir_0')
     order_field = int(request.args.get('iSortCol_0'))
     length = int(request.args.get('iDisplayLength', 10))
     start = int(request.args.get('iDisplayStart', 0))
 
     topics = Topic.query.filter_by(deleted=False).all()
+    map(lambda x: setattr(x, 'username', x.user().username), topics)
+    map(lambda x: setattr(x, 'node_title', x.node().title), topics)
 
     # Filter the topic according to the keywords.
     key = request.args.get('sSearch')
     if key:
         topics = list(filter(lambda x: (key == str(x.id) or key in x.title or
-                                        key in x.user().username or key in x.node().title), topics))
+                                        key in x.username or key in x.node_title), topics))
 
     # Sort the data according to specified columns.
-    if order_field == 2:
-        topics.sort(key=lambda x: x.user().username, reverse=False if order_dir == 'asc' else True)
-    elif order_field == 3:
-        topics.sort(key=lambda x: x.node().title, reverse=False if order_dir == 'asc' else True)
-    else:
-        topics.sort(key=lambda x: getattr(x, fields[order_field]), reverse=False if order_dir == 'asc' else True)
+    topics.sort(key=lambda x: getattr(x, fields[order_field]), reverse=False if order_dir == 'asc' else True)
 
     # Put data together to response.
     data = dict()
     data['aaData'] = []
     data['iTotalDisplayRecords'] = len(topics)
-    topics = topics[start:start + length]
     data['iTotalRecords'] = Topic.query.count()
-    for t in topics:
-        info_list = [t.id, t.title, t.user().username, t.node().title]
-        info_list.append('<a href="%s" class="label label-success">%s</a>' %
-                         (url_for('brother.topic_more', tid=t.id), gettext('more')))
-        data['aaData'].append(info_list)
+
+    topics = topics[start:start + length]
+    map(lambda x: setattr(x, 'more',
+                          '<a href="%s" class="label label-success">%s</a>' %
+                          (url_for('brother.topic_more', tid=x.id), gettext('more'))), topics)
+    data['aaData'] = [[t.id, t.title, t.username, t.node_title, t.more] for t in topics]
 
     return jsonify(**data)
 
 
-@brother.route("/admin/nodes/list/")
+@brother.route("/admin/nodes/list/<string:deleted>")
 @superuser_login
-def node_table_list():
-    fields = ['id', 'title', 'description']
+def node_table_list(deleted):
+    if deleted not in ["True", "False"]:
+        abort(404)
+    status = True if deleted == "True" else False
+
+    fields = ['id', 'title', 'description', 'count']
     order_dir = request.args.get('sSortDir_0')
     order_field = int(request.args.get('iSortCol_0'))
     length = int(request.args.get('iDisplayLength', 10))
     start = int(request.args.get('iDisplayStart', 0))
 
-    nodes = Node.query.filter_by(deleted=False).all()
+    nodes = Node.query.filter_by(deleted=status).all()
     # Filter the users according to the keywords.
     key = request.args.get('sSearch')
+
+    map(lambda x: setattr(x, 'count', 0 if not x.topics else len(x.topics.split(","))), nodes)
     if key:
         nodes = list(filter(lambda x: (key == str(x.id) or key in x.title or
-                                       key in x.description), nodes))
+                                       key in x.description or key == str(x.count)), nodes))
 
     # Sort the data according to specified columns.
     nodes.sort(key=lambda x: getattr(x, fields[order_field]), reverse=False if order_dir == 'asc' else True)
 
     # Put data together to response.
     data = dict()
-    data['aaData'] = []
     data['iTotalDisplayRecords'] = len(nodes)
+    data['iTotalRecords'] = Node.query.count()
     nodes = nodes[start:start + length]
-    data['iTotalRecords'] = User.query.count()
-    for n in nodes:
-        info_list = [n.id, n.title, n.description]
-        info_list.append('<a href="%s" class="label label-success">%s</a>' %
-                         (url_for('brother.node_more', nid=n.id), gettext('more')))
-        data['aaData'].append(info_list)
+    map(lambda x: setattr(x, 'more',
+                          '<a href="%s" class="label label-success">%s</a>' %
+                          (url_for('brother.node_more', nid=x.id), gettext('more'))), nodes)
+    data['aaData'] = [[n.id, n.title, n.description, n.count, n.more] for n in nodes]
 
     return jsonify(**data)
 
@@ -184,14 +198,16 @@ def node_table_list():
 @brother.route("/admin/users/list/<string:boolean>")
 @superuser_login
 def user_table_list(boolean):
-    deleted = True if boolean == "True" else False
+    if boolean not in ["True", "False"]:
+        abort(404)
+    status = True if boolean == "True" else False
     fields = ['id', 'username', 'email', 'last_login', 'is_superuser']
     order_dir = request.args.get('sSortDir_0')
     order_field = int(request.args.get('iSortCol_0'))
     length = int(request.args.get('iDisplayLength', 10))
     start = int(request.args.get('iDisplayStart', 0))
 
-    users = User.query.filter_by(deleted=deleted).all()
+    users = User.query.filter_by(deleted=status).all()
     # Filter the users according to the keywords.
     key = request.args.get('sSearch')
     if key:
@@ -203,16 +219,14 @@ def user_table_list(boolean):
 
     # Put data together to response.
     data = dict()
-    data['aaData'] = []
     data['iTotalDisplayRecords'] = len(users)
-    users = users[start:start + length]
     data['iTotalRecords'] = User.query.count()
-    for u in users:
-        info_list = [u.id, u.username, u.email, natural_time(u.last_login),
-                     gettext('Yes') if u.is_superuser else gettext('No')]
-        info_list.append('<a href="%s" class="label label-success">%s</a>' %
-                         (url_for('brother.user_more', uid=u.id), gettext('more')))
-        data['aaData'].append(info_list)
+    users = users[start:start + length]
+    map(lambda x: setattr(x, 'more',
+                          '<a href="%s" class="label label-success">%s</a>' %
+                          (url_for('brother.user_more', uid=x.id), gettext('more'))), users)
+    data['aaData'] = [[u.id, u.username, u.email, natural_time(u.last_login),
+                       str(u.is_superuser), u.more] for u in users]
 
     return jsonify(**data)
 
@@ -227,14 +241,31 @@ def topic_bulk_delete():
     return "Done"
 
 
-@brother.route("/admin/nodes/delete/")
+@brother.route("/admin/nodes/delete/<string:status>")
 @superuser_login
-def node_bulk_delete():
+def node_bulk_delete(status):
+    if status not in ['active', 'del']:
+        abort(404)
+    node_status = False if status == 'active' else True
     ids = request.args.get('ids')
     ids = ids.split(',')
     for i in ids:
-        node_delete(i)
-    return "Done"
+        node_process(i, status=node_status)
+
+    db.session.commit()
+    return "Done"       # Just return to fit the flask syntax.
+
+
+def node_process(nid, status=True):
+    """ Delete or reactive the specified node by id. (Reset all the topic's node_deleted under this node.)
+    """
+    n = Node.query.filter_by(id=nid).first()
+    n.deleted = status
+
+    all_topics = n.extract_topics()
+    for t in all_topics:
+        t.topic_deleted = status
+    # Remember to do commit in the caller function.
 
 
 @brother.route("/admin/users/process/<string:status>")
@@ -282,17 +313,6 @@ def comment_delete(cid):
     return redirect(url_for("brother.topic_more", tid=c.topic_id))
 
 
-@brother.route("/admin/delete_node/<int:nid>")
-@superuser_login
-def node_delete(nid):
-    """ Delete the useless node by id. (Delete all the topics under this node.)
-    """
-    n = Node.query.filter_by(id=nid).first()
-    n.deleted = True
-    db.session.commit()
-    return redirect(url_for("brother.node_manage"))
-
-
 @brother.route("/admin/process_user/<int:uid>")
 @superuser_login
 def user_process(uid, status=False):
@@ -325,7 +345,19 @@ def user_process(uid, status=False):
     return redirect(url_for("brother.user_manage"))
 
 
-@brother.route("/admin/node/create/")
+@brother.route("/admin/node/create/", methods=['GET', 'POST'])
 @superuser_login
 def node_create():
-    return "Create"
+    if request.method == 'GET':
+        return render_template('brother/node_create.html',
+                               title=gettext('Create Node'),
+                               form=Node)
+    elif request.method == 'POST':
+        title = request.form['title']
+        description = request.form['description']
+        n = Node(title, description)
+        db.session.add(n)
+        db.session.commit()
+        return redirect(url_for('brother.node_manage', classify="normal"))
+    else:
+        abort(404)

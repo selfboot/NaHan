@@ -2,11 +2,12 @@
 {% block left %}
 {% include 'user/panel.html' %}
 {% endblock %}
+
 {% block right %}
 <div class="panel panel-default">
     <div class="panel-heading title-breadcrumb">
-        <a href="{{ url_for('voice.index') }}">{{ _('home') }}</a>
-        <span>{{ _('new topic') }}</span>
+        <a href="{{ url_for('voice.index') }}">{{ _('Index') }}</a>
+        <span>{{ _('New Topic') }}</span>
     </div>
     <div class="panel-body">
     	{% if message %}
@@ -15,9 +16,8 @@
 				{{ message }}
 			</p>
 		</div>
-
 		{% endif %}
-        {% if current_user.is_authenticated %}
+        {% if nodes%}
         <form class="form" action="{{ url_for('voice.create') }}" method="post">
             <div class="form-group">
                 <label>{{ _('title') }}</label>
@@ -51,9 +51,8 @@
         </div>
         {% else %}
         <div class="alert alert-info">
-            {{ _('please sign in before post') }}
+            {{ _('There is not any node yet, please contact the administrator to create nodes.') }}
         </div>
-        <a href="{{ url_for('user.signin') }}" class="btn btn-info">{{ _('sign in') }}</a>
         {% endif %}
     </div>
 </div><!--end reply panel-->

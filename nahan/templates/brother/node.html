@@ -5,17 +5,18 @@
     <div class="col-md-10 col-md-offset-1">
         <div class="panel panel-default">
             <div class="panel-heading">
-                {{ _('node management') }}
+                {{ _('Normal node') }}
             </div>
             <div class="panel-body">
                 <div class="table-responsive">
-                    <table class="table table-default table-bordered display" cellspacing="0" id="database">
+                    <table class="table table-default table-bordered display" cellspacing="0" id="normal">
                         <thead>
                             <tr>
-                                <th>id</th>
-                                <th>{{ _('title') }}</th>
-                                <th>{{ _('description') }}</th>
-                                <th>{{ _('more') }}</th>
+                                <th>Id</th>
+                                <th>{{ _('Title') }}</th>
+                                <th>{{ _('Description') }}</th>
+                                <th>{{ _('Topic Count') }}</th>
+                                <th>{{ _('More') }}</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -23,8 +24,7 @@
                     </table>
                 </div>
                 <p></p>
-                <a class="btn btn-danger" id="bulk-delete">{{ _('delete selected') }}</a>
-                <a class="btn btn-success pull-right" id="create-node" href="{{ url_for('brother.node_create') }}">{{ _('create node') }}</a>
+                <a class="btn btn-danger" id="bulk-delete">{{ _('Delete Selected Nodes') }}</a>
             </div>
         </div>
     </div>
@@ -35,14 +35,14 @@
 <script>
 $(document).ready(
     function() {
-        $('#database').DataTable({
+        $('#normal').DataTable({
             language: {
                 url: "//cdn.datatables.net/plug-ins/9dcbecd42ad/i18n/Chinese.json"
             },
             bProcessing: true,
             bServerSide: true,
             bPaginate: true,
-            sAjaxSource: "{{ url_for('brother.node_table_list') }}",
+            sAjaxSource: "{{ url_for('brother.node_table_list', deleted=False) }}",
             aoColumnDefs: [{ 'bSortable': false, 'aTargets': [ -1 ] }],
             sDom: "<'row'<'col-sm-4'l><'col-sm-8 text-right'f>r>" + "t" + "<'row'<'col-sm-6'i><'col-sm-6 text-right'p><'col-sm-0 text-right'T>>",
             oTableTools: {"sRowSelect": "multi",
@@ -52,9 +52,9 @@ $(document).ready(
 
 
 $(document).ready(function() {
-    var table = $('#database').DataTable();
+    var table = $('#normal').DataTable();
 
-    $('#database tbody').on( 'click', 'tr', function () {
+    $('#normal tbody').on( 'click', 'tr', function () {
         $(this).toggleClass('selected');
     } );
 } );
@@ -74,7 +74,7 @@ $(document).ready(
         function(){
             $('#bulk-delete').click(
                 function(){
-                    $.get('{{ url_for("brother.node_bulk_delete") }}', {'ids': selected_id()});
+                    $.get('{{ url_for("brother.node_bulk_delete", status="del") }}', {'ids': selected_id()});
                     location.reload();
                 }
                 );

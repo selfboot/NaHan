@@ -5,18 +5,17 @@
     <div class="col-md-10 col-md-offset-1">
         <div class="panel panel-default">
             <div class="panel-heading">
-                {{ _('Blacklist Users') }}
+                {{ _('Deleted node') }}
             </div>
             <div class="panel-body">
                 <div class="table-responsive">
-                    <table class="table table-default table-bordered display" cellspacing="0" id="blacklist">
+                    <table class="table table-default table-bordered display" cellspacing="0" id="normal">
                         <thead>
                             <tr>
                                 <th>Id</th>
-                                <th>{{ _('Username') }}</th>
-                                <th>{{ _('Email') }}</th>
-                                <th>{{ _('Last Login') }}</th>
-                                <th>{{ _('Is Superuser') }}</th>
+                                <th>{{ _('Title') }}</th>
+                                <th>{{ _('Description') }}</th>
+                                <th>{{ _('Topic Count') }}</th>
                                 <th>{{ _('More') }}</th>
                             </tr>
                         </thead>
@@ -25,7 +24,7 @@
                     </table>
                 </div>
                 <p></p>
-                <a class="btn btn-danger" id="bulk-add">{{ _('Active Selected User Again') }}</a>
+                <a class="btn btn-danger" id="bulk-delete">{{ _('Active Selected Nodes') }}</a>
             </div>
         </div>
     </div>
@@ -36,14 +35,14 @@
 <script>
 $(document).ready(
     function() {
-        $('#blacklist').DataTable({
+        $('#normal').DataTable({
             language: {
                 url: "//cdn.datatables.net/plug-ins/9dcbecd42ad/i18n/Chinese.json"
             },
             bProcessing: true,
             bServerSide: true,
             bPaginate: true,
-            sAjaxSource: "{{ url_for('brother.user_table_list', boolean='True') }}",
+            sAjaxSource: "{{ url_for('brother.node_table_list', deleted=True) }}",
             aoColumnDefs: [{ 'bSortable': false, 'aTargets': [ -1 ] }],
             sDom: "<'row'<'col-sm-4'l><'col-sm-8 text-right'f>r>" + "t" + "<'row'<'col-sm-6'i><'col-sm-6 text-right'p><'col-sm-0 text-right'T>>",
             oTableTools: {"sRowSelect": "multi",
@@ -53,7 +52,7 @@ $(document).ready(
 
 
 $(document).ready(function() {
-    var table = $('#blacklist').DataTable();
+    var table = $('#normal').DataTable();
 
     $('#normal tbody').on( 'click', 'tr', function () {
         $(this).toggleClass('selected');
@@ -73,9 +72,9 @@ function selected_id(){
 
 $(document).ready(
         function(){
-            $('#bulk-add').click(
+            $('#bulk-delete').click(
                 function(){
-                    $.get('{{ url_for("brother.user_bulk_process", status="active") }}', {'ids': selected_id()});
+                    $.get('{{ url_for("brother.node_bulk_delete", status="active") }}', {'ids': selected_id()});
                     location.reload();
                 }
                 );

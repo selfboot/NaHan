@@ -56,7 +56,7 @@ def hot():
     return render_template('voice/index.html',
                            topics=topics,
                            title=gettext('Hottest Topics'),
-                           post_list_title=gettext('Latest Topics'),
+                           post_list_title=gettext('Hottest Topics'),
                            pagination=pagination)
 
 
@@ -213,12 +213,14 @@ def edit(tid):
     if current_user.id != topic.user().id:
         abort(403)
     if request.method == 'GET':
-        return render_template('voice/edit.html', topic=topic)
+        return render_template('voice/edit.html',
+                               title=gettext('Edit Topic'),
+                               topic=topic)
     elif request.method == 'POST':
         topic.content = request.form['content']
         if not topic.content:
             message = gettext('content cannot be empty')
-            return render_template('voice/edit.html', topic=topic, message=message)
+            return render_template('voice/edit.html', topic=topic, message=message, title=gettext('Edit Topic'))
 
         content_rendered = markdown.markdown(topic.content, ['codehilite'], safe_mode='escape')
         topic.content_rendered = add_user_links_in_content(content_rendered)
@@ -289,14 +291,13 @@ def search(keywords):
     """
 
     keys = keywords.split(' ')
-    all_topics = set(Topic.query.filter(and_(Topic.deleted==False,
-                                             *[Topic.title.like("%"+k+"%") for k in keys])).all())
-    content_topics = set(Topic.query.filter(and_(Topic.deleted==False,
-                                                 *[Topic.content.like("%"+k+"%") for k in keys])).all())
+    all_topics = set(Topic.query.filter(and_(*[Topic.title.like("%"+k+"%") for k in keys])).all())
+    content_topics = set(Topic.query.filter(and_(*[Topic.content.like("%"+k+"%") for k in keys])).all())
 
     # Remove duplicated search result, because the keywords occur in both title and content.
     all_topics.update(content_topics)
     all_topics = list(all_topics)
+    all_topics = list(filter(lambda x: not x.deleted, all_topics))
     all_topics.sort(key=lambda x: x.time_created, reverse=True)
 
     per_page = current_app.config['PER_PAGE']

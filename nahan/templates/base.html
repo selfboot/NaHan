@@ -19,13 +19,13 @@
         <nav class="navbar navbar-default navbar-fixed-top">
             <div class="container">
                 <div class="navbar-header">
-                    <a class="navbar-brand" href="{{ url_for('voice.index') }}">{{_('bbs name')}}</a>
+                    <a class="navbar-brand" href="{{ url_for('voice.index') }}">{{_('Index')}}</a>
                 </div>
 
                 <div class="navbar-collapse collapse">
                     <ul class="nav navbar-nav">
-                        <li><a href="{{ url_for('voice.hot') }}">{{ _('hottest post') }}</a></li>
-                        <li><a href="{{ url_for('voice.all_nodes') }}">{{ _('all nodes') }}</a></li>
+                        <li><a href="{{ url_for('voice.hot') }}">{{ _('Hottest Post') }}</a></li>
+                        <li><a href="{{ url_for('voice.all_nodes') }}">{{ _('All Nodes') }}</a></li>
                     </ul>
 
                     {% if current_user.is_authenticated %}
@@ -39,12 +39,12 @@
                         <ul class="nav navbar-nav">
                         <li class="dropdown">
                           <button type="button" class="btn btn-info btn-primary dropdown-toggle" data-toggle="dropdown">
-                            {{ _('sign in?') }}  <b class="caret"></b>
+                            {{ _('Sign In?') }}  <b class="caret"></b>
                           </button>
                             <ul class="dropdown-menu">
-                            <li><a href="{{ url_for('user.signin') }}">{{ _('sign in?') }} </a></li>
-                            <li><a href="{{ url_for('user.reg') }}">{{_('register a account') }}?</a></li>
-                            <li><a href="{{ url_for('user.password_reset_request') }}">{{ _('forget password?') }}</a></li>
+                            <li><a href="{{ url_for('user.signin') }}">{{ _('Sign In?') }} </a></li>
+                            <li><a href="{{ url_for('user.reg') }}">{{_('Register Account') }}?</a></li>
+                            <li><a href="{{ url_for('user.password_reset_request') }}">{{ _('Forget Password?') }}</a></li>
                             </ul>
                         </li>
                         </ul>
@@ -53,7 +53,7 @@
 
                     <div class="navbar-form navbar-right" role="search">
                         <div class="form-group">
-                            <input onkeydown="if(event.keyCode==13){search();}" type="text" id="search" class="form-control" name="search" placeholder="{{ _('enter key words') }}">
+                            <input onkeydown="if(event.keyCode==13){search();}" type="text" id="search" class="form-control" name="search" placeholder="{{ _('Enter Key Words') }}">
                         </div>
                         <a class="btn btn-default" id="search-btn">
                             {{ _('Search') }}
@@ -74,7 +74,7 @@
 
         <footer id="footer">
             <div class="container clearfix">
-                <p class="muted credit pull-right"> {{ _('copyright by') }}
+                <p class="muted credit pull-right"> {{ _('copyright by xuezaigds@gmail.com') }}
                 </p>
             </div>
         </footer>

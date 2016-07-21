@@ -5,11 +5,11 @@
     <div class="col-md-10 col-md-offset-1">
         <div class="panel panel-default">
             <div class="panel-heading">
-                {{ _('topic management') }}
+                {{ _('Normal topic') }}
             </div>
             <div class="panel-body">
                 <div class="table-responsive">
-                    <table class="table table-default table-bordered display" cellspacing="0" id="database">
+                    <table class="table table-default table-bordered display" cellspacing="0" id="normal">
                         <thead>
                             <tr>
                                 <th>id</th>
@@ -35,7 +35,7 @@
 <script>
 $(document).ready(
     function() {
-        $('#database').DataTable({
+        $('#normal').DataTable({
             language: {
                 url: "//cdn.datatables.net/plug-ins/9dcbecd42ad/i18n/Chinese.json"
             },
@@ -52,9 +52,9 @@ $(document).ready(
 
 
 $(document).ready(function() {
-    var table = $('#database').DataTable();
+    var table = $('#normal').DataTable();
 
-    $('#database tbody').on( 'click', 'tr', function () {
+    $('#normal tbody').on( 'click', 'tr', function () {
         $(this).toggleClass('selected');
     } );
 } );
