@@ -66,7 +66,7 @@ def view(tid):
     topic = Topic.query.filter_by(id=tid).first_or_404()
     if topic.deleted:
         abort(404)
-    live_comments_all = topic.extract_comments()
+    live_comments_all = list(filter(lambda x: not x.deleted, topic.extract_comments()))
     page = int(request.args.get('page', 1))
     offset = (page-1)*per_page
     live_comments = live_comments_all[offset:offset + per_page]
@@ -111,7 +111,9 @@ def view(tid):
         db.session.add(c)
         db.session.commit()
 
-        topic.add_comments(c.id)
+        # Update the comments record in topic and user.
+        topic.add_comment(c.id)
+        current_user.add_comment(c.id)
         db.session.commit()
 
         # Generate notify from the reply content.
@@ -193,11 +195,11 @@ def appendix(tid):
         topic_append.content_rendered = add_user_links_in_content(topic_append.content_rendered)
         db.session.add(topic_append)
         db.session.commit()
-        topic.add_appends(topic_append.id)
+        topic.add_append(topic_append.id)
         db.session.commit()
 
         # Generate notify from the topic content.
-        add_notify_in_content(topic_append.content, current_user.id, tid)
+        add_notify_in_content(topic_append.content, current_user.id, tid, append_id=topic_append.id)
 
         return redirect(url_for('voice.view', tid=topic.id, _anchor='append'))
     else:

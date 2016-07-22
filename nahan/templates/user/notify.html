@@ -25,12 +25,14 @@
                         {% if n.comment_id %}
                         {{ _('In comment') }}
                         <a href="{{ url_for('voice.view', tid = n.topic_id) }}#comment-{{n.comment_id}}" > {{n.topic.title}}</a>
-                        {{ _('Mentioned you') }}
+                        {% elif n.append_id %}
+                        {{ _('In appendix') }}
+                        <a href="{{ url_for('voice.view', tid = n.topic_id) }}#append-{{n.append_id}}" > {{n.topic.title}}</a>
                         {% else %}
                         {{ _('In topic') }}
                         <a href="{{ url_for('voice.view', tid= n.topic_id) }}" > {{n.topic.title}}</a>
-                        {{ _('Mentioned you') }}
                         {% endif %}
+                        {{ _('Mentioned you') }}
                     </div>
                 </div>
             </div>
@@ -58,12 +60,14 @@
                         {% if n.comment_id %}
                         {{ _('In comment') }}
                         <a href="{{ url_for('voice.view', tid=n.topic_id) }}#comment-{{n.comment_id}}" > {{n.topic.title}}</a>
-                        {{ _('Mentioned you') }}
+                        {% elif n.append_id %}
+                        {{ _('In appendix') }}
+                        <a href="{{ url_for('voice.view', tid = n.topic_id) }}#append-{{n.append_id}}" > {{n.topic.title}}</a>
                         {% else %}
                         {{ _('In topic') }}
                         <a href="{{ url_for('voice.view', tid=n.topic_id) }}" > {{n.topic.title}}</a>
-                        {{ _('Mentioned you') }}
                         {% endif %}
+                        {{ _('Mentioned you') }}
                     </div>
                 </div>
             </div>

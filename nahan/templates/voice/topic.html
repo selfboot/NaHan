@@ -22,7 +22,6 @@
 					<a class="label-success label" href="{{ url_for('voice.appendix', tid = topic.id) }}">{{ _('topic appendix') }}</a>
                     <a class="label-warning label" href="{{ url_for('voice.edit', tid=topic.id) }}">{{ _('edit') }}</a>
 					{% endif %}
-
 				</p>
 			</div>
 		</div>
@@ -33,6 +32,7 @@
 	{% if topic.appends %}
 	<ul class="list-group" id="append">
 		{% for a in topic.extract_appends() %}
+		{% if not a.deleted %}
 		<div class="list-group-item list-appendix-item">
 			<p class="appendix-meta">
                 {{ _('The ')}}{{ loop.index }} {{ _('appendix') }} {{ a.time_created | natural_time }}
@@ -40,6 +40,7 @@
             </p>
 			{{a.content_rendered | safe}}
 		</div>
+		{% endif %}
 		{% endfor %}
 	</ul>
 	{% endif %}
@@ -55,7 +56,7 @@
 			{% endif %}
 		</p>
 	</div>
-	{% if topic.reply_count != 0 %}
+	{% if topic.reply_count %}
 	<ul class="list-group">
         {% for c in comments %}
             <div class="list-group-item list-topic-item" id="comment-{{c.id}}">

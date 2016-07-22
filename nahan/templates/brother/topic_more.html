@@ -1,0 +1,101 @@
+{% extends 'base_admin.html' %}
+
+{% block main %}
+<div class="panel panel-default">
+    <div class="panel-heading">
+        <div class="row">
+            <div class="col-md-10">
+                <h3 class="list-post-title-in-topic"> {{ topic.title }} </h3>
+            </div>
+            <div class="col-md-2">
+                {% if not topic.deleted %}
+                <a type="button" class="btn btn-danger" href="{{ url_for('brother.topic_process', tid = topic.id, process='del') }}"> {{ _('Delete Topic') }}</a>
+                {% elif topic.deleted and topic.topic_deleted %}
+                <a type="button" class="btn btn-success" href="{{ url_for('brother.topic_process', tid = topic.id, process='active') }}"> {{ _('Activate Topic') }}</a>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+
+    <div class="panel-body">
+        {{ topic.content_rendered | safe}}
+    </div>
+    {% if topic.appends %}
+    <ul class="list-group" id="append">
+        {% for a in topic.extract_appends() %}
+            {% if a.deleted and not a.append_deleted %}
+            <div class="list-group-item list-topic-item blocked">
+                <div class="glyphicon glyphicon-ban-circle fa-3x watermark"></div>
+            {% else %}
+            <div class="list-group-item list-topic-item">
+            {% endif %}
+                <p class="appendix-meta">
+                    {{ _('The ')}}{{ loop.index }} {{ _('appendix') }} {{ a.time_created | natural_time }}
+                    {% if not a.deleted %}
+                    <a href="{{ url_for('brother.appendix_process', aid=a.id, next=request.url, process='del')}}" class="label-danger label pull-right">{{ _('Delete') }}</a>
+                    {% elif a.deleted and a.append_deleted %}
+                    <a href="{{ url_for('brother.appendix_process', aid=a.id, next=request.url, process='active')}}" class="label-success label pull-right">{{ _('Activate') }}</a>
+                    {% endif %}
+                </p>
+            <div>
+            {{a.content_rendered | safe}}
+            </div>
+            </div>
+        {% endfor %}
+    </ul>
+    {% endif %}
+</div>
+
+<div class="panel panel-default">
+    <div class="panel-heading">
+    <p class="panel-title">
+        {% if topic.reply_count %}
+        {{ topic.reply_count }} {{ _('reply') }}
+        {% else %}
+        {{ _('no replies yet') }}
+        {% endif %}
+    </p>
+    </div>
+    {% if topic.reply_count %}
+    <ul class="list-group">
+        {% for c in comments %}
+            {% if c.deleted and not c.comment_deleted %}
+            <div class="list-group-item list-topic-item blocked">
+                <div class="glyphicon glyphicon-ban-circle fa-3x watermark"></div>
+            {% else %}
+            <div class="list-group-item list-topic-item">
+            {% endif %}
+                <div class="row">
+                    <a href="{{ url_for('user.info', uid=c.user_id) }}" class="col-md-1"><img title="{{c.user().username}}" class="avatar-middle" src=" {{ c.user().avatar_url }} "></a>
+                    <div class="col-xs-11">
+                        <div class="row">
+                            <div class="reply-author col-sm-10">
+                                <a href="{{ url_for('brother.user_more', uid=c.user_id) }}">{{c.user().username}}</a>
+                                <span class="list-time">{{c.time_created | natural_time}}</span>
+
+                            </div>
+                            <div class="col-sm-2">
+                                {% if not c.deleted%}
+                                <a href="{{ url_for('brother.comment_process', cid=c.id, next=request.url, process='del')}}" class="label-danger label pull-right">{{ _('Delete') }}</a>
+                                {% elif c.deleted and c.comment_deleted %}
+                                <a href="{{ url_for('brother.comment_process', cid=c.id, next=request.url, process='active')}}" class="label-success label pull-right">{{ _('Activate') }}</a>
+                                {% endif %}
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="reply-content col-md-11" style="margin-top:0.8em">
+                                {{c.content_rendered | safe}}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        {% endfor %}
+    <div class="panel-footer">
+        {{ pagination.links }}
+    </div>
+    {% endif %}
+    </ul>
+</div>
+
+{% endblock %}

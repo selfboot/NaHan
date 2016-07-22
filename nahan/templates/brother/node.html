@@ -1,32 +1,28 @@
 {% extends 'base_admin.html' %}
 
 {% block main %}
-<div class="row">
-    <div class="col-md-10 col-md-offset-1">
-        <div class="panel panel-default">
-            <div class="panel-heading">
-                {{ _('Normal node') }}
-            </div>
-            <div class="panel-body">
-                <div class="table-responsive">
-                    <table class="table table-default table-bordered display" cellspacing="0" id="normal">
-                        <thead>
-                            <tr>
-                                <th>Id</th>
-                                <th>{{ _('Title') }}</th>
-                                <th>{{ _('Description') }}</th>
-                                <th>{{ _('Topic Count') }}</th>
-                                <th>{{ _('More') }}</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                        </tbody>
-                    </table>
-                </div>
-                <p></p>
-                <a class="btn btn-danger" id="bulk-delete">{{ _('Delete Selected Nodes') }}</a>
-            </div>
+<div class="panel panel-default">
+    <div class="panel-heading">
+        {{ _('Normal Nodes') }}
+    </div>
+    <div class="panel-body">
+        <div class="table-responsive">
+            <table class="table table-default table-bordered display" cellspacing="0" id="normal">
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>{{ _('Title') }}</th>
+                        <th>{{ _('Description') }}</th>
+                        <th>{{ _('Topic Count') }}</th>
+                        <th>{{ _('More') }}</th>
+                    </tr>
+                </thead>
+                <tbody>
+                </tbody>
+            </table>
         </div>
+        <p></p>
+        <a class="btn btn-danger" id="bulk-delete">{{ _('Delete Selected Nodes') }}</a>
     </div>
 </div>
 {% endblock %}
@@ -74,7 +70,7 @@ $(document).ready(
         function(){
             $('#bulk-delete').click(
                 function(){
-                    $.get('{{ url_for("brother.node_bulk_delete", status="del") }}', {'ids': selected_id()});
+                    $.get('{{ url_for("brother.node_bulk_process", process="del") }}', {'ids': selected_id()});
                     location.reload();
                 }
                 );

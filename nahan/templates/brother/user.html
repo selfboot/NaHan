@@ -1,33 +1,30 @@
 {% extends 'base_admin.html' %}
 
 {% block main %}
-<div class="row">
-    <div class="col-md-10 col-md-offset-1">
-        <div class="panel panel-default">
-            <div class="panel-heading">
-                {{ _('Normal Users') }}
-            </div>
-            <div class="panel-body">
-                <div class="table-responsive">
-                    <table class="table table-default table-bordered display" cellspacing="0" id="normal">
-                        <thead>
-                            <tr>
-                                <th>Id</th>
-                                <th>{{ _('Username') }}</th>
-                                <th>{{ _('Email') }}</th>
-                                <th>{{ _('Last Login') }}</th>
-                                <th>{{ _('Is Superuser') }}</th>
-                                <th>{{ _('More') }}</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                        </tbody>
-                    </table>
-                </div>
-                <p></p>
-                <a class="btn btn-danger" id="bulk-delete">{{ _('Move Selected to Blacklist') }}</a>
-            </div>
+<div class="panel panel-default">
+    <div class="panel-heading">
+        {{ _('Normal Users') }}
+    </div>
+    <div class="panel-body">
+        <div class="table-responsive">
+            <table class="table table-default table-bordered display" cellspacing="0" id="normal">
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>{{ _('Username') }}</th>
+                        <th>{{ _('Email') }}</th>
+                        <th>{{ _('Last Login') }}</th>
+                        <th>{{ _('Is Superuser') }}</th>
+                        <th>{{ _('Topics') }}</th>
+                        <th>{{ _('Comments') }}</th>
+                    </tr>
+                </thead>
+                <tbody>
+                </tbody>
+            </table>
         </div>
+        <p></p>
+        <a class="btn btn-danger" id="bulk-delete">{{ _('Move Selected to Blacklist') }}</a>
     </div>
 </div>
 {% endblock %}
@@ -43,11 +40,10 @@ $(document).ready(
             bProcessing: true,
             bServerSide: true,
             bPaginate: true,
-            sAjaxSource: "{{ url_for('brother.user_table_list', boolean='False') }}",
-            aoColumnDefs: [{ 'bSortable': false, 'aTargets': [ -1 ] }],
+            sAjaxSource: "{{ url_for('brother.user_table_list', deleted=False) }}",
             sDom: "<'row'<'col-sm-4'l><'col-sm-8 text-right'f>r>" + "t" + "<'row'<'col-sm-6'i><'col-sm-6 text-right'p><'col-sm-0 text-right'T>>",
             oTableTools: {"sRowSelect": "multi",
-                            "aButtons": []},
+                          "aButtons": []},
         });
     });
 
@@ -74,7 +70,7 @@ $(document).ready(
         function(){
             $('#bulk-delete').click(
                 function(){
-                    $.get('{{ url_for("brother.user_bulk_process", status="delete") }}', {'ids': selected_id()});
+                    $.get('{{ url_for("brother.user_bulk_process", process="del") }}', {'ids': selected_id()});
                     location.reload();
                 }
                 );

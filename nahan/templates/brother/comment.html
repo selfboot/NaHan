@@ -3,7 +3,7 @@
 {% block main %}
 <div class="panel panel-default">
     <div class="panel-heading">
-        {{ _('Deleted Nodes') }}
+        {{ _('Normal Comments') }}
     </div>
     <div class="panel-body">
         <div class="table-responsive">
@@ -11,10 +11,9 @@
                 <thead>
                     <tr>
                         <th>ID</th>
-                        <th>{{ _('Title') }}</th>
-                        <th>{{ _('Description') }}</th>
-                        <th>{{ _('Topic Count') }}</th>
-                        <th>{{ _('More') }}</th>
+                        <th>{{ _('Content') }}</th>
+                        <th>{{ _('Username') }}</th>
+                        <th>{{ _('Topic') }}</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -22,7 +21,7 @@
             </table>
         </div>
         <p></p>
-        <a class="btn btn-danger" id="bulk-delete">{{ _('Active Selected Nodes') }}</a>
+        <a class="btn btn-danger" id="bulk-delete">{{ _('Delete Selected Comment') }}</a>
     </div>
 </div>
 {% endblock %}
@@ -38,8 +37,7 @@ $(document).ready(
             bProcessing: true,
             bServerSide: true,
             bPaginate: true,
-            sAjaxSource: "{{ url_for('brother.node_table_list', deleted=True) }}",
-            aoColumnDefs: [{ 'bSortable': false, 'aTargets': [ -1 ] }],
+            sAjaxSource: "{{ url_for('brother.comment_table_list', deleted=False) }}",
             sDom: "<'row'<'col-sm-4'l><'col-sm-8 text-right'f>r>" + "t" + "<'row'<'col-sm-6'i><'col-sm-6 text-right'p><'col-sm-0 text-right'T>>",
             oTableTools: {"sRowSelect": "multi",
                             "aButtons": []},
@@ -70,7 +68,7 @@ $(document).ready(
         function(){
             $('#bulk-delete').click(
                 function(){
-                    $.get('{{ url_for("brother.node_bulk_process", process="active") }}', {'ids': selected_id()});
+                    $.get('{{ url_for("brother.comment_bulk_process", status="del", next=request.url) }}', {'ids': selected_id()});
                     location.reload();
                 }
                 );

@@ -87,6 +87,22 @@ class User(UserMixin, db.Model):
         else:
             return []
 
+    def extract_topics(self):
+        if self.topics:
+            topic_id = list(map(int, self.topics.split(',')))
+            all_topics = [Topic.query.filter_by(id=i).first() for i in topic_id]
+            return all_topics[::-1]
+        else:
+            return []
+
+    def extract_comments(self):
+        if self.comments:
+            comment_id = list(map(int, self.comments.split(',')))
+            all_comments = [Comment.query.filter_by(id=i).first() for i in comment_id]
+            return all_comments[::-1]
+        else:
+            return []
+
     def add_topic(self, tid):
         if self.topics:
             self.topics += ",%d" % tid
@@ -98,6 +114,15 @@ class User(UserMixin, db.Model):
             self.comments += ",%d" % cid
         else:
             self.comments = "%d" % cid
+
+    def process(self, status):
+        """ Delete or activate one user,  update status of it's relevant topic, comment.
+        """
+        self.deleted = status
+
+        # Update status of this user's topics, comments
+        map(lambda x: x.process(status, cause=1), self.extract_topics())
+        map(lambda x: x.process(status, cause=1), self.extract_comments())
 
 
 @login_manager.user_loader
@@ -148,8 +173,7 @@ class Topic(db.Model):
         if self.appends:
             append_id = list(map(int, self.appends.split(',')))
             all_appends = [TopicAppend.query.filter_by(id=i).first() for i in append_id]
-            live_appends = list(filter(lambda x: x and not x.deleted, all_appends))
-            return live_appends
+            return all_appends
         else:
             return []
 
@@ -157,12 +181,11 @@ class Topic(db.Model):
         if self.comments:
             comment_id = list(map(int, self.comments.split(',')))
             all_comments = [Comment.query.filter_by(id=i).first() for i in comment_id]
-            live_comments = list(filter(lambda x: x and not x.deleted, all_comments))
-            return live_comments
+            return all_comments
         else:
             return []
 
-    def add_comments(self, cid):
+    def add_comment(self, cid):
         if self.comments:
             self.comments += ",%d" % cid
         else:
@@ -171,7 +194,7 @@ class Topic(db.Model):
         self.last_replied = datetime.now()
         self.reply_count += 1
 
-    def add_appends(self, aid):
+    def add_append(self, aid):
         if self.appends:
             self.appends += ",%d" % aid
         else:
@@ -182,6 +205,22 @@ class Topic(db.Model):
 
     def node(self):
         return Node.query.filter_by(id=self.node_id).first()
+
+    def process(self, status, cause):
+        """ Reset the status of the topic and relevant comments and notify.
+
+        Here update node_deleted(when cause=0), user_deleted (when cause=1), topic_deleted(when cause=2)
+        """
+        if status not in [0, 1, 2]:
+            return
+        target = ['node_deleted', 'user_deleted', 'topic_deleted']
+        setattr(self, target[cause], status)
+
+        # Update relevant comments, appendix, notify
+        map(lambda x: x.process(self.deleted, cause=0), self.extract_comments())
+        map(lambda x: x.process(self.deleted, cause=0), self.extract_appends())
+        notifies = Notify.query.filter_by(topic_id=self.id).all()
+        map(lambda x: x.process(self.deleted, cause=0), notifies)
 
 
 class TopicAppend(db.Model):
@@ -207,6 +246,19 @@ class TopicAppend(db.Model):
     def deleted(self):
         return self.topic_deleted or self.append_deleted
 
+    def process(self, status, cause):
+        """ Reset the status of the topic appendix and relevant notify.
+
+        Here update topic_deleted(when cause=0), append_deleted (when cause=1)
+        """
+        if status not in [0, 1]:
+            return
+        target = ['topic_deleted', 'append_deleted']
+        setattr(self, target[cause], status)
+
+        notifies = Notify.query.filter_by(append_id=self.id).all()
+        map(lambda x: x.process(self.deleted, cause=1), notifies)
+
 
 class Comment(db.Model):
     def __init__(self, content, user_id, topic_id):
@@ -229,8 +281,9 @@ class Comment(db.Model):
     user_id = db.Column(db.Integer)
     topic_id = db.Column(db.Integer)
 
-    # Comment can be deleted by two situations.
+    # Comment can be deleted or activate in three situations.
     topic_deleted = db.Column(db.Boolean(), default=False)
+    user_deleted = db.Column(db.Boolean(), default=False)
     comment_deleted = db.Column(db.Boolean(), default=False)
 
     @property
@@ -239,6 +292,22 @@ class Comment(db.Model):
 
     def user(self):
         return User.query.filter_by(id=self.user_id).first()
+
+    def topic(self):
+        return Topic.query.filter_by(id=self.topic_id).first()
+
+    def process(self, status, cause):
+        """ Reset the status of the comment and relevant notify.
+
+        Here update topic_deleted(cause=0), user_deleted(cause=1), comment_deleted(cause=2)
+        """
+        if status not in [0, 1, 2]:
+            return
+        target = ['topic_deleted', 'user_deleted', 'comment_deleted']
+        setattr(self, target[cause], status)
+
+        notifies = Notify.query.filter_by(comment_id=self.id).all()
+        map(lambda x: x.process(self.deleted, cause=2), notifies)
 
 
 class Node(db.Model):
@@ -252,7 +321,7 @@ class Node(db.Model):
     title = db.Column(db.String(64))
     description = db.Column(db.Text())
     deleted = db.Column(db.Boolean(), default=False)
-    # Keep all the topics id the node have.
+    # Keep all the topics id the node has.
     topics = db.Column(db.Text(), default="")
 
     def __unicode__(self):
@@ -268,19 +337,26 @@ class Node(db.Model):
         if self.topics and self.topics != " ":
             topics_id = list(map(int, self.topics.split(',')))
             all_topics = [Topic.query.filter_by(id=i).first() for i in topics_id]
-            # live_topics = list(filter(lambda x: x and not x.deleted, all_topics))
-            # return live_topics
             return all_topics
         else:
             return []
 
+    def process(self, status):
+        """ Reset the status of the node and relevant topics.
+        """
+        self.deleted = status
+
+        map(lambda x: x.process(status, 0), self.extract_topics())
+        # Remember to do commit in the caller function.
+
 
 class Notify(db.Model):
-    def __init__(self, sender_id, receiver_id, topic_id, comment_id=None):
+    def __init__(self, sender_id, receiver_id, topic_id, comment_id=None, append_id=None):
         self.sender_id = sender_id
         self.receiver_id = receiver_id
         self.topic_id = topic_id
         self.comment_id = comment_id
+        self.append_id = append_id
         self.time_created = datetime.now()
 
     __tablename__ = "notify"
@@ -293,19 +369,16 @@ class Notify(db.Model):
     receiver_id = db.Column(db.Integer)
     comment_id = db.Column(db.Integer, nullable=True)
     topic_id = db.Column(db.Integer, nullable=True)
+    append_id = db.Column(db.Integer, nullable=True)
 
-    # Comment can be deleted by two situations.
-    sender_deleted = db.Column(db.Boolean(), default=False)
-    receiver_deleted = db.Column(db.Boolean(), default=False)
+    append_deleted = db.Column(db.Boolean(), default=False)
     topic_deleted = db.Column(db.Boolean(), default=False)
     comment_deleted = db.Column(db.Boolean(), default=False)
 
     @property
     def deleted(self):
-        return self.sender_deleted or self.receiver_deleted or self.topic_deleted or self.comment_deleted
+        return self.append_deleted or self.topic_deleted or self.comment_deleted
 
-    # Need to get more info about this notify:
-    # sender_name, topic_title and so on.
     @property
     def topic(self):
         return Topic.query.filter_by(id=self.topic_id).first()
@@ -313,3 +386,9 @@ class Notify(db.Model):
     @property
     def sender(self):
         return User.query.filter_by(id=self.sender_id).first()
+
+    def process(self, status, cause):
+        if status not in [0, 1, 2]:
+            return
+        target = ['topic_deleted', 'append_deleted', 'comment_deleted']
+        setattr(self, target[cause], status)

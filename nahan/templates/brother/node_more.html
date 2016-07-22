@@ -1,11 +1,10 @@
 {% extends 'base_admin.html' %}
 
 {% block main %}
-<div class="col-md-10 col-md-offset-1">
-    <div class="panel panel-default">
-    <div class="panel-heading title-breadcrumb">
+<div class="panel panel-default">
+    <div class="panel-heading" >
         <a href="{{ url_for('brother.node_manage', classify='normal') }}">{{ _('Node Management') }}</a>
-        <span>{{ _('More About Node') }}: {{ node.title }}</span>
+        <span> / {{ node.title }}</span>
     </div>
     <div class="panel-body">
     	{% if message %}
@@ -28,12 +27,11 @@
 
             <div class="form-submit text-right">
                 <button class="btn btn-info" type="submit" id="submit">
-                    {{ _('submit') }}(Ctrl+Enter)
+                    {{ _('Submit') }}(Ctrl+Enter)
                 </button>
             </div>
         </form>
     </div>
-    </div><!--end reply panel-->
 </div>
 
 {% endblock %}

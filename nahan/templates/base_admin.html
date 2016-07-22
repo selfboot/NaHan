@@ -19,30 +19,41 @@
 <body>
     <nav class="navbar navbar-default navbar-fixed-top">
         <div class="container">
+            <div class="navbar-header">
+                <a class="navbar-brand">{{ _('Admin Management')}}</a>
+            </div>
+
             <div class="navbar-collapse collapse">
                 <ul class="nav navbar-nav">
-
                     <li class="dropdown">
-                    <a data-toggle="dropdown" class="dropdown-toggle">{{ _('User Management')}}</a>
+                    <a data-toggle="dropdown" class="dropdown-toggle">{{ _('User')}}</a>
                         <ul class="dropdown-menu">
-                            <li><a href="{{ url_for('brother.user_manage', classify='normal') }}"> {{ _('Normal User') }} </a></li>
-                            <li><a href="{{ url_for('brother.user_manage', classify='deleted') }}"> {{ _('Blacklist User') }}</a></li>
+                            <li><a href="{{ url_for('brother.user_manage', classify='normal') }}"> {{ _('Normal Users') }} </a></li>
+                            <li><a href="{{ url_for('brother.user_manage', classify='deleted') }}"> {{ _('Blacklist Users') }}</a></li>
                         </ul>
                     </li>
 
                     <li class="dropdown">
-                    <a data-toggle="dropdown" class="dropdown-toggle">{{ _('Topic Management')}}</a>
+                    <a data-toggle="dropdown" class="dropdown-toggle">{{ _('Topic')}}</a>
                         <ul class="dropdown-menu">
-                            <li><a href="{{ url_for('brother.topic_manage', classify='normal') }}"> {{ _('Normal Topic') }} </a></li>
-                            <li><a href="{{ url_for('brother.topic_manage', classify='deleted') }}"> {{ _('Deleted Topic') }}</a></li>
+                            <li><a href="{{ url_for('brother.topic_manage', classify='normal') }}"> {{ _('Normal Topics') }} </a></li>
+                            <li><a href="{{ url_for('brother.topic_manage', classify='deleted') }}"> {{ _('Deleted Topics') }}</a></li>
                         </ul>
                     </li>
 
                     <li class="dropdown">
-                    <a data-toggle="dropdown" class="dropdown-toggle"}}>{{ _('Node Management')}}</a>
+                    <a data-toggle="dropdown" class="dropdown-toggle">{{ _('Comment')}}</a>
                         <ul class="dropdown-menu">
-                            <li><a href="{{ url_for('brother.node_manage', classify='normal') }}"> {{ _('Normal Node') }} </a></li>
-                            <li><a href="{{ url_for('brother.node_manage', classify='deleted') }}"> {{ _('Deleted Node') }}</a></li>
+                            <li><a href="{{ url_for('brother.comment_manage', classify='normal') }}"> {{ _('Normal Comment') }} </a></li>
+                            <li><a href="{{ url_for('brother.comment_manage', classify='deleted') }}"> {{ _('Blacklist Comment') }}</a></li>
+                        </ul>
+                    </li>
+
+                    <li class="dropdown">
+                    <a data-toggle="dropdown" class="dropdown-toggle"}}>{{ _('Node')}}</a>
+                        <ul class="dropdown-menu">
+                            <li><a href="{{ url_for('brother.node_manage', classify='normal') }}"> {{ _('Normal Nodes') }} </a></li>
+                            <li><a href="{{ url_for('brother.node_manage', classify='deleted') }}"> {{ _('Deleted Nodes') }}</a></li>
                             <li><a href="{{ url_for('brother.node_create') }}"> {{ _('Create Node') }}</a></li>
                         </ul>
                     </li>
@@ -58,8 +69,10 @@
 
     <div id="wrap">
         <div class="container" id="main">
+            <div class="col-md-10 col-md-offset-1">
             {% block main %}
             {% endblock %}
+            </div>
         </div><!--end main-->
     </div><!--end wrap-->
     <!-- Core Scripts - Include with every page -->

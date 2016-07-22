@@ -7,6 +7,7 @@ from flask import render_template, redirect, request, url_for, abort, current_ap
 from flask_login import login_user, logout_user, current_user
 from flask_babel import gettext
 from functools import wraps
+from flask_paginate import Pagination
 from ..util import natural_time
 from ..models import User, Topic, Node, Comment, TopicAppend
 from . import brother
@@ -47,42 +48,60 @@ def signout():
     return redirect(url_for('brother.auth'))
 
 
-@brother.route("/admin/topics/<string:classify>")
+@brother.route("/admin/topics/")
 @superuser_login
-def topic_manage(classify):
+def topic_manage():
     if request.method == 'GET':
+        classify = request.args['classify']
         if classify == 'normal':
-            return render_template('brother/topic.html', title=gettext('normal topics'))
+            return render_template('brother/topic.html', title=gettext('Normal Topics'))
         elif classify == 'deleted':
-            return render_template('brother/topic_deleted.html', title=gettext('deleted topics'))
+            return render_template('brother/topic_deleted.html', title=gettext('Deleted Topics'))
         else:
             abort(404)
     else:
         abort(404)
 
 
-@brother.route("/admin/nodes/<string:classify>")
+@brother.route("/admin/comments/")
 @superuser_login
-def node_manage(classify):
+def comment_manage():
     if request.method == 'GET':
+        classify = request.args['classify']
         if classify == 'normal':
-            return render_template('brother/node.html', title=gettext('normal nodes'))
+            return render_template('brother/comment.html', title=gettext('Normal Comments'))
         elif classify == 'deleted':
-            return render_template('brother/node_deleted.html', title=gettext('deleted nodes'))
+            return render_template('brother/comment_deleted.html', title=gettext('Deleted Comments'))
         else:
             abort(404)
     else:
         abort(404)
 
 
-@brother.route("/admin/users/<string:classify>")
+@brother.route("/admin/nodes/")
 @superuser_login
-def user_manage(classify):
+def node_manage():
     if request.method == 'GET':
+        classify = request.args['classify']
         if classify == 'normal':
-            return render_template('brother/user.html', title=gettext('normal users'))
+            return render_template('brother/node.html', title=gettext('Normal Nodes'))
         elif classify == 'deleted':
-            return render_template('brother/user_deleted.html', title=gettext('blacklist users'))
+            return render_template('brother/node_deleted.html', title=gettext('Deleted Nodes'))
+        else:
+            abort(404)
+    else:
+        abort(404)
+
+
+@brother.route("/admin/users/")
+@superuser_login
+def user_manage():
+    if request.method == 'GET':
+        classify = request.args['classify']
+        if classify == 'normal':
+            return render_template('brother/user.html', title=gettext('Normal Users'))
+        elif classify == 'deleted':
+            return render_template('brother/user_deleted.html', title=gettext('Blacklist Users'))
         else:
             abort(404)
     else:
@@ -92,7 +111,31 @@ def user_manage(classify):
 @brother.route("/admin/topic/<int:tid>/")
 @superuser_login
 def topic_more(tid):
-    return "edit %d" % tid
+    """ Delete part or all of one topic.
+
+    Can delete either one or more comment, appendix or the whole topic.
+    """
+    t = Topic.query.filter_by(id=tid).first_or_404()
+    if request.method == 'GET':
+        per_page = current_app.config['PER_PAGE']
+        page = int(request.args.get('page', 1))
+        offset = (page - 1) * per_page
+
+        all_comments = t.extract_comments()
+        comments = all_comments[offset:offset + per_page]
+        pagination = Pagination(page=page, total=len(all_comments),
+                                per_page=per_page,
+                                record_name='comments',
+                                CSS_FRAMEWORK='bootstrap',
+                                bs_version=3)
+
+        return render_template('brother/topic_more.html',
+                               title=gettext('More About Topic'),
+                               topic=t,
+                               comments=comments,
+                               pagination=pagination)
+    else:
+        abort(404)
 
 
 @brother.route("/admin/node/<int:nid>/", methods=['GET', 'POST'])
@@ -117,26 +160,68 @@ def node_more(nid):
 @brother.route("/admin/user/<int:uid>/")
 @superuser_login
 def user_more(uid):
-    return "edit %d" % uid
+    content = request.args['content']
+    if content not in ['Topic', 'Comment']:
+        abort(404)
+
+    if request.method == 'GET':
+        u = User.query.filter_by(id=uid).first_or_404()
+        per_page = current_app.config['PER_PAGE']
+        page = int(request.args.get('page', 1))
+        offset = (page - 1) * per_page
+
+        if content == 'Topic':
+            all_topics = u.extract_topics()
+            topics = all_topics[offset:offset + per_page]
+            pagination_topic = Pagination(page=page, total=len(all_topics),
+                                          per_page=per_page,
+                                          record_name='topics',
+                                          CSS_FRAMEWORK='bootstrap',
+                                          bs_version=3)
+            return render_template('brother/user_more_topic.html',
+                                   title=gettext('More About User'),
+                                   user=u,
+                                   topics=topics,
+                                   pagination_topic=pagination_topic)
+        else:
+            all_comments = u.extract_comments()
+            comments = all_comments[offset:offset + per_page]
+            pagination_comment = Pagination(page=page, total=len(all_comments),
+                                            per_page=per_page,
+                                            record_name='comments',
+                                            CSS_FRAMEWORK='bootstrap',
+                                            bs_version=3)
+            return render_template('brother/user_more_comment.html',
+                                   title=gettext('More About User'),
+                                   user=u,
+                                   comments=comments,
+                                   pagination_comment=pagination_comment)
+    else:
+        abort(404)
 
 
 @brother.route("/admin/topics/list/")
 @superuser_login
 def topic_table_list():
-    fields = ['id', 'title', 'username', 'node_title']
+    deleted = request.args.get('deleted')
+    if deleted not in ["True", "False"]:
+        abort(404)
+    status = True if deleted == "True" else False
+
+    fields = ['id', 'title', 'reply_count', 'username', 'node_title']
     order_dir = request.args.get('sSortDir_0')
     order_field = int(request.args.get('iSortCol_0'))
     length = int(request.args.get('iDisplayLength', 10))
     start = int(request.args.get('iDisplayStart', 0))
 
-    topics = Topic.query.filter_by(deleted=False).all()
+    topics = list(filter(lambda x: x.deleted == status, Topic.query.all()))
     map(lambda x: setattr(x, 'username', x.user().username), topics)
     map(lambda x: setattr(x, 'node_title', x.node().title), topics)
 
     # Filter the topic according to the keywords.
     key = request.args.get('sSearch')
     if key:
-        topics = list(filter(lambda x: (key == str(x.id) or key in x.title or
+        topics = list(filter(lambda x: (key == str(x.id) or key == str(x.reply_count) or key in x.title or
                                         key in x.username or key in x.node_title), topics))
 
     # Sort the data according to specified columns.
@@ -152,14 +237,15 @@ def topic_table_list():
     map(lambda x: setattr(x, 'more',
                           '<a href="%s" class="label label-success">%s</a>' %
                           (url_for('brother.topic_more', tid=x.id), gettext('more'))), topics)
-    data['aaData'] = [[t.id, t.title, t.username, t.node_title, t.more] for t in topics]
+    data['aaData'] = [[t.id, t.title, t.reply_count, t.username, t.node_title, t.more] for t in topics]
 
     return jsonify(**data)
 
 
-@brother.route("/admin/nodes/list/<string:deleted>")
+@brother.route("/admin/nodes/list/")
 @superuser_login
-def node_table_list(deleted):
+def node_table_list():
+    deleted = request.args.get('deleted')
     if deleted not in ["True", "False"]:
         abort(404)
     status = True if deleted == "True" else False
@@ -195,24 +281,69 @@ def node_table_list(deleted):
     return jsonify(**data)
 
 
-@brother.route("/admin/users/list/<string:boolean>")
+@brother.route("/admin/comments/list/")
 @superuser_login
-def user_table_list(boolean):
-    if boolean not in ["True", "False"]:
+def comment_table_list():
+    deleted = request.args.get('deleted')
+    if deleted not in ["True", "False"]:
         abort(404)
-    status = True if boolean == "True" else False
-    fields = ['id', 'username', 'email', 'last_login', 'is_superuser']
+    status = True if deleted == "True" else False
+
+    fields = ['id', 'content', 'username', 'topic']
+    order_dir = request.args.get('sSortDir_0')
+    order_field = int(request.args.get('iSortCol_0'))
+    length = int(request.args.get('iDisplayLength', 10))
+    start = int(request.args.get('iDisplayStart', 0))
+
+    comments = list(filter(lambda x: x.deleted == status, Comment.query.all()))
+    map(lambda x: setattr(x, 'username', x.user().username), comments)
+    map(lambda x: setattr(x, 'topic', x.topic().title), comments)
+
+    # Filter the comments according to the keywords.
+    key = request.args.get('sSearch')
+    if key:
+        comments = list(filter(lambda x: (key == str(x.id) or key in x.content or
+                                          key in x.username or key in x.topic), comments))
+
+    # Sort the data according to specified columns.
+    comments.sort(key=lambda x: getattr(x, fields[order_field]), reverse=False if order_dir == 'asc' else True)
+
+    # Put data together to response.
+    data = dict()
+    data['iTotalDisplayRecords'] = len(comments)
+    data['iTotalRecords'] = Comment.query.count()
+    comments = comments[start:start + length]
+    data['aaData'] = [[c.id, c.content, c.username, c.topic] for c in comments]
+    return jsonify(**data)
+
+
+@brother.route("/admin/users/list/")
+@superuser_login
+def user_table_list():
+    deleted = request.args.get('deleted')
+    if deleted not in ["True", "False"]:
+        abort(404)
+    status = True if deleted == "True" else False
+    fields = ['id', 'username', 'email', 'last_login', 'is_superuser', 'topics_cnt', 'comments_cnt']
     order_dir = request.args.get('sSortDir_0')
     order_field = int(request.args.get('iSortCol_0'))
     length = int(request.args.get('iDisplayLength', 10))
     start = int(request.args.get('iDisplayStart', 0))
 
     users = User.query.filter_by(deleted=status).all()
+    map(lambda x: setattr(x, 'topics_cnt',
+                          '<a href="%s" class="label label-success">%s</a>' %
+                          (url_for('brother.user_more', uid=x.id, content='Topic'),
+                           0 if not x.topics else len(x.topics.split(',')))), users)
+    map(lambda x: setattr(x, 'comments_cnt',
+                          '<a href="%s" class="label label-success">%s</a>' %
+                          (url_for('brother.user_more', uid=x.id, content='Comment'),
+                           0 if not x.comments else len(x.comments.split(',')))), users)
     # Filter the users according to the keywords.
     key = request.args.get('sSearch')
     if key:
         users = list(filter(lambda x: (key == str(x.id) or key in x.username or
-                                       key in x.email or key in x.last_login), users))
+                                       key in x.email), users))
 
     # Sort the data according to specified columns.
     users.sort(key=lambda x: getattr(x, fields[order_field]), reverse=False if order_dir == 'asc' else True)
@@ -222,127 +353,155 @@ def user_table_list(boolean):
     data['iTotalDisplayRecords'] = len(users)
     data['iTotalRecords'] = User.query.count()
     users = users[start:start + length]
-    map(lambda x: setattr(x, 'more',
-                          '<a href="%s" class="label label-success">%s</a>' %
-                          (url_for('brother.user_more', uid=x.id), gettext('more'))), users)
     data['aaData'] = [[u.id, u.username, u.email, natural_time(u.last_login),
-                       str(u.is_superuser), u.more] for u in users]
+                       str(u.is_superuser), u.topics_cnt, u.comments_cnt] for u in users]
 
     return jsonify(**data)
 
 
-@brother.route("/admin/topics/delete/")
+@brother.route("/admin/topics/process/")
 @superuser_login
-def topic_bulk_delete():
+def topic_bulk_process():
+    process = request.args.get('process')
+    if process not in ['active', 'del']:
+        abort(404)
+    topic_status = True if process == 'del' else False
     ids = request.args.get('ids')
     ids = ids.split(',')
     for i in ids:
-        delete(i)
+        i_topic = Topic.query.filter_by(id=i).first()
+        i_topic.process(status=topic_status, cause=2)
+
+    db.session.commit()
     return "Done"
 
 
-@brother.route("/admin/nodes/delete/<string:status>")
+@brother.route("/admin/nodes/process/")
 @superuser_login
-def node_bulk_delete(status):
-    if status not in ['active', 'del']:
+def node_bulk_process():
+    process = request.args.get('process')
+    if process not in ['active', 'del']:
         abort(404)
-    node_status = False if status == 'active' else True
+    node_status = True if process == 'del' else False
     ids = request.args.get('ids')
     ids = ids.split(',')
     for i in ids:
-        node_process(i, status=node_status)
+        i_node = Node.query.filter_by(id=i).first()
+        i_node.process(status=node_status)
 
     db.session.commit()
     return "Done"       # Just return to fit the flask syntax.
 
 
-def node_process(nid, status=True):
-    """ Delete or reactive the specified node by id. (Reset all the topic's node_deleted under this node.)
-    """
-    n = Node.query.filter_by(id=nid).first()
-    n.deleted = status
-
-    all_topics = n.extract_topics()
-    for t in all_topics:
-        t.topic_deleted = status
-    # Remember to do commit in the caller function.
-
-
-@brother.route("/admin/users/process/<string:status>")
+@brother.route("/admin/comments/process/")
 @superuser_login
-def user_bulk_process(status):
-    user_status = True if status == 'active' else False
+def comment_bulk_process():
+    process = request.args.get('process')
+    if process not in ['active', 'del']:
+        abort(404)
+    comment_status = True if process == 'del' else False
     ids = request.args.get('ids')
     ids = ids.split(',')
     for i in ids:
-        user_process(i, status=user_status)
+        i_comment = Comment.query.filter_by(id=i).first()
+        i_comment.process(status=comment_status, cause=1)
+
+    db.session.commit()
+    return "Done"       # Just return to fit the flask syntax.
+
+
+@brother.route("/admin/users/process/")
+@superuser_login
+def user_bulk_process():
+    process = request.args.get('process')
+    if process not in ['active', 'del']:
+        abort(404)
+    user_status = True if process == 'del' else False
+    ids = request.args.get('ids')
+    ids = ids.split(',')
+    for i in ids:
+        i_user = User.query.filter_by(id=i).first()
+        i_user.process(status=user_status)
+    db.session.commit()
     return "Done"
 
 
-@brother.route("/admin/delete_topic/<int:tid>")
+@brother.route("/admin/topic/process/<int:tid>/")
 @superuser_login
-def delete(tid):
-    t = Topic.query.filter_by(id=tid, deleted=False).first_or_404()
-    t.deleted = True
+def topic_process(tid):
+    process = request.args.get('process')
+    if process not in ['active', 'del']:
+        abort(404)
+    status = True if process == 'del' else False
+
+    t = Topic.query.filter_by(id=tid).first_or_404()
+    if t.topic_deleted == status:
+        return redirect(request.args.get('next') or
+                        url_for("brother.topic_manage", classify="deleted" if status else 'normal'))
+
+    t.process(status=status, cause=2)
     db.session.commit()
-    # Delete all the comment and appendix in this topic.
-    map(lambda a: append_delete(a.id), t.extract_appends())
-    map(lambda c: comment_delete(c.id), t.extract_comments())
-    return redirect(url_for("brother.topic_manage"))
+    return redirect(request.args.get('next') or
+                    url_for('brother.topic_manage', classify="deleted" if status else 'normal'))
 
 
-@brother.route("/admin/delete_appendix/<int:aid>")
+@brother.route("/admin/appendix/process/<int:aid>/")
 @superuser_login
-def append_delete(aid):
-    ta = TopicAppend.query.filter_by(id=aid, deleted=False).first_or_404()
-    ta.deleted = True
+def appendix_process(aid):
+    process = request.args.get('process')
+    if process not in ['del', 'active']:
+        abort(404)
+
+    status = True if process == "del" else False
+
+    ta = TopicAppend.query.filter_by(id=aid).first_or_404()
+    if ta.append_deleted == status:
+        return redirect(request.args.get('next') or url_for("brother.topic_more", tid=ta.topic_id))
+
+    ta.process(status=status, cause=1)
     db.session.commit()
     return redirect(url_for("brother.topic_more", tid=ta.topic_id))
 
 
-@brother.route("/admin/delete_comment/<int:cid>")
+@brother.route("/admin/comment/process/<int:cid>/")
 @superuser_login
-def comment_delete(cid):
-    c = Comment.query.filter_by(id=cid, deleted=False).first_or_404()
-    c.deleted = True
+def comment_process(cid):
+    process = request.args.get('process')
+    if process not in ['del', 'active']:
+        abort(404)
 
-    # Delete this comment in corresponding topic.  Just need to minus the reply count.
-    t = Topic.query.filter_by(id=c.topic_id).first()
-    t.reply_count -= 1
+    status = True if process == "del" else False
+
+    c = Comment.query.filter_by(id=cid).first_or_404()
+    if c.comment_deleted == status:
+        return redirect(request.args.get('next') or url_for("brother.topic_more", tid=c.topic_id))
+
+    c.process(status=status, cause=2)
     db.session.commit()
-    return redirect(url_for("brother.topic_more", tid=c.topic_id))
+    return redirect(request.args.get('next') or url_for("brother.topic_more", tid=c.topic_id))
 
 
-@brother.route("/admin/process_user/<int:uid>")
+@brother.route("/admin/user/process/<int:uid>/")
 @superuser_login
-def user_process(uid, status=False):
-    """ Move the user to blacklist or reactivate the blocked user.
+def user_process(uid):
+    """ Move the user to blacklist.
 
-    Block the user if status == False, or reactivate the user.
     Delete or add all the topics and comments the user has made at the same time
     """
-    u = User.query.filter_by(id=uid).first()
-    if u.is_superuser or u.deleted:
-        return redirect(url_for("brother.user_manage"))
+    process = request.args.get('process')
+    if process not in ['del', 'active']:
+        abort(404)
 
-    u.deleted = True
+    status = True if process == "del" else False
+    u = User.query.filter_by(id=uid).first_or_404()
+    if u.is_superuser or u.deleted == status:
+        return redirect(request.args.get('next') or
+                        url_for("brother.user_manage", classify="deleted" if status else 'normal'))
 
-    # Delete all the user's topics
-    if u.topics:
-        topic_list = list(map(int, u.topics.split(',')))
-        for t_id in topic_list:
-            t = Topic.query.filter_by(id=t_id).first()
-            t.deleted = True
-
-    # Delete all the user's comments
-    if u.comments:
-        comment_list = list(map(int, u.comments.split(',')))
-        for c_id in comment_list:
-            c = Comment.query.filter_by(id=c_id).first()
-            c.deleted = True
-
+    u.process(status=True)
     db.session.commit()
-    return redirect(url_for("brother.user_manage"))
+    return redirect(request.args.get('next') or
+                    url_for("brother.user_manage", classify="deleted" if status else 'normal'))
 
 
 @brother.route("/admin/node/create/", methods=['GET', 'POST'])
@@ -358,6 +517,6 @@ def node_create():
         n = Node(title, description)
         db.session.add(n)
         db.session.commit()
-        return redirect(url_for('brother.node_manage', classify="normal"))
+        return redirect(request.args.get('next') or url_for('brother.node_manage', classify="normal"))
     else:
         abort(404)

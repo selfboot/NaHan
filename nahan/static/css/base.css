@@ -259,3 +259,23 @@ blockquote
         display: block;
     }
 }
+
+.watermark
+{
+    position:absolute;
+    left: 50%;
+    top: 20px;
+    z-index: 99999;
+    opacity:0.9;
+    color:red;
+}
+
+.blocked
+{
+    opacity: 0.5;
+    background-color: rgba(243, 205, 205, 0.5);
+}
+
+.fa-3x{
+    font-size: 3em;
+}

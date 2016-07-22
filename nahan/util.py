@@ -31,7 +31,7 @@ def add_user_links_in_content(content_rendered):
     return content_rendered
 
 
-def add_notify_in_content(content, sender_id, topic_id, comment_id=None):
+def add_notify_in_content(content, sender_id, topic_id, comment_id=None, append_id=None):
     """ Generate notify object from the content the user submit.
 
     """
@@ -44,7 +44,8 @@ def add_notify_in_content(content, sender_id, topic_id, comment_id=None):
 
     all_notifies = []
     for u in valid_receiver:
-        all_notifies.append(Notify(sender_id=sender_id, receiver_id=u.id, topic_id=topic_id, comment_id=comment_id))
+        all_notifies.append(Notify(sender_id=sender_id, receiver_id=u.id,
+                                   topic_id=topic_id, comment_id=comment_id, append_id=append_id))
 
     for new_notify in all_notifies:
         db.session.add(new_notify)

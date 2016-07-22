@@ -1,0 +1,92 @@
+{% extends 'base_admin.html' %}
+
+{% block main %}
+<div class="panel panel-default col-md-4" id="left" style="padding: 0">
+    <div class="panel-body">
+        <div class="row">
+            <a class="col-xs-5 text-right" href="{{ url_for('user.info', uid=user.id) }}"><img title="{{user.username}}" class="avatar-large" src="{{user.avatar_url}}"></a>
+            <div class="col-xs-7">
+                <p class="list-post-title"><strong>@{{user.username}}</strong></p>
+                <p class="list-meta">{{ _('The') }} {{user.id}} {{ _('th users') }} </p>
+                <p class="list-meta">{{ user.date_joined | natural_time }}{{ _(' join.') }}</p>
+            </div>
+        </div>
+        <hr class="divider">
+        <div class="row">
+            <div class="list-meta col-xs-5 text-right" style="padding-left: 0"> {{ _('Email Address') }}: </div>
+            <a class="list-meta col-xs-7" href="mailto:{{ user.email }}">{{user.email}}</a>
+        </div>
+        <div class="row">
+            {% if user.website %}
+            <div class="list-meta col-xs-5 text-right" style="padding-left: 0"> {{ _('Personal Site') }}: </div>
+            <a class="list-meta col-xs-7" href="{{user.website}}">{{user.website}}</a>
+            {% endif %}
+        </div>
+        <div class="row">
+            <div class="list-meta col-xs-5 text-right" style="padding-left: 0"> {{ _('Last Login') }}: </div>
+            <div class="list-meta col-xs-7">{{user.last_login | natural_time }}</div>
+        </div>
+        <div class="row">
+            <div class="list-meta col-xs-5 text-right" style="padding-left: 0"> {{ _('Topic Num') }}: </div>
+            <div class="list-meta col-xs-7">{{ 0 if not user.topics else user.topics.split(",") | length }} {{_('Topics')}}</div>
+        </div>
+        <div class="row">
+            <div class="list-meta col-xs-5 text-right" style="padding-left: 0"> {{ _('Comment Num') }}: </div>
+            <div class="list-meta col-xs-7">{{ 0 if not user.comments else user.comments.split(",") | length }} {{_('Comments')}} </div>
+        </div>
+        </br>
+        <div class="row" style="padding-right: 15px">
+            {% if not user.deleted %}
+            <a type="button" class="btn btn-danger pull-right" href="{{ url_for('brother.user_process', uid = user.id, process='del') }}"> {{ _('Block User') }}</a>
+            {% else %}
+            <a type="button" class="btn btn-success pull-right" href="{{ url_for('brother.user_process', uid = user.id, process='active') }}"> {{ _('Activate User') }}</a>
+            {% endif %}
+        </div>
+    </div>
+</div>
+
+<div class="panel panel-default col-md-8" id="right" style="padding: 0">
+    <div class="panel-heading">
+    <p class="panel-title"> {{ user.username }}{{ _("'s Comments") }}</p>
+    </div>
+
+    {% if not comments %}
+	<div class="panel-body">
+		<div class="alert alert-info">
+			{{ _("The user has not any deleted comments") }}
+		</div>
+    </div>
+	{% else %}
+	<ul class="list-group">
+        {% for c in comments %}
+            {% if c.deleted and c.comment_deleted %}
+            <div class="list-group-item list-topic-item blocked">
+                <div class="glyphicon glyphicon-ban-circle fa-3x watermark"></div>
+            {% else %}
+            <div class="list-group-item list-topic-item">
+            {% endif %}
+                <div class="row">
+                    <div class="col-md-10">
+                        <span class="list-meta-node"><a href="{{ url_for('brother.topic_more', tid=c.topic().id) }}">{{c.topic().title}}</a></span>
+                        <span class="list-time">{{c.time_created | natural_time}}</span>
+                        <div class="reply-content col-md-11" style="margin-top:0.8em">
+                            {{c.content_rendered | safe}}
+                        </div>
+                    </div>
+                    <div class="col-md-2">
+                        {% if not c.deleted %}
+                        <a href="{{ url_for('brother.comment_process', cid=c.id, next=request.url, process='del') }}" class="label-danger label pull-right">{{ _('Delete') }}</a>
+                        {% elif c.deleted and not c.comment_deleted %}
+                        <a href="{{ url_for('brother.comment_process', cid=c.id, next=request.url, process='active') }}" class="label-success label pull-right">{{ _('Activate') }}</a>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+        {% endfor %}
+        <div class="panel-footer">
+        {{ pagination_comment.links }}
+		</div>
+    {% endif %}
+	</ul>
+</div>
+{% endblock %}

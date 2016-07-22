@@ -11,7 +11,7 @@ import re
 from PIL import Image
 from datetime import datetime
 from . import user
-from ..models import User, Topic
+from ..models import User
 from ..email import send_email
 from .. import db
 
@@ -175,9 +175,8 @@ def info(uid):
     per_page = current_app.config['PER_PAGE']
     page = int(request.args.get('page', 1))
     offset = (page-1)*per_page
-    topics_all = list(filter(lambda t: not t.deleted, Topic.query.filter_by(user_id=uid)))
+    topics_all = list(filter(lambda t: not t.deleted, u.extract_topics()))
     topics_all.sort(key=lambda t: (t.reply_count, t.click), reverse=True)
-    topics_all = topics_all[:120]
     topics = topics_all[offset:offset+per_page]
     pagination = Pagination(page=page, total=len(topics_all),
                             per_page=per_page,
