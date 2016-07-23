@@ -48,11 +48,6 @@ class User(UserMixin, db.Model):
     def verify_password(self, password):
         return check_password_hash(self.password_hash, password)
 
-    def unread_notify_count(self):
-        if not self.unread_notify:
-            return 0
-        return len(self.unread_notify.split(","))
-
     def generate_reset_token(self, expiration=600):
         s = Serializer(current_app.config['SECRET_KEY'], expiration)
         return s.dumps({'id': self.id})
@@ -74,6 +69,7 @@ class User(UserMixin, db.Model):
             notify_id = list(map(int, self.unread_notify.split(',')))
             all_notify = [Notify.query.filter_by(id=i).first() for i in notify_id]
             live_notify = list(filter(lambda n: not n.deleted, all_notify))
+            print "****", live_notify
             return live_notify
         else:
             return []
@@ -118,8 +114,11 @@ class User(UserMixin, db.Model):
     def process(self, status):
         """ Delete or activate one user,  update status of it's relevant topic, comment.
         """
-        self.deleted = status
+        # No need to do the relevant modification.
+        if self.deleted == status:
+            return
 
+        self.deleted = status
         # Update status of this user's topics, comments
         map(lambda x: x.process(status, cause=1), self.extract_topics())
         map(lambda x: x.process(status, cause=1), self.extract_comments())
@@ -214,9 +213,14 @@ class Topic(db.Model):
         if status not in [0, 1, 2]:
             return
         target = ['node_deleted', 'user_deleted', 'topic_deleted']
-        setattr(self, target[cause], status)
+
+        # No need to do the relevant modification.
+        if self.deleted == status:
+            setattr(self, target[cause], status)
+            return
 
         # Update relevant comments, appendix, notify
+        setattr(self, target[cause], status)
         map(lambda x: x.process(self.deleted, cause=0), self.extract_comments())
         map(lambda x: x.process(self.deleted, cause=0), self.extract_appends())
         notifies = Notify.query.filter_by(topic_id=self.id).all()
@@ -254,8 +258,13 @@ class TopicAppend(db.Model):
         if status not in [0, 1]:
             return
         target = ['topic_deleted', 'append_deleted']
-        setattr(self, target[cause], status)
 
+        # No need to do the relevant modification.
+        if self.deleted == status:
+            setattr(self, target[cause], status)
+            return
+
+        setattr(self, target[cause], status)
         notifies = Notify.query.filter_by(append_id=self.id).all()
         map(lambda x: x.process(self.deleted, cause=1), notifies)
 
@@ -304,10 +313,19 @@ class Comment(db.Model):
         if status not in [0, 1, 2]:
             return
         target = ['topic_deleted', 'user_deleted', 'comment_deleted']
-        setattr(self, target[cause], status)
 
+        # No need to do the relevant modification.
+        if self.deleted == status:
+            setattr(self, target[cause], status)
+            return
+
+        # Remember don't forget setattr here.
+        setattr(self, target[cause], status)
         notifies = Notify.query.filter_by(comment_id=self.id).all()
         map(lambda x: x.process(self.deleted, cause=2), notifies)
+
+        if cause == 2:
+            self.topic().reply_count += -1 if status else 1
 
 
 class Node(db.Model):
@@ -334,7 +352,7 @@ class Node(db.Model):
             self.topics = "%d" % tid
 
     def extract_topics(self):
-        if self.topics and self.topics != " ":
+        if self.topics:
             topics_id = list(map(int, self.topics.split(',')))
             all_topics = [Topic.query.filter_by(id=i).first() for i in topics_id]
             return all_topics
@@ -344,8 +362,11 @@ class Node(db.Model):
     def process(self, status):
         """ Reset the status of the node and relevant topics.
         """
-        self.deleted = status
+        # No need to do the relevant modification.
+        if self.deleted == status:
+            return
 
+        self.deleted = status
         map(lambda x: x.process(status, 0), self.extract_topics())
         # Remember to do commit in the caller function.
 

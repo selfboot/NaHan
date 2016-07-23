@@ -9,6 +9,7 @@
     {% for node in nodes %}
     <div class="col-md-3">
       <a class="thumbnail" href="{{ url_for ('voice.node_view', nid = node.id) }}">
+          <span class="badge pull-right"> {{ node.extract_topics() | rejectattr('deleted') | list | length }} </span>
       <div class="caption">
         <p class="text-center"><strong>{{ node.title }}</strong></p>
         <p>{{ node.description }}</p>

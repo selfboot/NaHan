@@ -68,7 +68,7 @@ $(document).ready(
         function(){
             $('#bulk-add').click(
                 function(){
-                    $.get('{{ url_for("brother.comment_bulk_process", status="active", next=request.url) }}', {'ids': selected_id()});
+                    $.get('{{ url_for("brother.comment_bulk_process", process="active", next=request.url) }}', {'ids': selected_id()});
                     location.reload();
                 }
                 );

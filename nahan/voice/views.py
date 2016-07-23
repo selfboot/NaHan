@@ -11,7 +11,7 @@ from flask_login import login_required, current_user
 import json
 import markdown
 from .. import db
-from ..util import add_user_links_in_content, add_notify_in_content
+from ..util import add_user_links_in_content, add_notify_in_content, update_notify_in_topic
 from flask_paginate import Pagination
 from sqlalchemy import and_
 
@@ -219,17 +219,18 @@ def edit(tid):
                                title=gettext('Edit Topic'),
                                topic=topic)
     elif request.method == 'POST':
-        topic.content = request.form['content']
-        if not topic.content:
-            message = gettext('content cannot be empty')
+        new_content = request.form['content']
+        if not new_content:
+            message = gettext("Topic's content cannot be empty")
             return render_template('voice/edit.html', topic=topic, message=message, title=gettext('Edit Topic'))
 
+        topic.content = new_content
         content_rendered = markdown.markdown(topic.content, ['codehilite'], safe_mode='escape')
         topic.content_rendered = add_user_links_in_content(content_rendered)
-        db.session.commit()
 
-        # Generate notify from the topic content.
-        add_notify_in_content(topic.content, current_user.id, topic.id)
+        # Update the notify from the topic's new content.
+        update_notify_in_topic(new_content, current_user.id, topic.id)
+        db.session.commit()
         return redirect(url_for('voice.view', tid=topic.id))
 
 

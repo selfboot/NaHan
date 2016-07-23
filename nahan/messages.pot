@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PROJECT VERSION\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2016-07-18 10:50+0800\n"
+"POT-Creation-Date: 2016-07-23 14:21+0800\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -17,71 +17,137 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Generated-By: Babel 2.3.4\n"
 
-#: util.py:80
+#: util.py:96
 msgid "year"
 msgstr ""
 
-#: util.py:80
+#: util.py:96
 msgid "years"
 msgstr ""
 
-#: util.py:81
+#: util.py:97
 msgid "month"
 msgstr ""
 
-#: util.py:81
+#: util.py:97
 msgid "months"
 msgstr ""
 
-#: util.py:82
+#: util.py:98
 msgid "week"
 msgstr ""
 
-#: util.py:82
+#: util.py:98
 msgid "weeks"
 msgstr ""
 
-#: util.py:83
+#: util.py:99
 msgid "day"
 msgstr ""
 
-#: util.py:83
+#: util.py:99
 msgid "days"
 msgstr ""
 
-#: util.py:84
+#: util.py:100
 msgid "hour"
 msgstr ""
 
-#: util.py:84
+#: util.py:100
 msgid "hours"
 msgstr ""
 
-#: util.py:85
+#: util.py:101
 msgid "minute"
 msgstr ""
 
-#: util.py:85
+#: util.py:101
 msgid "minutes"
 msgstr ""
 
-#: util.py:86
+#: util.py:102
 msgid "second"
 msgstr ""
 
-#: util.py:86
+#: util.py:102
 msgid "seconds"
 msgstr ""
 
-#: util.py:91
+#: util.py:107
 msgid " ago"
 msgstr ""
 
-#: util.py:93
+#: util.py:109
 msgid "just now"
 msgstr ""
 
-#: templates/404.html:5
+#: brother/views.py:40 user/views.py:40
+msgid "Invalid username or password."
+msgstr ""
+
+#: brother/views.py:57 templates/base_admin.html:41
+#: templates/brother/topic.html:6
+msgid "Normal Topics"
+msgstr ""
+
+#: brother/views.py:59 templates/base_admin.html:42
+#: templates/brother/topic_deleted.html:6
+msgid "Deleted Topics"
+msgstr ""
+
+#: brother/views.py:72 templates/brother/comment.html:6
+msgid "Normal Comments"
+msgstr ""
+
+#: brother/views.py:74 templates/brother/comment_deleted.html:6
+msgid "Deleted Comments"
+msgstr ""
+
+#: brother/views.py:87 templates/base_admin.html:57
+#: templates/brother/node.html:6
+msgid "Normal Nodes"
+msgstr ""
+
+#: brother/views.py:89 templates/base_admin.html:58
+#: templates/brother/node_deleted.html:6
+msgid "Deleted Nodes"
+msgstr ""
+
+#: brother/views.py:102 templates/base_admin.html:33
+#: templates/brother/user.html:6
+msgid "Normal Users"
+msgstr ""
+
+#: brother/views.py:104 templates/base_admin.html:34
+#: templates/brother/user_deleted.html:6
+msgid "Blacklist Users"
+msgstr ""
+
+#: brother/views.py:133
+msgid "More About Topic"
+msgstr ""
+
+#: brother/views.py:149
+msgid "More About Node"
+msgstr ""
+
+#: brother/views.py:182 brother/views.py:195
+msgid "More About User"
+msgstr ""
+
+#: brother/views.py:239 brother/views.py:278
+msgid "more"
+msgstr ""
+
+#: brother/views.py:512 templates/base_admin.html:59
+msgid "Create Node"
+msgstr ""
+
+#: templates/403.html:3 templates/403.html:7
+msgid "403 Forbidden"
+msgstr ""
+
+#: templates/404.html:3 templates/404.html:7
 msgid "404 Not Found"
 msgstr ""
 
@@ -89,40 +155,44 @@ msgstr ""
 msgid "500 Internal Error"
 msgstr ""
 
+#: templates/500.html:7
+msgid "Internal Error Detected"
+msgstr ""
+
 #: templates/base.html:10 templates/user/panel.html:25
 msgid "Speaker for children"
 msgstr ""
 
-#: templates/base.html:23
-msgid "bbs name"
+#: templates/base.html:22 templates/voice/create.html:9
+msgid "Index"
 msgstr ""
 
-#: templates/base.html:29
-msgid "hottest post"
+#: templates/base.html:27 voice/views.py:58 voice/views.py:59
+msgid "Hottest Topics"
 msgstr ""
 
-#: templates/base.html:30
-msgid "all nodes"
+#: templates/base.html:28
+msgid "All Nodes"
 msgstr ""
 
-#: templates/base.html:36
+#: templates/base.html:34 templates/voice/create.html:10
 msgid "New Topic"
 msgstr ""
 
-#: templates/base.html:43 templates/base.html:46 templates/user/reg.html:33
-msgid "sign in?"
+#: templates/base.html:42 templates/base.html:45
+msgid "Sign In?"
 msgstr ""
 
-#: templates/base.html:47 templates/user/reg.html:5
-msgid "register a account"
+#: templates/base.html:46
+msgid "Register Account"
 msgstr ""
 
-#: templates/base.html:48 templates/user/signin.html:25
-msgid "forget password?"
+#: templates/base.html:47
+msgid "Forget Password?"
 msgstr ""
 
 #: templates/base.html:56
-msgid "enter key words"
+msgid "Enter Key Words"
 msgstr ""
 
 #: templates/base.html:59
@@ -130,19 +200,294 @@ msgid "Search"
 msgstr ""
 
 #: templates/base.html:77
-msgid "copyright by"
+msgid "copyright by xuezaigds@gmail.com"
 msgstr ""
 
-#: templates/user/info.html:14
+#: templates/base_admin.html:10
+msgid "admin"
+msgstr ""
+
+#: templates/base_admin.html:10
+msgid "sitename"
+msgstr ""
+
+#: templates/base_admin.html:25
+msgid "Admin Management"
+msgstr ""
+
+#: templates/base_admin.html:31
+msgid "User"
+msgstr ""
+
+#: templates/base_admin.html:39 templates/brother/comment.html:16
+#: templates/brother/comment_deleted.html:16 voice/views.py:83
+#: voice/views.py:98 voice/views.py:131
+msgid "Topic"
+msgstr ""
+
+#: templates/base_admin.html:47
+msgid "Comment"
+msgstr ""
+
+#: templates/base_admin.html:49
+msgid "Normal Comment"
+msgstr ""
+
+#: templates/base_admin.html:50
+msgid "Blacklist Comment"
+msgstr ""
+
+#: templates/base_admin.html:55
+msgid "Node"
+msgstr ""
+
+#: templates/base_admin.html:65
+msgid "Log Out"
+msgstr ""
+
+#: templates/brother/auth.html:7
+msgid "Administrator sign in"
+msgstr ""
+
+#: templates/brother/auth.html:16
+msgid "Administrator Sign In"
+msgstr ""
+
+#: templates/brother/auth.html:21 templates/user/signin.html:11
+msgid "email"
+msgstr ""
+
+#: templates/brother/auth.html:26 templates/user/reg.html:19
+#: templates/user/signin.html:16
+msgid "password"
+msgstr ""
+
+#: templates/brother/auth.html:32 templates/user/signin.html:22
+#: templates/voice/topic.html:135
+msgid "sign in"
+msgstr ""
+
+#: templates/brother/comment.html:14 templates/brother/comment_deleted.html:14
+msgid "Content"
+msgstr ""
+
+#: templates/brother/comment.html:15 templates/brother/comment_deleted.html:15
+#: templates/brother/topic.html:16 templates/brother/topic_deleted.html:16
+#: templates/brother/user.html:14 templates/brother/user_deleted.html:14
+msgid "Username"
+msgstr ""
+
+#: templates/brother/comment.html:24
+msgid "Delete Selected Comment"
+msgstr ""
+
+#: templates/brother/comment_deleted.html:24
+msgid "Active Selected Comment Again"
+msgstr ""
+
+#: templates/brother/node.html:14 templates/brother/node_create.html:20
+#: templates/brother/node_deleted.html:14 templates/brother/node_more.html:20
+#: templates/brother/topic.html:14 templates/brother/topic_deleted.html:14
+msgid "Title"
+msgstr ""
+
+#: templates/brother/node.html:15 templates/brother/node_create.html:24
+#: templates/brother/node_deleted.html:15 templates/brother/node_more.html:24
+msgid "Description"
+msgstr ""
+
+#: templates/brother/node.html:16 templates/brother/node_deleted.html:16
+msgid "Topic Count"
+msgstr ""
+
+#: templates/brother/node.html:17 templates/brother/node_deleted.html:17
+#: templates/brother/topic.html:18 templates/brother/topic_deleted.html:18
+msgid "More"
+msgstr ""
+
+#: templates/brother/node.html:25
+msgid "Delete Selected Nodes"
+msgstr ""
+
+#: templates/brother/node_create.html:6 templates/brother/node_more.html:6
+msgid "Node Management"
+msgstr ""
+
+#: templates/brother/node_create.html:7
+msgid "New Node"
+msgstr ""
+
+#: templates/brother/node_create.html:21
+msgid "Node Title"
+msgstr ""
+
+#: templates/brother/node_create.html:25
+msgid "Node Description"
+msgstr ""
+
+#: templates/brother/node_create.html:30 templates/brother/node_more.html:30
+msgid "Submit"
+msgstr ""
+
+#: templates/brother/node_deleted.html:25
+msgid "Active Selected Nodes"
+msgstr ""
+
+#: templates/brother/topic.html:15 templates/brother/topic_deleted.html:15
+msgid "Reply Count"
+msgstr ""
+
+#: templates/brother/topic.html:17 templates/brother/topic_deleted.html:17
+msgid "Topic's node"
+msgstr ""
+
+#: templates/brother/topic.html:26
+msgid "Delete Selected Topic"
+msgstr ""
+
+#: templates/brother/topic_deleted.html:26
+msgid "Active Selected Topic Again"
+msgstr ""
+
+#: templates/brother/topic_more.html:12
+msgid "Delete Topic"
+msgstr ""
+
+#: templates/brother/topic_more.html:14
+msgid "Activate Topic"
+msgstr ""
+
+#: templates/brother/topic_more.html:33 templates/user/panel.html:9
+#: templates/voice/append.html:62 templates/voice/topic.html:38
+msgid "The "
+msgstr ""
+
+#: templates/brother/topic_more.html:33 templates/voice/append.html:62
+#: templates/voice/edit.html:62 templates/voice/topic.html:38
+msgid "appendix"
+msgstr ""
+
+#: templates/brother/topic_more.html:35 templates/brother/topic_more.html:79
+#: templates/brother/user_more_comment.html:78
+#: templates/brother/user_more_topic.html:79
+msgid "Delete"
+msgstr ""
+
+#: templates/brother/topic_more.html:37 templates/brother/topic_more.html:81
+#: templates/brother/user_more_comment.html:80
+#: templates/brother/user_more_topic.html:81
+msgid "Activate"
+msgstr ""
+
+#: templates/brother/topic_more.html:53 templates/voice/topic.html:53
+#: templates/voice/topic.html:74 templates/voice/topic.html:103
+msgid "reply"
+msgstr ""
+
+#: templates/brother/topic_more.html:55 templates/voice/topic.html:55
+#: templates/voice/topic.html:94
+msgid "no replies yet"
+msgstr ""
+
+#: templates/brother/user.html:15 templates/brother/user_deleted.html:15
+#: templates/user/reg.html:13 templates/user/setting_info.html:28
+msgid "Email"
+msgstr ""
+
+#: templates/brother/user.html:16 templates/brother/user_deleted.html:16
+#: templates/brother/user_more_comment.html:26
+#: templates/brother/user_more_topic.html:26
+msgid "Last Login"
+msgstr ""
+
+#: templates/brother/user.html:17 templates/brother/user_deleted.html:17
+msgid "Is Superuser"
+msgstr ""
+
+#: templates/brother/user.html:18 templates/brother/user_deleted.html:18
+#: templates/brother/user_more_comment.html:31
+#: templates/brother/user_more_topic.html:31
+msgid "Topics"
+msgstr ""
+
+#: templates/brother/user.html:19 templates/brother/user_deleted.html:19
+#: templates/brother/user_more_comment.html:35
+#: templates/brother/user_more_topic.html:35
+msgid "Comments"
+msgstr ""
+
+#: templates/brother/user.html:27
+msgid "Move Selected to Blacklist"
+msgstr ""
+
+#: templates/brother/user_deleted.html:27
+msgid "Active Selected User Again"
+msgstr ""
+
+#: templates/brother/user_more_comment.html:10
+#: templates/brother/user_more_topic.html:10 templates/user/info.html:14
 msgid "The"
 msgstr ""
 
-#: templates/user/info.html:14 templates/user/panel.html:9
+#: templates/brother/user_more_comment.html:10
+#: templates/brother/user_more_topic.html:10 templates/user/info.html:14
+#: templates/user/panel.html:9
 msgid "th users"
 msgstr ""
 
-#: templates/user/info.html:14
+#: templates/brother/user_more_comment.html:11
+#: templates/brother/user_more_topic.html:11 templates/user/info.html:14
 msgid " join."
+msgstr ""
+
+#: templates/brother/user_more_comment.html:16
+#: templates/brother/user_more_topic.html:16
+msgid "Email Address"
+msgstr ""
+
+#: templates/brother/user_more_comment.html:21
+#: templates/brother/user_more_topic.html:21
+msgid "Personal Site"
+msgstr ""
+
+#: templates/brother/user_more_comment.html:30
+#: templates/brother/user_more_topic.html:30
+msgid "Topic Num"
+msgstr ""
+
+#: templates/brother/user_more_comment.html:34
+#: templates/brother/user_more_topic.html:34
+msgid "Comment Num"
+msgstr ""
+
+#: templates/brother/user_more_comment.html:40
+#: templates/brother/user_more_topic.html:40
+msgid "Block User"
+msgstr ""
+
+#: templates/brother/user_more_comment.html:42
+msgid "Activate User"
+msgstr ""
+
+#: templates/brother/user_more_comment.html:50
+msgid "'s Comments"
+msgstr ""
+
+#: templates/brother/user_more_comment.html:56
+msgid "The user has not any deleted comments"
+msgstr ""
+
+#: templates/brother/user_more_topic.html:48 user/views.py:188
+#: user/views.py:189
+msgid "'s Topics"
+msgstr ""
+
+#: templates/brother/user_more_topic.html:54
+msgid "The user has not any deleted topics"
+msgstr ""
+
+#: templates/brother/user_more_topic.html:72 templates/voice/list.html:25
+msgid "clicks"
 msgstr ""
 
 #: templates/user/info.html:16
@@ -153,29 +498,28 @@ msgstr ""
 msgid "Unread Mentions"
 msgstr ""
 
-#: templates/user/notify.html:26 templates/user/notify.html:59
+#: templates/user/notify.html:27 templates/user/notify.html:64
 msgid "In comment"
 msgstr ""
 
-#: templates/user/notify.html:28 templates/user/notify.html:32
-#: templates/user/notify.html:61 templates/user/notify.html:65
-msgid "Mentioned you"
+#: templates/user/notify.html:30 templates/user/notify.html:67
+msgid "In appendix"
 msgstr ""
 
-#: templates/user/notify.html:30 templates/user/notify.html:63
+#: templates/user/notify.html:33 templates/user/notify.html:70
 msgid "In topic"
 msgstr ""
 
-#: templates/user/notify.html:44
+#: templates/user/notify.html:36 templates/user/notify.html:73
+msgid "Mentioned you"
+msgstr ""
+
+#: templates/user/notify.html:48
 msgid "Old Mentions"
 msgstr ""
 
-#: templates/user/notify.html:77
+#: templates/user/notify.html:85
 msgid "No Mentions"
-msgstr ""
-
-#: templates/user/panel.html:9 templates/voice/topic.html:40
-msgid "The "
 msgstr ""
 
 #: templates/user/panel.html:15
@@ -203,11 +547,11 @@ msgid " Do you ever Think what children think."
 msgstr ""
 
 #: templates/user/panel.html:36
-msgid "new messages"
+msgid "New Messages"
 msgstr ""
 
 #: templates/user/panel.html:40
-msgid "site messages"
+msgid "Site Messages"
 msgstr ""
 
 #: templates/user/passwd_reset.html:3 templates/user/passwd_reset.html:10
@@ -218,9 +562,9 @@ msgstr ""
 msgid "register email"
 msgstr ""
 
-#: templates/user/passwd_reset.html:22 templates/voice/append.html:52
-#: templates/voice/create.html:46 templates/voice/edit.html:51
-#: templates/voice/topic.html:129
+#: templates/user/passwd_reset.html:22 templates/voice/append.html:49
+#: templates/voice/create.html:46 templates/voice/edit.html:48
+#: templates/voice/topic.html:124
 msgid "submit"
 msgstr ""
 
@@ -315,6 +659,10 @@ msgid ""
 "check your email and click the link to continue."
 msgstr ""
 
+#: templates/user/reg.html:5 user/views.py:55 user/views.py:89
+msgid "register a account"
+msgstr ""
+
 #: templates/user/reg.html:7
 msgid "username"
 msgstr ""
@@ -323,16 +671,12 @@ msgstr ""
 msgid "letters,digits,underscore"
 msgstr ""
 
-#: templates/user/reg.html:13 templates/user/setting_info.html:28
-msgid "Email"
-msgstr ""
-
-#: templates/user/reg.html:19 templates/user/signin.html:16
-msgid "password"
-msgstr ""
-
 #: templates/user/reg.html:31
 msgid "register"
+msgstr ""
+
+#: templates/user/reg.html:33
+msgid "sign in?"
 msgstr ""
 
 #: templates/user/setting_avatar.html:10 templates/user/setting_info.html:12
@@ -375,21 +719,16 @@ msgstr ""
 msgid "current password"
 msgstr ""
 
-#: templates/user/signin.html:6
+#: templates/user/signin.html:6 user/views.py:29 user/views.py:41
 msgid "user sign in"
-msgstr ""
-
-#: templates/user/signin.html:11
-msgid "email"
-msgstr ""
-
-#: templates/user/signin.html:22 templates/voice/create.html:56
-#: templates/voice/topic.html:140
-msgid "sign in"
 msgstr ""
 
 #: templates/user/signin.html:24
 msgid "reg"
+msgstr ""
+
+#: templates/user/signin.html:25
+msgid "forget password?"
 msgstr ""
 
 #: templates/voice/append.html:13 templates/voice/edit.html:13
@@ -407,34 +746,16 @@ msgstr ""
 msgid "edit"
 msgstr ""
 
-#: templates/voice/append.html:26 templates/voice/edit.html:26
-#: templates/voice/topic.html:26 templates/voice/topic.html:42
-#: templates/voice/topic.html:74
-msgid "delete"
-msgstr ""
-
-#: templates/voice/append.html:46 templates/voice/create.html:27
-#: templates/voice/create.html:28 templates/voice/edit.html:43
-#: templates/voice/edit.html:44 templates/voice/topic.html:122
+#: templates/voice/append.html:43 templates/voice/append.html:44
+#: templates/voice/create.html:27 templates/voice/create.html:28
+#: templates/voice/edit.html:40 templates/voice/edit.html:41
+#: templates/voice/topic.html:117
 msgid "content"
 msgstr ""
 
-#: templates/voice/append.html:47 templates/voice/append.html:65
-#: templates/voice/edit.html:65 templates/voice/topic.html:40
-msgid "appendix"
-msgstr ""
-
-#: templates/voice/append.html:50 templates/voice/create.html:43
-#: templates/voice/edit.html:48 templates/voice/topic.html:127
+#: templates/voice/append.html:47 templates/voice/create.html:43
+#: templates/voice/edit.html:45 templates/voice/topic.html:122
 msgid "preview"
-msgstr ""
-
-#: templates/voice/create.html:8
-msgid "home"
-msgstr ""
-
-#: templates/voice/create.html:9
-msgid "new topic"
 msgstr ""
 
 #: templates/voice/create.html:23
@@ -450,132 +771,132 @@ msgid "node"
 msgstr ""
 
 #: templates/voice/create.html:54
-msgid "please sign in before post"
+msgid ""
+"There is not any node yet, please contact the administrator to create "
+"nodes."
 msgstr ""
 
 #: templates/voice/list.html:6 voice/views.py:33 voice/views.py:34
-#: voice/views.py:56 voice/views.py:57
 msgid "Latest Topics"
 msgstr ""
 
 #: templates/voice/list.html:12
-msgid "sorry, but we can't find the topics you need"
+msgid "Sorry, but we can't find the topics you need"
 msgstr ""
 
-#: templates/voice/list.html:25
-msgid "clicks"
+#: templates/voice/node_all.html:23
+msgid "Sorry, but we can't find any nodes yet."
 msgstr ""
 
-#: templates/voice/node_all.html:9
-msgid "node navigation"
-msgstr ""
-
-#: templates/voice/topic.html:56 templates/voice/topic.html:79
-#: templates/voice/topic.html:108
-msgid "reply"
-msgstr ""
-
-#: templates/voice/topic.html:58 templates/voice/topic.html:99
-msgid "no replies yet"
-msgstr ""
-
-#: templates/voice/topic.html:138
+#: templates/voice/topic.html:133
 msgid "please sign in before reply"
 msgstr ""
 
-#: user/views.py:35
-msgid "Invalid username or password."
-msgstr ""
-
-#: user/views.py:60
+#: user/views.py:67
 msgid "Username can not be empty."
 msgstr ""
 
-#: user/views.py:62
+#: user/views.py:69
 msgid "Username can only contain letters digits and underscore."
 msgstr ""
 
-#: user/views.py:64
+#: user/views.py:71
 msgid "Username already exists."
 msgstr ""
 
-#: user/views.py:68 user/views.py:232
+#: user/views.py:75 user/views.py:240
 msgid "Email address can not be empty."
 msgstr ""
 
-#: user/views.py:70 user/views.py:110 user/views.py:234
+#: user/views.py:77 user/views.py:118 user/views.py:242
 msgid "Email address is invalid."
 msgstr ""
 
-#: user/views.py:72
+#: user/views.py:79
 msgid "Email already exists."
 msgstr ""
 
-#: user/views.py:76 user/views.py:143 user/views.py:204
+#: user/views.py:83 user/views.py:151 user/views.py:212
 msgid "Passwords don't match."
 msgstr ""
 
-#: user/views.py:78 user/views.py:145 user/views.py:206
+#: user/views.py:85 user/views.py:153 user/views.py:214
 msgid "Passwords can not be empty."
 msgstr ""
 
-#: user/views.py:108
+#: user/views.py:116
 msgid "The email can not be empty"
 msgstr ""
 
-#: user/views.py:112
+#: user/views.py:120
 msgid "The email has not be registered"
 msgstr ""
 
-#: user/views.py:180 user/views.py:181
-msgid "'s Topics"
-msgstr ""
-
-#: user/views.py:215
+#: user/views.py:223
 msgid "Update password done!"
 msgstr ""
 
-#: user/views.py:244
+#: user/views.py:252
 msgid "Update info done!"
 msgstr ""
 
-#: user/views.py:257
+#: user/views.py:265
 msgid "No selected file"
 msgstr ""
 
-#: user/views.py:271
+#: user/views.py:279
 msgid "Update avatar done!"
 msgstr ""
 
-#: user/views.py:275
+#: user/views.py:283
 msgid "Invalid file"
 msgstr ""
 
-#: voice/views.py:91
+#: user/views.py:305
+msgid "Notify"
+msgstr ""
+
+#: voice/views.py:96
 msgid "Comment cannot be empty or too large"
 msgstr ""
 
-#: voice/views.py:169 voice/views.py:199
+#: voice/views.py:148
+msgid "Create Topic"
+msgstr ""
+
+#: voice/views.py:190
 msgid "content cannot be empty"
 msgstr ""
 
-#: voice/views.py:248
+#: voice/views.py:219 voice/views.py:225
+msgid "Edit Topic"
+msgstr ""
+
+#: voice/views.py:224
+msgid "Topic's content cannot be empty"
+msgstr ""
+
+#: voice/views.py:255
+msgid "All nodes"
+msgstr ""
+
+#: voice/views.py:278
 msgid "Node view"
 msgstr ""
 
-#: voice/views.py:249
+#: voice/views.py:279
 msgid "Node "
 msgstr ""
 
-#: voice/views.py:249
+#: voice/views.py:279
 msgid "'s topics"
 msgstr ""
 
-#: voice/views.py:288
+#: voice/views.py:317
 msgid " -search result"
 msgstr ""
 
-#: voice/views.py:290
+#: voice/views.py:319
 msgid "'s search result"
 msgstr ""
 

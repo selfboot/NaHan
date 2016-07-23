@@ -68,7 +68,7 @@ $(document).ready(
         function(){
             $('#bulk-delete').click(
                 function(){
-                    $.get('{{ url_for("brother.comment_bulk_process", status="del", next=request.url) }}', {'ids': selected_id()});
+                    $.get('{{ url_for("brother.comment_bulk_process", process="del", next=request.url) }}', {'ids': selected_id()});
                     location.reload();
                 }
                 );

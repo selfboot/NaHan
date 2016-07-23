@@ -13,7 +13,7 @@
     <div class="panel panel-default col-md-6 col-md-offset-3" style="margin-top:5em">
 
         <form class="panel-body" role="form" method="post" action="{{ url_for('brother.auth', next=request.args.get('next')) }}">
-            <h2 class="text-center" style="margin-bottom:1em"> {{ _('Administrator sign in')}} </h2>
+            <h2 class="text-center" style="margin-bottom:1em"> {{ _('Administrator Sign In')}} </h2>
             {% if message %}
             <div class="messages"> <p class="text-danger"> {{ message }} </p></div>
             {% endif %}

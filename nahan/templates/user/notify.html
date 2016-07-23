@@ -13,6 +13,7 @@
     </div>
     <ul class="list-group">
         {% for n in new %}
+        {% if not n.deleted %}
         <div class="list-group-item list-topic-item">
             <div class="row">
                 <a href="{{ url_for('user.info', uid = n.sender_id) }}" class="col-xs-1"><img title="{{n.sender.username}}" class="avatar-middle" src="{{n.sender.avatar_url}}"></a>
@@ -37,6 +38,7 @@
                 </div>
             </div>
         </div>
+        {% endif %}
         {% endfor %}
     </ul>
     {% endif %}
@@ -48,6 +50,7 @@
     </div>
     <ul class="list-group">
         {% for n in old %}
+        {% if not n.deleted %}
         <div class="list-group-item list-topic-item">
             <div class="row ">
                 <a href="{{ url_for('user.info', uid = n.sender_id) }}" class="col-xs-1"><img title="{{n.sender.username}}" class="avatar-middle" src="{{n.sender.avatar_url }}"></a>
@@ -72,6 +75,7 @@
                 </div>
             </div>
         </div>
+        {% endif %}
         {% endfor %}
     </ul>
     {% endif %}

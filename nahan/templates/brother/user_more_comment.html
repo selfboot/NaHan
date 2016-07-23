@@ -59,7 +59,7 @@
 	{% else %}
 	<ul class="list-group">
         {% for c in comments %}
-            {% if c.deleted and c.comment_deleted %}
+            {% if c.deleted and not c.comment_deleted %}
             <div class="list-group-item list-topic-item blocked">
                 <div class="glyphicon glyphicon-ban-circle fa-3x watermark"></div>
             {% else %}
@@ -76,7 +76,7 @@
                     <div class="col-md-2">
                         {% if not c.deleted %}
                         <a href="{{ url_for('brother.comment_process', cid=c.id, next=request.url, process='del') }}" class="label-danger label pull-right">{{ _('Delete') }}</a>
-                        {% elif c.deleted and not c.comment_deleted %}
+                        {% elif c.deleted and c.comment_deleted %}
                         <a href="{{ url_for('brother.comment_process', cid=c.id, next=request.url, process='active') }}" class="label-success label pull-right">{{ _('Activate') }}</a>
                         {% endif %}
                     </div>

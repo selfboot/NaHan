@@ -31,13 +31,13 @@
         {% endif %}
     </div>
     {% if current_user.is_authenticated %}
-        {% if current_user.unread_notify %}
+        {% if current_user.extract_unread_notify() %}
         <div class="panel-footer">
-            <span class="notification"><a href="{{ url_for('user.notify') }}">{{current_user.unread_notify_count()}}{{ _('new messages') }}</a></span>
+            <span class="notification"><a href="{{ url_for('user.notify') }}">{{current_user.extract_unread_notify() | length }} {{ _('New Messages') }}</a></span>
         </div>
         {% else  %}
         <div class="panel-footer">
-            <span class="notification"><a href="{{ url_for('user.notify') }}">{{ _('site messages') }}</a></span>
+            <span class="notification"><a href="{{ url_for('user.notify') }}">{{ _('Site Messages') }}</a></span>
         </div>
         {% endif %}
     {% endif %}
