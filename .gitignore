@@ -7,6 +7,3 @@ __pycache__/
 
 # pycharm files
 .idea/
-
-# some small demos
-demo/
