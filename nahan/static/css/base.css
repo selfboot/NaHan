@@ -2,6 +2,10 @@ a {
 	text-decoration: none !important;
 }
 
+p{
+	word-wrap: break-word;
+}
+
 .list-post-title, .list-meta {
 	margin: 0px;
 }
