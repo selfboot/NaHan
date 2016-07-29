@@ -8,6 +8,7 @@ from flask_login import login_user, logout_user, login_required, current_user
 from flask_babel import gettext
 from flask_paginate import Pagination
 import re
+import os
 from PIL import Image
 from datetime import datetime
 from . import user
@@ -274,10 +275,11 @@ def setting_avatar():
             im.thumbnail((128, 128), Image.ANTIALIAS)
             im.save("%s/%d.png" % (upload_folder, current_user.id), 'PNG')
 
-            current_user.avatar_url = url_for("static", filename="upload/%d.png" % current_user.id)
+            image_path = os.path.join(current_app.config['UPLOAD_FOLDER'], "%d.png" % current_user.id)
+            unique_mark = os.stat(image_path).st_mtime
+            current_user.avatar_url = url_for('static', filename='upload/%d.png' % current_user.id, t=unique_mark)
             db.session.commit()
             message_success = gettext('Update avatar done!')
-            # Need to reload the whole page, otherwise the avatar is still old because of the cache.
             return render_template('user/setting_avatar.html', message_success=message_success)
         else:
             message_fail = gettext("Invalid file")
