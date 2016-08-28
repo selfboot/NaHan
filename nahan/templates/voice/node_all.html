@@ -4,24 +4,27 @@
 {% endblock %}
 
 {% block right %}
-<div class="row">
-    {% if nodes %}
-    {% for node in nodes %}
-    <div class="col-md-3">
-      <a class="thumbnail" href="{{ url_for ('voice.node_view', nid = node.id) }}">
-          <span class="badge pull-right"> {{ node.extract_topics() | rejectattr('deleted') | list | length }} </span>
+  {% if nodes %}
+  {% for i in range(0, nodes|length, 4) %}
+    <div class="row">
+      {% for n in nodes[i: i+4] %}
+      <div class="col-md-3">
+      <a class="thumbnail" href="{{ url_for ('voice.node_view', nid = n.id) }}">
+          <span class="badge pull-right"> {{ n.extract_topics() | rejectattr('deleted') | list | length }} </span>
       <div class="caption">
-        <p class="text-center"><strong>{{ node.title }}</strong></p>
-        <p>{{ node.description }}</p>
+        <p class="text-center"><strong>{{ n.title }}</strong></p>
+        <p>{{ n.description }}</p>
       </div>
       </a>
+      </div>
+      {% endfor %}
     </div>
-    {% endfor %}
+  {% endfor %}
 
-    {% else %}
+  {% else %}
 		<div class="alert alert-danger">
 			{{ _("Sorry, but we can't find any nodes yet.") }}
 		</div>
-    {% endif %}
-</div>
+  {% endif %}
+
 {% endblock %}

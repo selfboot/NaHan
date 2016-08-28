@@ -224,8 +224,9 @@ p > img {
     margin-right: auto;
 }
 .panel-body p{
-	font-size: 1.3em;
+	font-size: 16px;
     font-family: Monaco, Courier, sans-serif, Arial, "Microsoft YaHei";
+    line-height: 1.5;
 }
 
 blockquote

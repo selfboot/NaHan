@@ -513,9 +513,7 @@ def node_create():
                                form=Node)
     elif request.method == 'POST':
         title = request.form['title']
-        print request.form
         description = request.form['description']
-        print description
         n = Node(title, description)
         db.session.add(n)
         db.session.commit()

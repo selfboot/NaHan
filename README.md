@@ -1,6 +1,6 @@
 # NaHan: A Tiny Forum.
 
-NaHan is a tiny forum written by Python flask and bootstrap.  Its goal is to learn flask and web development in practice.
+[NaHan](http://bbs.selfboot.cn/) is a tiny forum written by Python flask and bootstrap.  Its goal is to learn flask and web development in practice.
 
 Topic page:
 
@@ -20,6 +20,8 @@ Major features:
 4. Can use `@someone` to remind other user anywhere.  The user which be is reminded will receive notify.
 5. A convenient administrator system, super user can block or activate users, topics, nodes and comments.
 6. A simple keyword search engine, one can search some specific topics.
+
+You can sign up for an account and have a explore as normal user.  You can even login as an administrator in [admin page](http://bbs.selfboot.cn/admin/) with username 1291023320@qq.com, password 1.  Then you can try to block some topics(comments and users as well) and reactive them again.
 
 # How to Run
 
