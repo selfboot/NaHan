@@ -1,7 +1,7 @@
 #! /usr/bin/env python
 # -*- coding: utf-8 -*-
 # @Author: xuezaigds@gmail.com
-# @Last Modified time: 2016-07-01 09:44:03
+# @Last Modified time: 2016-09-07 21:53:34
 
 from flask import render_template, redirect, request, url_for, abort, current_app
 from . import voice
@@ -20,9 +20,10 @@ from sqlalchemy import and_
 def index():
     per_page = current_app.config['PER_PAGE']
     page = int(request.args.get('page', 1))
-    offset = (page-1)*per_page
+    offset = (page - 1) * per_page
     topics_all = list(filter(lambda t: not t.deleted, Topic.query.all()))
-    topics = topics_all[offset:offset+per_page]
+    topics_all.sort(key=lambda t: (t.time_created), reverse=True)
+    topics = topics_all[offset:offset + per_page]
     pagination = Pagination(page=page, total=len(topics_all),
                             per_page=per_page,
                             record_name='topics',
@@ -43,11 +44,11 @@ def hot():
     """
     per_page = current_app.config['PER_PAGE']
     page = int(request.args.get('page', 1))
-    offset = (page-1)*per_page
+    offset = (page - 1) * per_page
     topics_all = list(filter(lambda t: not t.deleted, Topic.query.all()))
     topics_all.sort(key=lambda t: (t.reply_count, t.click), reverse=True)
     topics_all = topics_all[:120]
-    topics = topics_all[offset:offset+per_page]
+    topics = topics_all[offset:offset + per_page]
     pagination = Pagination(page=page, total=len(topics_all),
                             per_page=per_page,
                             record_name='topics',
@@ -66,9 +67,10 @@ def view(tid):
     topic = Topic.query.filter_by(id=tid).first_or_404()
     if topic.deleted:
         abort(404)
-    live_comments_all = list(filter(lambda x: not x.deleted, topic.extract_comments()))
+    live_comments_all = list(
+        filter(lambda x: not x.deleted, topic.extract_comments()))
     page = int(request.args.get('page', 1))
-    offset = (page-1)*per_page
+    offset = (page - 1) * per_page
     live_comments = live_comments_all[offset:offset + per_page]
     pagination = Pagination(page=page, total=len(live_comments_all),
                             per_page=per_page,
@@ -154,7 +156,8 @@ def create():
         user_id = current_user.id
 
         new_topic = Topic(user_id, title, content, node_id)
-        new_topic.content_rendered = add_user_links_in_content(new_topic.content_rendered)
+        new_topic.content_rendered = add_user_links_in_content(
+            new_topic.content_rendered)
         db.session.add(new_topic)
         db.session.commit()
         topic_id = new_topic.id
@@ -192,14 +195,16 @@ def appendix(tid):
                 'voice/append.html', topic=topic, message=message)
 
         topic_append = TopicAppend(append_c, tid)
-        topic_append.content_rendered = add_user_links_in_content(topic_append.content_rendered)
+        topic_append.content_rendered = add_user_links_in_content(
+            topic_append.content_rendered)
         db.session.add(topic_append)
         db.session.commit()
         topic.add_append(topic_append.id)
         db.session.commit()
 
         # Generate notify from the topic content.
-        add_notify_in_content(topic_append.content, current_user.id, tid, append_id=topic_append.id)
+        add_notify_in_content(topic_append.content,
+                              current_user.id, tid, append_id=topic_append.id)
 
         return redirect(url_for('voice.view', tid=topic.id, _anchor='append'))
     else:
@@ -225,7 +230,8 @@ def edit(tid):
             return render_template('voice/edit.html', topic=topic, message=message, title=gettext('Edit Topic'))
 
         topic.content = new_content
-        content_rendered = markdown.markdown(topic.content, ['codehilite'], safe_mode='escape')
+        content_rendered = markdown.markdown(
+            topic.content, ['codehilite'], safe_mode='escape')
         topic.content_rendered = add_user_links_in_content(content_rendered)
 
         # Update the notify from the topic's new content.
@@ -262,12 +268,13 @@ def node_view(nid):
     node_title = n.title
     per_page = current_app.config['PER_PAGE']
     page = int(request.args.get('page', 1))
-    offset = (page-1)*per_page
+    offset = (page - 1) * per_page
 
-    topics_all = list(filter(lambda t: not t.deleted, Topic.query.filter_by(node_id=nid)))
+    topics_all = list(filter(lambda t: not t.deleted,
+                             Topic.query.filter_by(node_id=nid)))
     topics_all.sort(key=lambda t: (t.reply_count, t.click), reverse=True)
     topics_all = topics_all[:120]
-    topics = topics_all[offset:offset+per_page]
+    topics = topics_all[offset:offset + per_page]
     pagination = Pagination(page=page, total=len(topics_all),
                             per_page=per_page,
                             record_name='topics',
@@ -276,7 +283,8 @@ def node_view(nid):
     return render_template('voice/node_view.html',
                            topics=topics,
                            title=gettext('Node view'),
-                           post_list_title=gettext("Node ") + node_title + gettext("'s topics"),
+                           post_list_title=gettext(
+                               "Node ") + node_title + gettext("'s topics"),
                            pagination=pagination)
     return render_template('voice/node_view.html')
 
@@ -294,18 +302,15 @@ def search(keywords):
     """
 
     keys = keywords.split(' ')
-    all_topics = set(Topic.query.filter(and_(*[Topic.title.like("%"+k+"%") for k in keys])).all())
-    content_topics = set(Topic.query.filter(and_(*[Topic.content.like("%"+k+"%") for k in keys])).all())
+    all_topics = (Topic.query.filter(
+        and_(*[Topic.title_content.like("%" + k + "%") for k in keys])).all())
 
-    # Remove duplicated search result, because the keywords occur in both title and content.
-    all_topics.update(content_topics)
-    all_topics = list(all_topics)
     all_topics = list(filter(lambda x: not x.deleted, all_topics))
     all_topics.sort(key=lambda x: x.time_created, reverse=True)
 
     per_page = current_app.config['PER_PAGE']
     page = int(request.args.get('page', 1))
-    offset = (page-1)*per_page
+    offset = (page - 1) * per_page
     topics = all_topics[offset:offset + per_page]
     pagination = Pagination(page=page, total=len(all_topics),
                             per_page=per_page,

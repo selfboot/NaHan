@@ -1,15 +1,17 @@
 #! /usr/bin/env python
 # -*- coding: utf-8 -*-
 # @Author: xuezaigds@gmail.com
-# @Last Modified time: 2016-07-01 15:57:33
+# @Last Modified time: 2016-09-07 23:23:20
 
 import markdown
 from datetime import datetime
 from flask_login import UserMixin
-from flask import current_app, url_for
+from flask import current_app
 from werkzeug.security import generate_password_hash, check_password_hash
 from itsdangerous import TimedJSONWebSignatureSerializer as Serializer
 from . import db, login_manager
+from sqlalchemy.ext.hybrid import hybrid_property
+from sqlalchemy.sql.functions import concat
 
 
 class User(UserMixin, db.Model):
@@ -167,6 +169,15 @@ class Topic(db.Model):
     @property
     def deleted(self):
         return self.topic_deleted or self.node_deleted or self.user_deleted
+
+    @hybrid_property
+    def title_content(self):
+        return '{0} {1}'.format(self.title, self.content)
+
+    @title_content.expression
+    def title_content(cls):
+        # return literal_column('title || " " || content')
+        return concat(cls.title, cls.content)
 
     def extract_appends(self):
         if self.appends:

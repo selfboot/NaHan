@@ -1,7 +1,7 @@
 #! /usr/bin/env python
 # -*- coding: utf-8 -*-
 # @Author: xuezaigds@gmail.com
-# @Last Modified time: 2016-07-13 15:57:33
+# @Last Modified time: 2016-09-07 20:45:10
 from datetime import datetime
 import re
 from flask import url_for
@@ -90,7 +90,7 @@ def natural_time(dt):
     # print "-->", now   2016-07-18 09:27:25.840414
     # print "---", dt    2016-07-18 09:27:26
     # The dt is truncated to seconds when saved in mysql.  So sometimes now may be small than dt.
-    diff = now - dt if now >= dt else now-now
+    diff = now - dt if now >= dt else now - now
 
     periods = (
         (diff.days / 365, gettext("year"), gettext("years")),
