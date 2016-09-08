@@ -1,7 +1,7 @@
 #! /usr/bin/env python
 # -*- coding: utf-8 -*-
 # @Author: xuezaigds@gmail.com
-# @Last Modified time: 2016-07-18 21:33:38
+# @Last Modified time: 2016-09-08 18:06:32
 
 from flask import render_template, redirect, request, url_for, abort, current_app, jsonify
 from flask_login import login_user, logout_user, current_user
@@ -214,7 +214,7 @@ def topic_table_list():
     length = int(request.args.get('iDisplayLength', 10))
     start = int(request.args.get('iDisplayStart', 0))
 
-    topics = list(filter(lambda x: x.deleted == status, Topic.query.all()))
+    topics = Topic.query.filter_by(deleted=status).all()
     map(lambda x: setattr(x, 'username', x.user().username), topics)
     map(lambda x: setattr(x, 'node_title', x.node().title), topics)
 

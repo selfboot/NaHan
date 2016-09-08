@@ -1,7 +1,7 @@
 #! /usr/bin/env python
 # -*- coding: utf-8 -*-
 # @Author: xuezaigds@gmail.com
-# @Last Modified time: 2016-07-01 09:44:09
+# @Last Modified time: 2016-09-08 16:27:23
 
 from flask import render_template, redirect, request, url_for, abort, current_app
 from flask_login import login_user, logout_user, login_required, current_user
@@ -175,10 +175,10 @@ def info(uid):
 
     per_page = current_app.config['PER_PAGE']
     page = int(request.args.get('page', 1))
-    offset = (page-1)*per_page
+    offset = (page - 1) * per_page
     topics_all = list(filter(lambda t: not t.deleted, u.extract_topics()))
     topics_all.sort(key=lambda t: (t.reply_count, t.click), reverse=True)
-    topics = topics_all[offset:offset+per_page]
+    topics = topics_all[offset:offset + per_page]
     pagination = Pagination(page=page, total=len(topics_all),
                             per_page=per_page,
                             record_name='topics',

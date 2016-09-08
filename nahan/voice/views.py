@@ -1,7 +1,7 @@
 #! /usr/bin/env python
 # -*- coding: utf-8 -*-
 # @Author: xuezaigds@gmail.com
-# @Last Modified time: 2016-09-07 21:53:34
+# @Last Modified time: 2016-09-08 18:30:34
 
 from flask import render_template, redirect, request, url_for, abort, current_app
 from . import voice
@@ -21,10 +21,12 @@ def index():
     per_page = current_app.config['PER_PAGE']
     page = int(request.args.get('page', 1))
     offset = (page - 1) * per_page
-    topics_all = list(filter(lambda t: not t.deleted, Topic.query.all()))
-    topics_all.sort(key=lambda t: (t.time_created), reverse=True)
+    # topics_all = list(filter(lambda t: not t.deleted, Topic.query.all()))
+    # topics_all.sort(key=lambda t: (t.time_created), reverse=True)
+    topics_all = Topic.query.filter_by(deleted=False).order_by(
+        Topic.time_created.desc()).limit(per_page + offset)
     topics = topics_all[offset:offset + per_page]
-    pagination = Pagination(page=page, total=len(topics_all),
+    pagination = Pagination(page=page, total=Topic.query.count(),
                             per_page=per_page,
                             record_name='topics',
                             CSS_FRAMEWORK='bootstrap',
@@ -45,11 +47,12 @@ def hot():
     per_page = current_app.config['PER_PAGE']
     page = int(request.args.get('page', 1))
     offset = (page - 1) * per_page
-    topics_all = list(filter(lambda t: not t.deleted, Topic.query.all()))
-    topics_all.sort(key=lambda t: (t.reply_count, t.click), reverse=True)
-    topics_all = topics_all[:120]
+
+    topics_all = Topic.query.filter_by(deleted=False).order_by(
+        Topic.reply_count.desc(), Topic.click.desc()).limit(per_page + offset)
+
     topics = topics_all[offset:offset + per_page]
-    pagination = Pagination(page=page, total=len(topics_all),
+    pagination = Pagination(page=page, total=Topic.query.count(),
                             per_page=per_page,
                             record_name='topics',
                             CSS_FRAMEWORK='bootstrap',
@@ -270,12 +273,11 @@ def node_view(nid):
     page = int(request.args.get('page', 1))
     offset = (page - 1) * per_page
 
-    topics_all = list(filter(lambda t: not t.deleted,
-                             Topic.query.filter_by(node_id=nid)))
-    topics_all.sort(key=lambda t: (t.reply_count, t.click), reverse=True)
-    topics_all = topics_all[:120]
+    topics_all = Topic.query.filter_by(node_id=nid, deleted=False).order_by(
+        Topic.time_created.desc()).limit(per_page + offset)
     topics = topics_all[offset:offset + per_page]
-    pagination = Pagination(page=page, total=len(topics_all),
+    pagination = Pagination(page=page,
+                            total=Topic.query.filter_by(node_id=nid).count(),
                             per_page=per_page,
                             record_name='topics',
                             CSS_FRAMEWORK='bootstrap',
@@ -283,8 +285,7 @@ def node_view(nid):
     return render_template('voice/node_view.html',
                            topics=topics,
                            title=gettext('Node view'),
-                           post_list_title=gettext(
-                               "Node ") + node_title + gettext("'s topics"),
+                           post_list_title=gettext("Node ") + node_title + gettext("'s topics"),
                            pagination=pagination)
     return render_template('voice/node_view.html')
 
@@ -300,11 +301,11 @@ def search(keywords):
     query.filter(and_(User.name == 'ed', User.fullname == 'Ed Jones'))
     query.filter(or_(User.name == 'ed', User.name == 'wendy'))
     """
-
     keys = keywords.split(' ')
     all_topics = (Topic.query.filter(
         and_(*[Topic.title_content.like("%" + k + "%") for k in keys])).all())
 
+    print "AAA", all_topics[0].topic_deleted, all_topics[0].deleted
     all_topics = list(filter(lambda x: not x.deleted, all_topics))
     all_topics.sort(key=lambda x: x.time_created, reverse=True)
 

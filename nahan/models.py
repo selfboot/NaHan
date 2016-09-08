@@ -1,7 +1,7 @@
 #! /usr/bin/env python
 # -*- coding: utf-8 -*-
 # @Author: xuezaigds@gmail.com
-# @Last Modified time: 2016-09-07 23:23:20
+# @Last Modified time: 2016-09-08 18:09:26
 
 import markdown
 from datetime import datetime
@@ -12,6 +12,8 @@ from itsdangerous import TimedJSONWebSignatureSerializer as Serializer
 from . import db, login_manager
 from sqlalchemy.ext.hybrid import hybrid_property
 from sqlalchemy.sql.functions import concat
+from sqlalchemy.sql.expression import true
+from sqlalchemy.sql import or_
 
 
 class User(UserMixin, db.Model):
@@ -166,13 +168,22 @@ class Topic(db.Model):
     appends = db.Column(db.Text(), default="")
     comments = db.Column(db.Text(), default="")
 
-    @property
+    @hybrid_property
     def deleted(self):
         return self.topic_deleted or self.node_deleted or self.user_deleted
 
+    @deleted.expression
+    def deleted(cls):
+        return or_(cls.topic_deleted == true(),
+                   cls.node_deleted == true(),
+                   cls.user_deleted == true())
+
+    # You may like to read:
+    # http://stackoverflow.com/questions/39346777/python-sqlalchemy-filter-records-that-all-the-keys-in-a-list-appear-in-either-of
     @hybrid_property
     def title_content(self):
-        return '{0} {1}'.format(self.title, self.content)
+        return '{0} {1}'.format(self.title.encode('utf-8'),
+                                self.content.encode('utf-8'))
 
     @title_content.expression
     def title_content(cls):
@@ -257,9 +268,14 @@ class TopicAppend(db.Model):
     topic_deleted = db.Column(db.Boolean(), default=False)
     append_deleted = db.Column(db.Boolean(), default=False)
 
-    @property
+    @hybrid_property
     def deleted(self):
         return self.topic_deleted or self.append_deleted
+
+    @deleted.expression
+    def deleted(cls):
+        return or_(cls.topic_deleted == true(),
+                   cls.append_deleted == true())
 
     def process(self, status, cause):
         """ Reset the status of the topic appendix and relevant notify.
@@ -306,9 +322,14 @@ class Comment(db.Model):
     user_deleted = db.Column(db.Boolean(), default=False)
     comment_deleted = db.Column(db.Boolean(), default=False)
 
-    @property
+    @hybrid_property
     def deleted(self):
         return self.topic_deleted or self.comment_deleted
+
+    @deleted.expression
+    def deleted(cls):
+        return or_(cls.topic_deleted == true(),
+                   cls.comment_deleted == true())
 
     def user(self):
         return User.query.filter_by(id=self.user_id).first()
@@ -407,9 +428,15 @@ class Notify(db.Model):
     topic_deleted = db.Column(db.Boolean(), default=False)
     comment_deleted = db.Column(db.Boolean(), default=False)
 
-    @property
+    @hybrid_property
     def deleted(self):
         return self.append_deleted or self.topic_deleted or self.comment_deleted
+
+    @deleted.expression
+    def deleted(cls):
+        return or_(cls.append_deleted == true(),
+                   cls.topic_deleted == true(),
+                   cls.comment_deleted == true())
 
     @property
     def topic(self):
